@@ -1,0 +1,31 @@
+# =========================================================================
+# Docker Compose Configuration
+# =========================================================================
+#
+# To start this service, run:
+#   docker compose up --build
+# =========================================================================
+
+services:
+  # ----------------------------------------------------
+  # FRONTEND SERVICE (React + Vite + TypeScript)
+  # ----------------------------------------------------
+  frontend:
+    # Build configuration targeting the frontend folder
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Name of the container that will be created
+    container_name: project-lab-frontend
+    # Map port 5173 of the container to port 5173 of your Mac host
+    ports:
+      - '5173:5173'
+    # Volume mounts to allow instant Hot Module Replacement (HMR) during development
+    volumes:
+      # 1. Mount your local frontend folder into the container's /app directory.
+      #    This means any code edit you do on your Mac is instantly visible to the container.
+      - .:/app
+      # 2. Prevent the host's node_modules directory (or lack thereof) from overwriting
+      #    the node_modules installed inside the container. This anonymous volume hides
+      #    the host directory mount inside /app/node_modules, keeping container dependencies intact.
+      - /app/node_modules
