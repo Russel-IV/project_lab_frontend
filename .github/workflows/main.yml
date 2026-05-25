@@ -1,7 +1,7 @@
 name: Deploy Frontend to AWS S3/CloudFront
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Keeping it manual for your tests!
 
 jobs:
   build-and-deploy:
@@ -11,25 +11,35 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 1. Install pnpm first so the setup-node action can detect it
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8 # or 9, depending on what version you use locally
+
+      # 2. Update setup-node to cache pnpm instead of npm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: 'pnpm' # Changed from 'npm' to 'pnpm'
 
+      # 3. Use pnpm to install dependencies cleanly
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile 
+        # --frozen-lockfile is the pnpm equivalent of 'npm ci' 
+        # It ensures the runner installs exactly what's in your lockfile without changing it
 
+      # 4. Use pnpm to run your Vite build
       - name: Build Application (Vite + TypeScript)
-        run: npm run build
-        # This outputs the compiled production code into the /dist folder
+        run: pnpm build
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 # Change this to your bucket/distribution region
+          aws-region: us-east-1 # Make sure this matches your bucket's region!
 
       - name: Deploy static assets to Amazon S3
         run: |
