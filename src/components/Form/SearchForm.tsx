@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SelectionField } from './SelectionField';
 import {
   SelectionSelector,
@@ -9,6 +10,7 @@ import {
 import './SearchForm.css';
 
 export const SearchForm: React.FC = () => {
+  const navigate = useNavigate();
   // Create state for the selector instances to drive React reactivity
   const [selectionSelector, setSelectionSelector] = useState(
     () => new SelectionSelector(),
@@ -32,17 +34,15 @@ export const SearchForm: React.FC = () => {
   };
 
   const handleSearch = () => {
-    alert(
-      `Search Parameters Selected:\n` +
-        `- Selection: ${selectionSelector.getCurrentValue()}\n` +
-        `- Dates: ${datesSelector.getCurrentValue()}\n` +
-        `- Travelers: ${travelersSelector.getCurrentValue()}`,
-    );
+    const params = new URLSearchParams();
+    params.append('selection', selectionSelector.getCurrentValue());
+    params.append('dates', datesSelector.getCurrentValue());
+    params.append('travelers', travelersSelector.getCurrentValue());
+    navigate(`/stays?${params.toString()}`);
   };
 
   return (
     <div className="form-component-wrapper">
-      <div className="form-component-header">FORM-COMPONENT</div>
       <div className="form-card">
         <div className="form-grid">
           <SelectionField
@@ -79,7 +79,7 @@ export const SearchForm: React.FC = () => {
         <div className="form-actions">
           <button
             type="button"
-            className="search-button"
+            className="search-button !bg-[#E8660D] !text-white"
             onClick={handleSearch}
           >
             Search
