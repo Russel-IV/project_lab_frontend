@@ -30,9 +30,8 @@ export function Navbar() {
             <Sparkles className="h-5 w-5 animate-pulse" />
           </div>
           <span className="text-xl font-bold tracking-tight text-white">
-            Lab
             <span className="bg-gradient-to-r from-[#E8660D] to-[#ff9900] bg-clip-text text-transparent">
-              Project
+              Frui
             </span>
           </span>
         </div>

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
+import { Navbar } from '@/components/Navbar/Navbar';
+import { Footer } from '@/components/Footer/Footer';
 import Home from './pages/Home';
 import StaysPage from './pages/StaysPage';
 
@@ -14,10 +15,7 @@ function App() {
             <Route path="/stays" element={<StaysPage />} />
           </Routes>
         </main>
-        <footer
-          className="bg-[#121529] h-[180px] md:h-[200px] w-full shadow-[inset_0_6px_15px_rgba(0,0,0,0.08)]"
-          aria-label="Main Footer"
-        ></footer>
+        <Footer />
       </div>
     </BrowserRouter>
   );
