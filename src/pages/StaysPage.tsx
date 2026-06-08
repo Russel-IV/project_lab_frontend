@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Heart, Waves, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import iberostarLlautImg from '@/assets/iberostar_selection_llaut.png';
 import iberostarPlayaImg from '@/assets/iberostar_selection_playa.png';
 import hotelDunasImg from '@/assets/hotel_hm_dunas_blancas.png';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchStays } from '@/store/staysSlice';
 
 interface Stay {
   id: string;
@@ -90,8 +92,21 @@ const staysData: Stay[] = [
 ];
 
 export default function StaysPage() {
+  const dispatch = useAppDispatch();
+  const { data, loading, error } = useAppSelector((state) => state.stays);
+
   const [searchParams] = useSearchParams();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+
+  // Dispatch the thunk once when the component mounts
+  useEffect(() => {
+    dispatch(fetchStays());
+  }, [dispatch]);
+
+  // Log the state whenever it changes
+  useEffect(() => {
+    console.log('Stays Redux State:', { data, loading, error });
+  }, [data, loading, error]);
 
   const selection = searchParams.get('selection') || 'None';
   const dates = searchParams.get('dates') || 'None';
