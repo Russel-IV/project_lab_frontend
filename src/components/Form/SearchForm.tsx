@@ -1,92 +1,73 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SelectionField } from './SelectionField';
-import {
-  SelectionSelector,
-  DatesSelector,
-  TravelersSelector,
-  BaseCycleSelector,
-} from './models';
+import { SelectionStrategy, DatesStrategy, TravelersStrategy } from './models';
+import { FormContainer } from './FormContainer';
+import { FormCombobox } from './FormCombobox';
+import { FormField } from './FormField';
+import { FormSubmit } from './FormSubmit';
 import './SearchForm.css';
+
+// Instantiate stateless strategies once (outside component renders to avoid duplicates)
+const selectionStrategy = new SelectionStrategy();
+const datesStrategy = new DatesStrategy();
+const travelersStrategy = new TravelersStrategy();
 
 export const SearchForm: React.FC = () => {
   const navigate = useNavigate();
-  // Create state for the selector instances to drive React reactivity
-  const [selectionSelector, setSelectionSelector] = useState(
-    () => new SelectionSelector(),
-  );
-  const [datesSelector, setDatesSelector] = useState(() => new DatesSelector());
-  const [travelersSelector, setTravelersSelector] = useState(
-    () => new TravelersSelector(),
-  );
 
-  // Generalized handler following SOLID principles (Open-Closed, LSP)
-  const handleCycle = <T extends BaseCycleSelector<string>>(
-    selector: T,
-    setter: React.Dispatch<React.SetStateAction<T>>,
-    SelectorClass: new (index: number) => T,
+  // Manage selection state cleanly using standard primitive values
+  const [selectionValue, setSelectionValue] = useState<string>('');
+  const [datesValue, setDatesValue] = useState<string>(
+    'Thu, Jun 25 - Sun, Jun 28',
+  );
+  const [travelersValue, setTravelersValue] = useState<string>('1 adult');
+
+  // Pure state toggling logic using our stateless strategies
+  const handleCycle = (
+    currentVal: string,
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    strategy: typeof datesStrategy | typeof travelersStrategy,
   ) => {
-    // Perform cycling logic inside domain class model
-    selector.cycle();
-
-    // Create new instance with the updated index to trigger React state change
-    setter(new SelectorClass(selector.currentIndex));
+    setter(strategy.getNextValue(currentVal));
   };
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    params.append('selection', selectionSelector.getCurrentValue());
-    params.append('dates', datesSelector.getCurrentValue());
-    params.append('travelers', travelersSelector.getCurrentValue());
+    params.append('selection', selectionValue);
+    params.append('dates', datesValue);
+    params.append('travelers', travelersValue);
     navigate(`/stays?${params.toString()}`);
   };
 
   return (
-    <div className="form-component-wrapper">
-      <div className="form-card">
-        <div className="form-grid">
-          <SelectionField
-            selector={selectionSelector}
-            onCycle={() =>
-              handleCycle(
-                selectionSelector,
-                setSelectionSelector,
-                SelectionSelector,
-              )
-            }
-          />
+    <FormContainer>
+      <div className="form-grid">
+        <FormCombobox
+          label={selectionStrategy.getLabel()}
+          value={selectionValue}
+          onValueChange={setSelectionValue}
+          options={selectionStrategy.getOptions()}
+          showClear={true}
+        />
 
-          <SelectionField
-            selector={datesSelector}
-            onCycle={() =>
-              handleCycle(datesSelector, setDatesSelector, DatesSelector)
-            }
-            showIcon={true}
-          />
+        <FormField
+          label={datesStrategy.getLabel()}
+          value={datesValue}
+          onClick={() => handleCycle(datesValue, setDatesValue, datesStrategy)}
+          showIcon={true}
+        />
 
-          <SelectionField
-            selector={travelersSelector}
-            onCycle={() =>
-              handleCycle(
-                travelersSelector,
-                setTravelersSelector,
-                TravelersSelector,
-              )
-            }
-          />
-        </div>
-
-        <div className="form-actions">
-          <button
-            type="button"
-            className="search-button !bg-[#E8660D] !text-white"
-            onClick={handleSearch}
-          >
-            Search
-          </button>
-        </div>
+        <FormField
+          label={travelersStrategy.getLabel()}
+          value={travelersValue}
+          onClick={() =>
+            handleCycle(travelersValue, setTravelersValue, travelersStrategy)
+          }
+        />
       </div>
-    </div>
+
+      <FormSubmit onClick={handleSearch} />
+    </FormContainer>
   );
 };
 

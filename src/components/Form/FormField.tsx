@@ -1,29 +1,28 @@
 import React from 'react';
-import type { IOptionCycleSelector } from './models';
 
-interface SelectionFieldProps {
-  selector: IOptionCycleSelector<string>;
-  onCycle: () => void;
+interface FormFieldProps {
+  label: string;
+  value: string;
+  onClick: () => void;
   showIcon?: boolean;
 }
 
-export const SelectionField: React.FC<SelectionFieldProps> = ({
-  selector,
-  onCycle,
+export const FormField: React.FC<FormFieldProps> = ({
+  label,
+  value,
+  onClick,
   showIcon = false,
 }) => {
   return (
     <div className="selection-field-container">
-      <span className="selection-field-label">{selector.getLabel()}</span>
+      <span className="selection-field-label">{label}</span>
       <button
         type="button"
-        className="selection-field-button"
-        onClick={onCycle}
-        aria-label={`Cycle options for ${selector.getLabel()}`}
+        className="form-field-base selection-field-button"
+        onClick={onClick}
+        aria-label={`Cycle options for ${label}`}
       >
-        <span className="selection-field-value">
-          {selector.getCurrentValue()}
-        </span>
+        <span className="selection-field-value">{value}</span>
         {showIcon && (
           <svg
             className="selection-field-icon"
@@ -40,4 +39,5 @@ export const SelectionField: React.FC<SelectionFieldProps> = ({
     </div>
   );
 };
-export default SelectionField;
+
+export default FormField;
