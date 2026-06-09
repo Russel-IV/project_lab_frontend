@@ -50,7 +50,7 @@ export abstract class BaseSelectionStrategy implements ISelectionStrategy {
 export class SelectionStrategy extends BaseSelectionStrategy {
   constructor() {
     super(
-      'SELECTION-COMPONENT',
+      'Where to?',
       staysData.map((stay) => stay.title),
     );
   }
@@ -61,7 +61,7 @@ export class SelectionStrategy extends BaseSelectionStrategy {
  */
 export class DatesStrategy extends BaseSelectionStrategy {
   constructor() {
-    super('DATES-COMPONENT', [
+    super('Dates', [
       'Thu, Jun 25 - Sun, Jun 28',
       'Mon, Jul 06 - Fri, Jul 10',
       'Fri, Aug 14 - Sun, Aug 16',
@@ -75,7 +75,8 @@ export class DatesStrategy extends BaseSelectionStrategy {
  */
 export class TravelersStrategy extends BaseSelectionStrategy {
   constructor() {
-    super('TRAVELERS-COMPONENT', [
+    super('Travelers', [
+      '6 travelers, 2 rooms',
       '1 adult',
       '2 adults, 1 child',
       '3 adults, 1 room',

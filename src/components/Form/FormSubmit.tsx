@@ -12,10 +12,11 @@ export const FormSubmit: React.FC<FormSubmitProps> = ({
   className = '',
 }) => {
   return (
-    <div className="form-actions">
+    <div className="submit-field-container">
+      <span className="submit-field-label-placeholder">&nbsp;</span>
       <button
         type="button"
-        className={`search-button !bg-[#E8660D] !text-white ${className}`}
+        className={`search-button ${className}`}
         onClick={onClick}
       >
         {label}

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { MapPin } from 'lucide-react';
+import { InputGroupAddon } from '@/components/ui/input-group';
 import {
   Combobox,
   ComboboxInput,
@@ -43,7 +45,11 @@ export const FormCombobox: React.FC<FormComboboxProps> = ({
           showClear={showClear && value !== ''}
           placeholder={'Where do you want to enjoy?'}
           className="form-field-base combobox-field"
-        />
+        >
+          <InputGroupAddon align="inline-start" className="pl-3">
+            <MapPin className="text-[#877D74] w-5 h-5" strokeWidth={1.5} />
+          </InputGroupAddon>
+        </ComboboxInput>
         <ComboboxContent className="z-50 bg-[#121324] border border-[#2e303a] rounded-lg shadow-xl p-1 text-white">
           <ComboboxList>
             {filteredOptions.map((option) => (
