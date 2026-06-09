@@ -1,7 +1,7 @@
 import { Heart, Waves, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { type Stay } from '@/store/staysSlice';
+import { type Stay } from '@/utils/stayMapper';
 
 interface StayCardProps {
   stay: Stay;

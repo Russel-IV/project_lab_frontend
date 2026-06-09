@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Filter } from '@/components/Filter/Filter';
 import { StayCard } from '@/components/StayCard/StayCard';
+import { type Stay, mapStayDtoToStay } from '@/utils/stayMapper';
 import iberostarLlautImg from '@/assets/iberostar_selection_llaut.png';
 import iberostarPlayaImg from '@/assets/iberostar_selection_playa.png';
 import hotelDunasImg from '@/assets/hotel_hm_dunas_blancas.png';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchStays, type Stay } from '@/store/staysSlice';
+import { fetchStays } from '@/store/staysSlice';
 
 const staysData: Stay[] = [
   {
@@ -92,6 +93,8 @@ export default function StaysPage() {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const displayStays = data.length > 0 ? data.map(mapStayDtoToStay) : staysData;
+
   return (
     <div className="flex-1 bg-muted/20 py-10 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl flex flex-col gap-6">
@@ -120,7 +123,7 @@ export default function StaysPage() {
 
           {/* Stays List */}
           <div className="flex-1 flex flex-col gap-6 w-full">
-            {staysData.map((stay) => {
+            {displayStays.map((stay) => {
               const isLiked = !!favorites[stay.id];
               return (
                 <StayCard

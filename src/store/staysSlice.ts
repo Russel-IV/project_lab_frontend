@@ -1,27 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { API_ENDPOINTS } from '@/config/api';
+import { type StayDto } from '@/dtos/StayDto';
 
-export interface Stay {
-  id: string;
-  image: string;
-  title: string;
-  distance: string;
-  hasPool: boolean;
-  vipAccess: boolean;
-  isAd: boolean;
-  highlightTitle?: string;
-  highlightDesc?: string;
-  refundPolicy: string;
-  reservePolicy?: string;
-  rating: number;
-  ratingText: string;
-  reviewsCount: number;
-  priceNightly: number;
-  priceTotal: number;
-  priceTotalRooms: number;
-  originalPrice?: number;
-  availabilityAlert?: string;
-}
+export type Stay = StayDto;
 
 interface StaysState {
   data: Stay[];
