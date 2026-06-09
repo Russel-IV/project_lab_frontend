@@ -1,6 +1,5 @@
 import { Heart, Waves, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { type Stay } from '@/utils/stayMapper';
 
 interface StayCardProps {
@@ -23,17 +22,6 @@ export function StayCard({ stay, isLiked, onToggleFavorite }: StayCardProps) {
           alt={stay.title}
           className="w-full h-full object-cover select-none"
         />
-        {/* VIP Access Badge */}
-        {stay.vipAccess && (
-          <div className="absolute top-3 left-3">
-            <Badge
-              variant="default"
-              className="bg-slate-900 text-white border-0 text-[10px] font-bold tracking-wide px-2.5 py-0.5 rounded-sm"
-            >
-              VIP Access
-            </Badge>
-          </div>
-        )}
 
         {/* Favorite Toggle Button */}
         <button
@@ -47,13 +35,6 @@ export function StayCard({ stay, isLiked, onToggleFavorite }: StayCardProps) {
             }`}
           />
         </button>
-
-        {/* Ad Indicator */}
-        {stay.isAd && (
-          <div className="absolute bottom-3 left-3 bg-white/90 text-[10px] text-muted-foreground px-1.5 py-0.5 rounded-xs font-medium border border-border">
-            Ad
-          </div>
-        )}
 
         {/* Slider Chevrons */}
         <button
@@ -129,19 +110,6 @@ export function StayCard({ stay, isLiked, onToggleFavorite }: StayCardProps) {
 
           {/* Right side: Pricing */}
           <div className="flex flex-col items-end text-right self-stretch sm:self-auto gap-0.5">
-            <div className="text-sm font-semibold text-foreground">
-              {formatCLP(stay.priceNightly)}{' '}
-              <span className="text-xs text-muted-foreground font-normal">
-                nightly
-              </span>
-            </div>
-
-            {stay.originalPrice && (
-              <div className="text-xs text-muted-foreground line-through">
-                {formatCLP(stay.originalPrice)}
-              </div>
-            )}
-
             <div className="text-sm font-bold text-foreground mt-0.5">
               {formatCLP(stay.priceTotal)}{' '}
               <span className="text-xs text-muted-foreground font-normal">
