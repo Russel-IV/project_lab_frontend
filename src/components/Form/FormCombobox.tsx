@@ -14,7 +14,6 @@ interface FormComboboxProps {
   label: string;
   value: string;
   onValueChange: (val: string) => void;
-  options: string[];
   placeholder?: string;
   showClear?: boolean;
 }

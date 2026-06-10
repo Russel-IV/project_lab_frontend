@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { API_ENDPOINTS } from '@/config/api';
-import { type StayDto } from '@/dtos/StayDto';
+import { type StayDto } from '@/dtos/stayDTO';
 
 export type Stay = StayDto;
 

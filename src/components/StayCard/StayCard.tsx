@@ -1,8 +1,7 @@
 import React, { createContext, useContext } from 'react';
 import { Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { type StayDto } from '@/dtos/StayDto';
-import defaultStayImg from '@/assets/iberostar_selection_llaut.png';
+import { type StayDto } from '@/dtos/stayDTO';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 
 interface StayCardContextType {
@@ -88,9 +87,10 @@ export function StayCardLeft({ children }: { children?: React.ReactNode }) {
 }
 
 export function StayCardImage() {
+  const { stay } = useStayCardContext();
   return (
     <img
-      src={defaultStayImg}
+      src={stay.pictures[0].url}
       alt="Stay Image"
       className="w-full h-full object-cover select-none"
     />
@@ -263,21 +263,26 @@ export function StayCardPricing() {
   const formatCLP = (val: number) => {
     return `CLP ${val.toLocaleString('de-DE')}`;
   };
+  const price = stay.startingFromPrice ?? 0;
+  const bedroomAmount =
+    stay.rooms?.reduce((sum, r) => sum + r.bedroomAmount, 0) ?? 0;
+  const isAvailable = stay.rooms && stay.rooms.length > 0;
+
   return (
     <>
       <div className="text-sm font-bold text-foreground mt-0.5">
-        {formatCLP(stay.price)}{' '}
+        {formatCLP(price)}{' '}
         <span className="text-xs text-muted-foreground font-normal">total</span>
       </div>
 
       <div className="text-[10px] text-muted-foreground">
-        for {stay.bedroomAmount} rooms
+        for {bedroomAmount} rooms
       </div>
       <div className="text-[10px] text-muted-foreground leading-none">
         Total with taxes and fees
       </div>
 
-      {stay.isAvailable ? null : (
+      {isAvailable ? null : (
         <div className="text-[10px] text-red-600 font-medium mt-1">
           Currently unavailable
         </div>
