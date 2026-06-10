@@ -1,4 +1,5 @@
 import SearchForm from '../components/Form/SearchForm';
+import { BedDouble, Plane, Car, Ticket, Ship } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -12,7 +13,31 @@ export default function Home() {
             Find exclusive deals on hotels, flights, and car rentals.
           </p>
         </div>
-        <SearchForm />
+        <SearchForm>
+          <SearchForm.Tabs>
+            <SearchForm.Tab id="stays" icon={BedDouble}>
+              STAYS
+            </SearchForm.Tab>
+            <SearchForm.Tab id="flights" icon={Plane}>
+              FLIGHTS
+            </SearchForm.Tab>
+            <SearchForm.Tab id="cars" icon={Car}>
+              CARS
+            </SearchForm.Tab>
+            <SearchForm.Tab id="things" icon={Ticket}>
+              THINGS TO DO
+            </SearchForm.Tab>
+            <SearchForm.Tab id="cruises" icon={Ship}>
+              CRUISES
+            </SearchForm.Tab>
+          </SearchForm.Tabs>
+          <SearchForm.Grid>
+            <SearchForm.Combobox />
+            <SearchForm.DatesField />
+            <SearchForm.TravelersField />
+            <SearchForm.Submit />
+          </SearchForm.Grid>
+        </SearchForm>
       </section>
     </div>
   );
