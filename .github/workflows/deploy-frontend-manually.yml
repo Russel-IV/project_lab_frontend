@@ -1,45 +1,50 @@
-name: Deploy Frontend to AWS S3/CloudFront
+name: Deploy Frontend to AWS S3/CloudFront (Manual)
 
 on:
-  workflow_dispatch: # Keeping it manual for your tests!
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_PAGER: ""
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 1. Install pnpm first so the setup-node action can detect it
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 8 # or 9, depending on what version you use locally
+          version: 11
 
-      # 2. Update setup-node to cache pnpm instead of npm
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm' # Changed from 'npm' to 'pnpm'
+          node-version: 22
+          cache: 'pnpm'
 
-      # 3. Use pnpm to install dependencies cleanly
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile 
-        # --frozen-lockfile is the pnpm equivalent of 'npm ci' 
-        # It ensures the runner installs exactly what's in your lockfile without changing it
+        run: pnpm install --frozen-lockfile
 
-      # 4. Use pnpm to run your Vite build
       - name: Build Application (Vite + TypeScript)
         run: pnpm build
+
+      - name: Install AWS CLI (local act only)
+        if: env.ACT == 'true'
+        run: |
+          sudo apt-get update && sudo apt-get install -y unzip curl
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip -q awscliv2.zip
+          sudo ./aws/install --update
+          rm -rf awscliv2.zip aws
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 # Make sure this matches your bucket's region!
+          aws-region: us-east-2
 
       - name: Deploy static assets to Amazon S3
         run: |
