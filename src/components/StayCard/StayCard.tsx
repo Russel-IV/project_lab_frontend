@@ -171,7 +171,8 @@ export function StayCardTitle() {
 export function StayCardFeatures() {
   const { stay } = useStayCardContext();
 
-  const features = (stay.amenityIds || [])
+  const features = [...(stay.amenityIds || [])]
+    .sort((a, b) => a - b)
     .map((id) => AMENITIES_LOOKUP[id])
     .filter(Boolean);
 

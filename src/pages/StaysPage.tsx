@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Filter } from '@/components/Filter/Filter';
 import { StayCard } from '@/components/StayCard/StayCard';
@@ -6,13 +6,19 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchStays } from '@/store/staysSlice';
 import { setSearchQuery } from '@/store/searchSlice';
 import SearchForm from '@/components/Form/SearchForm';
+import {
+  parseISOToDateRange,
+  formatDatesRange,
+} from '@/components/Form/searchFormUtils';
 
 export default function StaysPage() {
   const dispatch = useAppDispatch();
   const { data, loading, error } = useAppSelector((state) => state.stays);
 
-  // Read place, dates, and travelers parameters from the Redux store
-  const { place, dates, travelers } = useAppSelector((state) => state.search);
+  // Read search parameters from the Redux store
+  const { place, checkIn, checkOut, travelers } = useAppSelector(
+    (state) => state.search,
+  );
 
   const [searchParams] = useSearchParams();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
@@ -20,13 +26,15 @@ export default function StaysPage() {
   // Sync URL query params into Redux store on param change
   useEffect(() => {
     const placeParam = searchParams.get('place');
-    const datesParam = searchParams.get('dates');
+    const checkInParam = searchParams.get('checkIn');
+    const checkOutParam = searchParams.get('checkOut');
     const travelersParam = searchParams.get('travelers');
 
     dispatch(
       setSearchQuery({
         place: placeParam ?? undefined,
-        dates: datesParam ?? undefined,
+        checkIn: checkInParam ?? undefined,
+        checkOut: checkOutParam ?? undefined,
         travelers: travelersParam ?? undefined,
       }),
     );
@@ -35,7 +43,7 @@ export default function StaysPage() {
   // Dispatch the thunk whenever the search parameters change
   useEffect(() => {
     dispatch(fetchStays());
-  }, [dispatch, place, dates, travelers]);
+  }, [dispatch, place, checkIn, checkOut, travelers]);
 
   // Log the state whenever it changes
   useEffect(() => {
@@ -45,6 +53,11 @@ export default function StaysPage() {
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+
+  // Format dates for display in stays page subheader
+  const formattedDates = useMemo(() => {
+    return formatDatesRange(parseISOToDateRange(checkIn, checkOut));
+  }, [checkIn, checkOut]);
 
   return (
     <div className="flex-1 bg-muted/20 py-10 px-4 sm:px-6 lg:px-8">
@@ -62,12 +75,14 @@ export default function StaysPage() {
           <p className="text-sm text-muted-foreground mt-1 mb-4">
             Showing stays for{' '}
             <span className="font-semibold text-foreground">{place}</span> •{' '}
-            <span className="font-semibold text-foreground">{dates}</span> •{' '}
-            <span className="font-semibold text-foreground">{travelers}</span>
+            <span className="font-semibold text-foreground">
+              {formattedDates}
+            </span>{' '}
+            • <span className="font-semibold text-foreground">{travelers}</span>
           </p>
           <SearchForm>
             <SearchForm.Grid>
-              <SearchForm.Combobox />
+              <SearchForm.PlaceField />
               <SearchForm.DatesField />
               <SearchForm.TravelersField />
               <SearchForm.Submit />

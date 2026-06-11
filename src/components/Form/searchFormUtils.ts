@@ -1,58 +1,33 @@
-import { parse, format, isValid } from 'date-fns';
+import { parse, format } from 'date-fns';
 import { type DateRange } from 'react-day-picker';
-export const staysOptions = ['Miami', 'Tokyo', 'Valparaíso'];
 
-export const travelersOptions = [
-  '6 travelers, 2 rooms',
-  '1 adult',
-  '2 adults, 1 child',
-  '3 adults, 1 room',
-  '4 adults, 2 rooms',
-];
-
-export const getNextTravelerValue = (currentVal: string): string => {
-  const idx = travelersOptions.indexOf(currentVal);
-  if (idx === -1) return travelersOptions[0];
-  return travelersOptions[(idx + 1) % travelersOptions.length];
-};
-
-export const parseDatesString = (str: string): DateRange => {
-  const defaultRange: DateRange = { from: undefined, to: undefined };
-  if (!str) return defaultRange;
-
+/**
+ * Parses checkIn and checkOut ISO strings back into a DateRange object.
+ *
+ * @param checkIn - The check-in ISO date string.
+ * @param checkOut - The check-out ISO date string.
+ * @returns A DateRange object.
+ */
+export const parseISOToDateRange = (
+  checkIn?: string,
+  checkOut?: string,
+): DateRange => {
   try {
-    const parts = str.split(' - ');
-    const currentYear = new Date().getFullYear();
-
-    const parsePart = (part: string): Date | undefined => {
-      const subparts = part.split(',');
-      const dateStr = subparts[subparts.length - 1].trim(); // Get "Jun 25"
-      const parsed = parse(
-        `${dateStr}, ${currentYear}`,
-        'MMM d, yyyy',
-        new Date(),
-      );
-      return isValid(parsed) ? parsed : undefined;
-    };
-
-    if (parts.length === 2) {
-      const fromDate = parsePart(parts[0]);
-      const toDate = parsePart(parts[1]);
-      if (fromDate && toDate) {
-        return { from: fromDate, to: toDate };
-      }
-    } else if (parts.length === 1 && parts[0]) {
-      const fromDate = parsePart(parts[0]);
-      if (fromDate) {
-        return { from: fromDate, to: undefined };
-      }
-    }
+    const from = checkIn ? parse(checkIn, 'yyyy-MM-dd', new Date()) : undefined;
+    const to = checkOut ? parse(checkOut, 'yyyy-MM-dd', new Date()) : undefined;
+    return { from, to };
   } catch (e) {
-    console.error('Failed to parse dates string:', e);
+    console.error('Failed to parse date range strings:', e);
+    return { from: undefined, to: undefined };
   }
-  return defaultRange;
 };
 
+/**
+ * Formats a DateRange object into a user-friendly string range.
+ *
+ * @param range - The DateRange object.
+ * @returns Formatted date range string (e.g., "Thu, Jun 25 - Sun, Jun 28").
+ */
 export const formatDatesRange = (range: DateRange | undefined): string => {
   if (!range || !range.from) return '';
   if (!range.to) {
@@ -61,11 +36,21 @@ export const formatDatesRange = (range: DateRange | undefined): string => {
   return `${format(range.from, 'eee, MMM d')} - ${format(range.to, 'eee, MMM d')}`;
 };
 
+/**
+ * Represents the configuration of a single room.
+ */
 export interface RoomConfig {
   id: number;
   adults: number;
 }
 
+/**
+ * Parses a travelers config string (e.g., "6 travelers, 2 rooms")
+ * into an array of RoomConfig objects representing each room and its adult count.
+ *
+ * @param val - The formatted travelers string.
+ * @returns An array of RoomConfig objects.
+ */
 export const parseTravelersValue = (val: string): RoomConfig[] => {
   if (!val) return [{ id: 1, adults: 2 }];
 
@@ -88,6 +73,13 @@ export const parseTravelersValue = (val: string): RoomConfig[] => {
   return configs;
 };
 
+/**
+ * Serializes an array of RoomConfig objects into a user-friendly string
+ * (e.g., "6 travelers, 2 rooms").
+ *
+ * @param rooms - An array of RoomConfig objects.
+ * @returns The formatted travelers/rooms count string.
+ */
 export const serializeTravelersValue = (rooms: RoomConfig[]): string => {
   const totalAdults = rooms.reduce((sum, r) => sum + r.adults, 0);
   const roomCount = rooms.length;

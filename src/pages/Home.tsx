@@ -32,7 +32,7 @@ export default function Home() {
             </SearchForm.Tab>
           </SearchForm.Tabs>
           <SearchForm.Grid>
-            <SearchForm.Combobox />
+            <SearchForm.PlaceField />
             <SearchForm.DatesField />
             <SearchForm.TravelersField />
             <SearchForm.Submit />

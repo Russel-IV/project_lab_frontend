@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MapPin } from 'lucide-react';
+import { useSearchForm } from './SearchFormContext';
 import { InputGroupAddon } from '@/components/ui/input-group';
 import {
   Combobox,
@@ -10,47 +11,43 @@ import {
   ComboboxEmpty,
 } from '@/components/ui/combobox';
 
-interface FormComboboxProps {
-  label: string;
-  value: string;
-  onValueChange: (val: string) => void;
-  placeholder?: string;
-  showClear?: boolean;
-}
-
-export const FormCombobox: React.FC<FormComboboxProps> = ({
-  label,
-  value,
-  onValueChange,
+export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   showClear = true,
 }) => {
-  const [inputValue, setInputValue] = useState('');
+  const { placeValue, onPlaceChange } = useSearchForm();
+  const [inputValue, setInputValue] = useState(placeValue);
+  const [prevPlaceValue, setPrevPlaceValue] = useState(placeValue);
+
+  if (placeValue !== prevPlaceValue) {
+    setInputValue(placeValue);
+    setPrevPlaceValue(placeValue);
+  }
 
   const options = [
-    'New York',
-    'Los Angeles',
-    'Chicago',
-    'Houston',
-    'Phoenix',
-    'Philadelphia',
-    'San Antonio',
-    'San Diego',
-    'Dallas',
-    'San Jose',
+    'US, New York',
+    'US, Los Angeles',
+    'US, Chicago',
+    'US, Houston',
+    'US, Phoenix',
+    'US, Philadelphia',
+    'US, San Antonio',
+    'US, San Diego',
+    'US, Dallas',
+    'US, San Jose',
   ];
 
   return (
     <div className="selection-field-container">
-      <span className="selection-field-label">{label}</span>
+      <span className="selection-field-label">Where to?</span>
       <Combobox
         items={options}
-        value={value}
-        onValueChange={(val) => onValueChange(val ?? '')}
+        value={placeValue}
+        onValueChange={(val) => onPlaceChange(val ?? '')}
         inputValue={inputValue}
         onInputValueChange={setInputValue}
       >
         <ComboboxInput
-          showClear={showClear && value !== ''}
+          showClear={showClear && placeValue !== ''}
           placeholder={'Where are we going?'}
           className="form-field-base combobox-field"
         >
@@ -82,4 +79,4 @@ export const FormCombobox: React.FC<FormComboboxProps> = ({
   );
 };
 
-export default FormCombobox;
+export default SearchFormPlaceField;

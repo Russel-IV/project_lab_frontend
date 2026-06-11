@@ -1,15 +1,21 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { format, addDays } from 'date-fns';
 
 export interface SearchState {
   place: string;
-  dates: string;
+  checkIn: string;
+  checkOut: string;
   travelers: string;
 }
 
+const today = new Date();
+const tomorrow = addDays(today, 1);
+
 const initialState: SearchState = {
   place: '',
-  dates: 'Thu, Jun 25 - Sun, Jun 28',
-  travelers: '6 travelers, 2 rooms',
+  checkIn: format(today, 'yyyy-MM-dd'),
+  checkOut: format(tomorrow, 'yyyy-MM-dd'),
+  travelers: '1 travelers, 1 rooms',
 };
 
 const searchSlice = createSlice({
@@ -19,8 +25,12 @@ const searchSlice = createSlice({
     setPlace(state, action: PayloadAction<string>) {
       state.place = action.payload;
     },
-    setDates(state, action: PayloadAction<string>) {
-      state.dates = action.payload;
+    setDates(
+      state,
+      action: PayloadAction<{ checkIn: string; checkOut: string }>,
+    ) {
+      state.checkIn = action.payload.checkIn;
+      state.checkOut = action.payload.checkOut;
     },
     setTravelers(state, action: PayloadAction<string>) {
       state.travelers = action.payload;
@@ -29,15 +39,19 @@ const searchSlice = createSlice({
       state,
       action: PayloadAction<{
         place?: string;
-        dates?: string;
+        checkIn?: string;
+        checkOut?: string;
         travelers?: string;
       }>,
     ) {
       if (action.payload.place !== undefined) {
         state.place = action.payload.place;
       }
-      if (action.payload.dates !== undefined) {
-        state.dates = action.payload.dates;
+      if (action.payload.checkIn !== undefined) {
+        state.checkIn = action.payload.checkIn;
+      }
+      if (action.payload.checkOut !== undefined) {
+        state.checkOut = action.payload.checkOut;
       }
       if (action.payload.travelers !== undefined) {
         state.travelers = action.payload.travelers;
