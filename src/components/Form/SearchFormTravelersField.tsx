@@ -34,7 +34,7 @@ export const SearchFormTravelersField: React.FC = () => {
     setRooms((prev) =>
       prev.map((room) => {
         if (room.id === roomId) {
-          const nextAdults = Math.max(1, room.adults + delta);
+          const nextAdults = Math.max(1, Math.min(14, room.adults + delta));
           return { ...room, adults: nextAdults };
         }
         return room;
@@ -106,7 +106,8 @@ export const SearchFormTravelersField: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => updateAdults(room.id, 1)}
-                    className="size-8 rounded-full border border-border flex items-center justify-center hover:bg-muted/30 active:scale-95 transition-all cursor-pointer"
+                    disabled={room.adults >= 14}
+                    className="size-8 rounded-full border border-border flex items-center justify-center hover:bg-muted/30 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                   >
                     <Plus className="size-4 text-foreground" />
                   </button>
