@@ -1,10 +1,11 @@
-import React from 'react';
-import { MapPin, Star, Sparkles } from 'lucide-react';
-import { type StayDto } from '@/dtos/stayDTO';
+import { MapPin, Star } from 'lucide-react';
+import { type GetStaysQuery } from '@/types/__generated__/graphql';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 
+type GraphQLStay = GetStaysQuery['stays'][number];
+
 interface ItemInfoProps {
-  stay: StayDto | null;
+  stay: GraphQLStay | null;
   className?: string;
 }
 
@@ -30,9 +31,6 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
         className={`w-full h-full rounded-2xl border border-border bg-card p-8 shadow-sm flex flex-col items-center justify-center text-center ${className}`}
       >
         <div className="max-w-xs flex flex-col items-center gap-4">
-          <div className="bg-primary/5 p-4 rounded-full text-primary animate-pulse">
-            <Sparkles className="size-8 text-[#a75d2e]" />
-          </div>
           <div className="text-muted-foreground">
             <p className="font-semibold text-lg text-foreground">
               Select a Stay
@@ -60,18 +58,18 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
   }
 
   // Format pricing
-  const price = stay.startingFromPrice ?? 0;
+  const price = (stay.startingFromPrice as number | null) ?? 0;
   const isUSD = price < 10000;
   const formattedPrice = isUSD
     ? `$${price}`
     : `CLP ${price.toLocaleString('de-DE')}`;
 
-  const rating = stay.starRating ?? 4.8;
+  const rating = (stay.starRating as number | null) ?? 4.8;
   const ratingText = getRatingText(rating);
 
   // Map amenities
-  const amenities = (stay.amenityIds || [])
-    .map((id) => AMENITIES_LOOKUP[id])
+  const amenities = (stay.amenities || [])
+    .map((a) => AMENITIES_LOOKUP[a.id])
     .filter(Boolean);
 
   return (

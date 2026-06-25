@@ -1,9 +1,11 @@
 import React, { createContext, useContext } from 'react';
 import { Heart, MapPin } from 'lucide-react';
-import { type StayDto } from '@/dtos/stayDTO';
+import { type GetStaysQuery } from '@/types/__generated__/graphql';
+
+export type GraphQLStay = GetStaysQuery['stays'][number];
 
 interface StayCardVariantContextType {
-  stay: StayDto;
+  stay: GraphQLStay;
 }
 
 const StayCardVariantContext = createContext<
@@ -21,7 +23,7 @@ function useStayCardVariantContext() {
 }
 
 interface StayCardVariantProps {
-  stay: StayDto;
+  stay: GraphQLStay;
   children?: React.ReactNode;
   isLiked?: boolean;
   onToggleFavorite?: (id: string) => void;
@@ -148,7 +150,7 @@ export function StayCardVariantLocation() {
 
 export function StayCardVariantRating() {
   const { stay } = useStayCardVariantContext();
-  const rating = stay.starRating ?? 4.9;
+  const rating = (stay.starRating as number | null) ?? 4.9;
 
   const getRatingText = (val: number) => {
     if (val <= 5) {
@@ -175,7 +177,7 @@ export function StayCardVariantRating() {
 
 export function StayCardVariantPricing() {
   const { stay } = useStayCardVariantContext();
-  const price = stay.startingFromPrice ?? 0;
+  const price = (stay.startingFromPrice as number | null) ?? 0;
 
   // Decide whether USD or CLP depending on numeric value
   const isUSD = price < 10000;
