@@ -1,6 +1,7 @@
 import { MapPin, Star } from 'lucide-react';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
+import { useNavigate } from 'react-router-dom';
 
 type GraphQLStay = GetStaysQuery['stays'][number];
 
@@ -24,6 +25,8 @@ const getRatingText = (val: number) => {
 };
 
 export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
+  const navigate = useNavigate();
+
   // 1. Premium empty state
   if (!stay) {
     return (
@@ -182,9 +185,17 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
           </div>
         </div>
 
-        <button className="bg-[#a75d2e] hover:bg-[#924f24] active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0">
-          Reserve
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate(`/stay/${stay.id}`)}
+            className="bg-[#a75d2e] hover:bg-[#924f24] active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0"
+          >
+            More Information
+          </button>
+          <button className="bg-[#a75d2e] hover:bg-[#924f24] active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0">
+            Reserve
+          </button>
+        </div>
       </div>
     </div>
   );
