@@ -28,7 +28,6 @@ export function SearchForm({ children }: { children: React.ReactNode }) {
     checkOut: checkOutValue,
     travelers: travelersValue,
   } = useAppSelector((state) => state.search);
-  const [addFlight] = useState<boolean>(false);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -36,7 +35,6 @@ export function SearchForm({ children }: { children: React.ReactNode }) {
     params.append('checkIn', checkInValue);
     params.append('checkOut', checkOutValue);
     params.append('travelers', travelersValue);
-    params.append('addFlight', addFlight.toString());
     navigate(`/stays?${params.toString()}`);
   };
 

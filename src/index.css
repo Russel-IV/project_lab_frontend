@@ -46,6 +46,10 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-frui-orange: #e8660d;
+  --color-frui-cream: #fff8f3;
+  --color-frui-blue: #121529;
+  --color-frui-white: #ffffff;
 }
 
 :root {

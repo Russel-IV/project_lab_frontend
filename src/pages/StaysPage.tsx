@@ -11,6 +11,10 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSearchQuery } from '@/store/searchSlice';
 import SearchForm from '@/components/Form/SearchForm';
 import {
+  SearchFormMobile,
+  SearchFormMobileTrigger,
+} from '@/components/SearchFormMobile';
+import {
   useBackgroundQuery,
   useReadQuery,
   type QueryRef,
@@ -37,6 +41,7 @@ export default function StaysPage() {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   useEffect(() => {
     const placeParam = searchParams.get('place');
@@ -65,7 +70,7 @@ export default function StaysPage() {
         {/* Left Panel: Stays List (Green Area) */}
         <section className="flex-1 h-full overflow-y-auto flex flex-col gap-4">
           {/* SearchForm */}
-          <div>
+          <div className="hidden md:block">
             <SearchForm>
               <SearchForm.Grid>
                 <SearchForm.PlaceField />
@@ -74,6 +79,18 @@ export default function StaysPage() {
                 <SearchForm.Submit />
               </SearchForm.Grid>
             </SearchForm>
+          </div>
+
+          <div className="block md:hidden">
+            <SearchFormMobileTrigger
+              onClick={() => setIsMobileSearchOpen(true)}
+            />
+            {isMobileSearchOpen && (
+              <SearchFormMobile
+                isOpen={isMobileSearchOpen}
+                onClose={() => setIsMobileSearchOpen(false)}
+              />
+            )}
           </div>
 
           {/* Toggle Filters */}

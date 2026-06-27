@@ -27,7 +27,6 @@ const getRatingText = (val: number) => {
 export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
   const navigate = useNavigate();
 
-  // 1. Premium empty state
   if (!stay) {
     return (
       <div
