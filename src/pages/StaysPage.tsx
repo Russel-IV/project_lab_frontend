@@ -22,6 +22,7 @@ import {
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 import { GET_STAYS } from '@/graphql/stays';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
+import { Pagination } from '@/components/Pagination';
 
 type GraphQLStay = GetStaysQuery['stays'][number];
 
@@ -184,15 +185,58 @@ function StaysListContent({
     });
   }, [data, priceMin, priceMax, propertyType, ratingMin, amenityIds]);
 
+  // Pagination state and settings
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 12;
+
+  // Track previous filters to detect changes and reset page to 1
+  const [prevFilters, setPrevFilters] = useState(() => ({
+    priceMin,
+    priceMax,
+    propertyType,
+    ratingMin,
+    amenityIds,
+  }));
+
+  if (
+    priceMin !== prevFilters.priceMin ||
+    priceMax !== prevFilters.priceMax ||
+    propertyType !== prevFilters.propertyType ||
+    ratingMin !== prevFilters.ratingMin ||
+    amenityIds !== prevFilters.amenityIds
+  ) {
+    setPrevFilters({ priceMin, priceMax, propertyType, ratingMin, amenityIds });
+    setCurrentPage(1);
+  }
+
+  const totalStays = staysList.length;
+  const totalPages = Math.ceil(totalStays / pageSize);
+
+  const showPagination = totalStays > pageSize;
+
+  // Slice list of stays for the current page
+  const paginatedStays = useMemo(() => {
+    if (!showPagination) return staysList;
+    const startIndex = (currentPage - 1) * pageSize;
+    return staysList.slice(startIndex, startIndex + pageSize);
+  }, [staysList, currentPage, showPagination]);
+
   const activeStayId = useMemo(() => {
     if (
       selectedStayId !== null &&
-      staysList.some((s) => s.id === selectedStayId)
+      paginatedStays.some((s) => s.id === selectedStayId)
     ) {
       return selectedStayId;
     }
-    return staysList.length > 0 ? staysList[0].id : null;
-  }, [staysList, selectedStayId]);
+    return paginatedStays.length > 0 ? paginatedStays[0].id : null;
+  }, [paginatedStays, selectedStayId]);
+
+  // Synchronize selection back to parent when page changes so that StaysDetailContent updates
+  useEffect(() => {
+    if (activeStayId !== selectedStayId) {
+      setSelectedStayId(activeStayId);
+    }
+  }, [activeStayId, selectedStayId, setSelectedStayId]);
 
   return (
     <>
@@ -223,18 +267,27 @@ function StaysListContent({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-          {staysList.map((stay) => (
-            <StayCardVariant
-              key={stay.id}
-              stay={stay}
-              isLiked={!!favorites[stay.id]}
-              onToggleFavorite={toggleFavorite}
-              isActive={activeStayId === stay.id}
-              onClick={() => setSelectedStayId(stay.id)}
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            {paginatedStays.map((stay) => (
+              <StayCardVariant
+                key={stay.id}
+                stay={stay}
+                isLiked={!!favorites[stay.id]}
+                onToggleFavorite={toggleFavorite}
+                isActive={activeStayId === stay.id}
+                onClick={() => setSelectedStayId(stay.id)}
+              />
+            ))}
+          </div>
+          {showPagination && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
     </>
   );
