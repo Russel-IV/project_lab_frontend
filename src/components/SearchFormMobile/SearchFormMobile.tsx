@@ -87,7 +87,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
 
   // Handle date selection from Calendar
   const handleSelectDates = (
-    newRange: DateRange | undefined,
+    _newRange: DateRange | undefined,
     selectedDay: Date,
   ) => {
     if (!selectedDay) return;

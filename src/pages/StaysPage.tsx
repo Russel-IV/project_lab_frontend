@@ -143,18 +143,27 @@ function StaysListContent({
 }: StaysContentProps) {
   const { data } = useReadQuery(queryRef);
 
-  const { propertyType, ratingMin, amenityIds } = useAppSelector(
-    (state) => state.filters,
-  );
+  const { priceMin, priceMax, propertyType, ratingMin, amenityIds } =
+    useAppSelector((state) => state.filters);
 
   const staysList: GraphQLStay[] = useMemo(() => {
     if (!data?.stays) return [];
     return data.stays.filter((stay) => {
-      // 1. Property Type Filter
+      // 1. Price Range Filter
+      const price = stay.startingFromPrice as number | null;
+      if (price !== null && price !== undefined) {
+        if (priceMin !== null && price < priceMin) {
+          return false;
+        }
+        if (priceMax !== null && price > priceMax) {
+          return false;
+        }
+      }
+      // 2. Property Type Filter
       if (propertyType && stay.propertyType !== propertyType) {
         return false;
       }
-      // 2. Guest Rating Filter
+      // 3. Guest Rating Filter
       const rating = (stay.starRating as number | null) ?? 0;
       if (ratingMin !== null) {
         if (ratingMin === 5.0) {
@@ -163,7 +172,7 @@ function StaysListContent({
           if (rating < ratingMin || rating >= ratingMin + 1.0) return false;
         }
       }
-      // 3. Amenities Filter
+      // 4. Amenities Filter
       if (amenityIds && amenityIds.length > 0) {
         const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
         const hasAllAmenities = amenityIds.every((id) =>
@@ -173,7 +182,7 @@ function StaysListContent({
       }
       return true;
     });
-  }, [data, propertyType, ratingMin, amenityIds]);
+  }, [data, priceMin, priceMax, propertyType, ratingMin, amenityIds]);
 
   const activeStayId = useMemo(() => {
     if (
@@ -238,18 +247,27 @@ function StaysDetailContent({
 }: Omit<StaysContentProps, 'favorites' | 'toggleFavorite'>) {
   const { data } = useReadQuery(queryRef);
 
-  const { propertyType, ratingMin, amenityIds } = useAppSelector(
-    (state) => state.filters,
-  );
+  const { priceMin, priceMax, propertyType, ratingMin, amenityIds } =
+    useAppSelector((state) => state.filters);
 
   const staysList: GraphQLStay[] = useMemo(() => {
     if (!data?.stays) return [];
     return data.stays.filter((stay) => {
-      // 1. Property Type Filter
+      // 1. Price Range Filter
+      const price = stay.startingFromPrice as number | null;
+      if (price !== null && price !== undefined) {
+        if (priceMin !== null && price < priceMin) {
+          return false;
+        }
+        if (priceMax !== null && price > priceMax) {
+          return false;
+        }
+      }
+      // 2. Property Type Filter
       if (propertyType && stay.propertyType !== propertyType) {
         return false;
       }
-      // 2. Guest Rating Filter
+      // 3. Guest Rating Filter
       const rating = (stay.starRating as number | null) ?? 0;
       if (ratingMin !== null) {
         if (ratingMin === 5.0) {
@@ -258,7 +276,7 @@ function StaysDetailContent({
           if (rating < ratingMin || rating >= ratingMin + 1.0) return false;
         }
       }
-      // 3. Amenities Filter
+      // 4. Amenities Filter
       if (amenityIds && amenityIds.length > 0) {
         const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
         const hasAllAmenities = amenityIds.every((id) =>
@@ -268,7 +286,7 @@ function StaysDetailContent({
       }
       return true;
     });
-  }, [data, propertyType, ratingMin, amenityIds]);
+  }, [data, priceMin, priceMax, propertyType, ratingMin, amenityIds]);
 
   const activeStayId = useMemo(() => {
     if (

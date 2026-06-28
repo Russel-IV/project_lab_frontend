@@ -1,9 +1,13 @@
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useQuery } from '@apollo/client/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setFilters } from '@/store/filtersSlice';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
+import { GET_STAYS } from '@/graphql/stays';
+import { type GetStaysQuery } from '@/types/__generated__/graphql';
+import { Slider } from '@/components/ui/slider';
 
 interface FilterModalProps {
   isOpen: boolean;
@@ -30,6 +34,38 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
   const [draftAmenityIds, setDraftAmenityIds] = useState<number[]>(
     activeFilters.amenityIds || [],
   );
+
+  // Retrieve stay items dynamically from Apollo Client cache (populated by StaysPage)
+  const { data } = useQuery<GetStaysQuery>(GET_STAYS, {
+    fetchPolicy: 'cache-first',
+  });
+
+  const stays = data?.stays || [];
+  const prices = stays
+    .map((s) => s.startingFromPrice as number | null)
+    .filter((p: unknown): p is number => typeof p === 'number');
+
+  // Compute pricing bounds and details
+  const globalMin = prices.length > 0 ? Math.min(...prices) : 0;
+  const globalMax = prices.length > 0 ? Math.max(...prices) : 1000;
+  const isUSD = globalMin < 10000;
+
+  // Determine dynamic histogram bin ranges
+  const numBins = 40;
+  const binWidth = (globalMax - globalMin) / numBins;
+
+  const bins = Array.from({ length: numBins }, () => 0);
+  prices.forEach((price: number) => {
+    const binIndex = Math.min(
+      Math.floor((price - globalMin) / (binWidth || 1)),
+      numBins - 1,
+    );
+    if (binIndex >= 0 && binIndex < numBins) {
+      bins[binIndex]++;
+    }
+  });
+
+  const maxCount = Math.max(...bins, 1);
 
   // Prevent scrolling on body when modal is open
   useEffect(() => {
@@ -79,17 +115,17 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
       {/* Modal Dialog */}
       <div
-        className="relative z-10 w-full max-w-lg transform overflow-hidden rounded-3xl border border-border bg-background p-6 shadow-2xl transition-all duration-300 animate-in fade-in zoom-in-95 flex flex-col"
+        className="relative z-10 w-full max-w-lg transform overflow-hidden rounded-3xl border border-frui-blue/10 bg-frui-cream p-6 shadow-2xl transition-all duration-300 animate-in fade-in zoom-in-95 flex flex-col"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
-          <h2 className="text-lg font-semibold text-foreground">Filters</h2>
+        <div className="flex items-center justify-between border-b border-frui-blue/10 pb-4 mb-4">
+          <h2 className="text-lg font-bold text-frui-blue">Filters</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            className="rounded-full p-1.5 text-frui-blue/60 hover:bg-frui-blue/10 hover:text-frui-blue transition-all cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-frui-orange"
             aria-label="Close modal"
           >
             <X className="size-5" />
@@ -99,18 +135,97 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
         {/* Content - Flex Column for Filter Sections */}
         <div className="flex flex-col gap-6 py-4 overflow-y-auto max-h-[60vh]">
           {/* Section 1: Price range */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-foreground">
-              Price range
-            </h3>
-            <p>Etc</p>
+          <div className="flex flex-col gap-4">
+            <h3 className="text-sm font-bold text-frui-blue">Price range</h3>
+
+            {/* Histogram and Slider Container */}
+            <div className="flex flex-col gap-2 px-3 text-left">
+              {/* Histogram */}
+              <div className="flex items-end gap-[2px] h-16 w-full select-none">
+                {bins.map((count, i) => {
+                  const binMin = globalMin + i * binWidth;
+                  const binMax = binMin + binWidth;
+                  const currentMin = draftPriceMin ?? globalMin;
+                  const currentMax = draftPriceMax ?? globalMax;
+                  const isSelected =
+                    binMin >= currentMin && binMax <= currentMax;
+                  const heightPercent = (count / maxCount) * 100;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex-1 transition-colors duration-200 rounded-xs ${
+                        isSelected ? 'bg-frui-orange' : 'bg-frui-blue/10'
+                      }`}
+                      style={{ height: `${Math.max(6, heightPercent)}%` }}
+                    />
+                  );
+                })}
+              </div>
+
+              <Slider
+                min={globalMin}
+                max={globalMax}
+                value={[draftPriceMin ?? globalMin, draftPriceMax ?? globalMax]}
+                onValueChange={(vals) => {
+                  if (Array.isArray(vals)) {
+                    setDraftPriceMin(vals[0]);
+                    setDraftPriceMax(vals[1]);
+                  }
+                }}
+                className="w-full"
+              />
+            </div>
+
+            {/* Inputs Row */}
+            <div className="flex items-center gap-4 justify-between mt-2">
+              <div className="flex-1 flex flex-col gap-1 text-left">
+                <span className="text-xs text-frui-blue/60 font-medium pl-1">
+                  Minimum
+                </span>
+                <div className="relative flex items-center rounded-full border border-frui-blue/20 bg-frui-white px-4 py-2.5 shadow-2xs focus-within:border-frui-orange focus-within:ring-2 focus-within:ring-frui-orange/20">
+                  <span className="text-sm font-semibold text-frui-blue/60 mr-1">
+                    {isUSD ? '$' : 'CLP '}
+                  </span>
+                  <input
+                    type="number"
+                    value={draftPriceMin ?? ''}
+                    placeholder={String(globalMin)}
+                    className="w-full bg-transparent text-sm font-bold text-frui-blue focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    onChange={(e) => {
+                      const val =
+                        e.target.value === '' ? null : Number(e.target.value);
+                      setDraftPriceMin(val);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col gap-1 text-left">
+                <span className="text-xs text-frui-blue/60 font-medium pl-1">
+                  Maximum
+                </span>
+                <div className="relative flex items-center rounded-full border border-frui-blue/20 bg-frui-white px-4 py-2.5 shadow-2xs focus-within:border-frui-orange focus-within:ring-2 focus-within:ring-frui-orange/20">
+                  <span className="text-sm font-semibold text-frui-blue/60 mr-1">
+                    {isUSD ? '$' : 'CLP '}
+                  </span>
+                  <input
+                    type="number"
+                    value={draftPriceMax ?? ''}
+                    placeholder={String(globalMax)}
+                    className="w-full bg-transparent text-sm font-bold text-frui-blue focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    onChange={(e) => {
+                      const val =
+                        e.target.value === '' ? null : Number(e.target.value);
+                      setDraftPriceMax(val);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Section 2: Property type */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-foreground">
-              Property type
-            </h3>
+            <h3 className="text-sm font-bold text-frui-blue">Property type</h3>
             <div className="flex gap-2">
               {[
                 { value: null, label: 'All stays' },
@@ -125,8 +240,8 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                     onClick={() => setDraftPropertyType(opt.value)}
                     className={`flex-1 rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
-                        ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                        : 'border-border bg-card text-foreground hover:bg-muted'
+                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
+                        : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
                     }`}
                   >
                     {opt.label}
@@ -138,9 +253,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
           {/* Section 3: Guest rating */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-foreground">
-              Guest rating
-            </h3>
+            <h3 className="text-sm font-bold text-frui-blue">Guest rating</h3>
             <div className="flex flex-wrap gap-2">
               {[
                 { value: null, label: 'Any' },
@@ -156,8 +269,8 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                     onClick={() => setDraftRatingMin(opt.value)}
                     className={`flex-1 min-w-[70px] rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
-                        ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                        : 'border-border bg-card text-foreground hover:bg-muted'
+                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
+                        : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
                     }`}
                   >
                     {opt.label}
@@ -169,7 +282,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
           {/* Section 4: Amenities */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-foreground">Amenities</h3>
+            <h3 className="text-sm font-bold text-frui-blue">Amenities</h3>
             <div className="flex flex-wrap gap-2">
               {Object.entries(AMENITIES_LOOKUP).map(([idStr, config]) => {
                 const id = Number(idStr);
@@ -182,8 +295,8 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                     onClick={() => handleToggleAmenity(id)}
                     className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'border-primary bg-primary text-primary-foreground shadow-sm scale-[1.02]'
-                        : 'border-border bg-card text-foreground hover:bg-muted hover:scale-[1.02]'
+                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm scale-[1.02]'
+                        : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream hover:scale-[1.02]'
                     } active:scale-95`}
                   >
                     <Icon className="size-4" />
@@ -196,18 +309,18 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between border-t border-border pt-4 mt-4">
+        <div className="flex justify-between border-t border-frui-blue/10 pt-4 mt-4">
           <button
             type="button"
             onClick={handleClearAll}
-            className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-all cursor-pointer"
+            className="rounded-xl border border-frui-blue/20 bg-transparent px-4 py-2 text-sm font-semibold text-frui-blue hover:bg-frui-blue/10 transition-all cursor-pointer"
           >
             Clear all
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+            className="rounded-xl bg-frui-blue px-4 py-2 text-sm font-semibold text-frui-white shadow-sm hover:bg-frui-blue/90 active:scale-95 transition-all cursor-pointer"
           >
             Show results
           </button>
