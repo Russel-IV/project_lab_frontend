@@ -8,6 +8,21 @@ export type Incremental<T> =
     };
 export type PropertyType = 'HOME' | 'HOTEL';
 
+export type GetReviewsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  size?: number | null | undefined;
+}>;
+
+export type GetReviewsQuery = {
+  reviews: Array<{
+    __typename: 'Review';
+    id: number;
+    text: string;
+    userId: number;
+    stayId: number;
+  }>;
+};
+
 export type GetStaysQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetStaysQuery = {

@@ -3,9 +3,12 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { useEffect } from 'react';
 import { GET_STAY_DETAILS } from '@/graphql/stays';
+import { GET_REVIEWS } from '@/graphql/reviews';
 import type {
   GetStayDetailsQuery,
   GetStayDetailsQueryVariables,
+  GetReviewsQuery,
+  GetReviewsQueryVariables,
 } from '@/types/__generated__/graphql';
 
 export default function StayInfoPage() {
@@ -18,6 +21,18 @@ export default function StayInfoPage() {
       skip: !id,
     },
   );
+
+  const {
+    data: reviewsData,
+    loading: reviewsLoading,
+    error: reviewsError,
+  } = useQuery<GetReviewsQuery, GetReviewsQueryVariables>(GET_REVIEWS, {
+    variables: { page: 0, size: 10 },
+  });
+
+  const stayId = id ? parseInt(id, 10) : 0;
+  const stayReviews =
+    reviewsData?.reviews.filter((r) => r.stayId === stayId) || [];
 
   useEffect(() => {
     if (data?.stay) {
@@ -60,10 +75,41 @@ export default function StayInfoPage() {
         {/* 4. Commentary Section (Outside the Grid) */}
         {/* The sticky sidebar above will stop scrolling before entering this section */}
         <section className="border-t pt-8 mt-4">
-          <h2 className="text-xl font-semibold mb-4">Reviews & Comments</h2>
-          <div className="flex flex-col gap-4">
-            <p>User comments will render here...</p>
-          </div>
+          <h2 className="text-xl font-semibold mb-4 text-frui-blue">
+            Reviews & Comments
+          </h2>
+          {reviewsLoading && (
+            <p className="text-sm text-gray-500">Loading reviews...</p>
+          )}
+          {reviewsError && (
+            <p className="text-sm text-red-500">
+              Error loading reviews: {reviewsError.message}
+            </p>
+          )}
+          {!reviewsLoading && !reviewsError && stayReviews.length === 0 && (
+            <p className="text-sm text-gray-500">
+              No reviews found for this stay.
+            </p>
+          )}
+          {!reviewsLoading && !reviewsError && stayReviews.length > 0 && (
+            <div className="flex flex-col gap-4">
+              {stayReviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="p-4 rounded-lg bg-frui-cream border border-gray-100"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-frui-blue">
+                      User #{review.userId}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {review.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

@@ -42,7 +42,7 @@ export function StayCardVariant({
     <StayCardVariantContext.Provider value={{ stay }}>
       <div
         onClick={onClick}
-        className={`group relative overflow-hidden w-full aspect-[4/3] rounded-2xl shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer p-0 bg-muted border ${
+        className={`group relative overflow-hidden w-full aspect-[4/3] rounded-2xl shadow-xs cursor-pointer p-0 bg-muted border ${
           isActive ? 'border-primary ring-2 ring-primary' : 'border-border'
         }`}
       >

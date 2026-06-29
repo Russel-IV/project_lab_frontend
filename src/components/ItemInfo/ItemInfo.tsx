@@ -87,7 +87,7 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
             <img
               src={galleryImages[0]}
               alt={`${stay.name} - main view`}
-              className="absolute inset-0 w-full h-full object-cover select-none hover:scale-103 transition-transform duration-500"
+              className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
             />
           </div>
           {/* Top Sub-image */}
@@ -95,7 +95,7 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
             <img
               src={galleryImages[1]}
               alt={`${stay.name} - details 1`}
-              className="absolute inset-0 w-full h-full object-cover select-none hover:scale-103 transition-transform duration-500"
+              className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
             />
           </div>
           {/* Bottom Sub-image */}
@@ -103,7 +103,7 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
             <img
               src={galleryImages[2]}
               alt={`${stay.name} - details 2`}
-              className="absolute inset-0 w-full h-full object-cover select-none hover:scale-103 transition-transform duration-500"
+              className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
             />
           </div>
         </div>
