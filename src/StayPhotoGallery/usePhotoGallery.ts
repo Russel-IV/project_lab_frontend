@@ -1,20 +1,5 @@
 import { useState, useMemo } from 'react';
 
-// Import local image assets for fallback
-import beachExterior from '@/assets/images/beach-exterior.png';
-import lobby from '@/assets/images/lobby.png';
-import standardKing from '@/assets/images/standard-king.png';
-import cabinExterior from '@/assets/images/cabin-exterior.png';
-import livingRoom from '@/assets/images/living-room.png';
-
-const MOCK_IMAGES = [
-  beachExterior,
-  lobby,
-  standardKing,
-  cabinExterior,
-  livingRoom,
-];
-
 export type GalleryLayoutMode = 'one' | 'three' | 'five';
 
 export interface UsePhotoGalleryProps {
@@ -23,7 +8,7 @@ export interface UsePhotoGalleryProps {
 
 /**
  * Custom React hook to manage the state and layout calculations for a stay's photo gallery.
- * Handles fallback to local mock images, determines the layout mode for desktop displays,
+ * Determines the layout mode for desktop displays based on the count of images,
  * and maintains the state of the fullscreen photo modal.
  *
  * @param props - Configuration properties for the gallery hook.
@@ -34,9 +19,9 @@ export interface UsePhotoGalleryProps {
 export function usePhotoGallery({ images }: UsePhotoGalleryProps = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fallback to local mock assets if no images are provided or the list is empty
+  // Return a safe array representation of the images prop
   const safeImages = useMemo(() => {
-    return images && images.length > 0 ? images : MOCK_IMAGES;
+    return images || [];
   }, [images]);
 
   // Determine desktop layout based on safe image count

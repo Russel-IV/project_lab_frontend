@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { Heart, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 
 export type GraphQLStay = GetStaysQuery['stays'][number];
@@ -36,35 +37,44 @@ export function StayCardVariant({
   isLiked,
   onToggleFavorite,
   onClick,
-  isActive,
+  //isActive,
 }: StayCardVariantProps) {
+  const cardContent = (
+    <>
+      <StayCardVariant.Image />
+      <StayCardVariant.Rating />
+      {onToggleFavorite && (
+        <StayCardVariant.FavoriteButton
+          isLiked={!!isLiked}
+          onToggle={onToggleFavorite}
+        />
+      )}
+      <StayCardVariant.BottomSection>
+        <div className="flex justify-between items-end w-full h-full">
+          <div className="flex flex-col gap-1 text-left">
+            <StayCardVariant.Title />
+            <StayCardVariant.Location />
+          </div>
+          <div className="text-right">
+            <StayCardVariant.Pricing />
+          </div>
+        </div>
+      </StayCardVariant.BottomSection>
+    </>
+  );
+
+  const containerClasses = `group relative overflow-hidden w-full aspect-[4/3] rounded-2xl shadow-xs cursor-pointer p-0 bg-muted border block no-underline text-inherit`;
+
   return (
     <StayCardVariantContext.Provider value={{ stay }}>
-      <div
-        onClick={onClick}
-        className={`group relative overflow-hidden w-full aspect-[4/3] rounded-2xl shadow-xs cursor-pointer p-0 bg-muted border ${
-          isActive ? 'border-primary ring-2 ring-primary' : 'border-border'
-        }`}
-      >
-        <StayCardVariant.Image />
-        <StayCardVariant.Rating />
-        {onToggleFavorite && (
-          <StayCardVariant.FavoriteButton
-            isLiked={!!isLiked}
-            onToggle={onToggleFavorite}
-          />
-        )}
-        <StayCardVariant.BottomSection>
-          <div className="flex justify-between items-end w-full h-full">
-            <div className="flex flex-col gap-1 text-left">
-              <StayCardVariant.Title />
-              <StayCardVariant.Location />
-            </div>
-            <div className="text-right">
-              <StayCardVariant.Pricing />
-            </div>
-          </div>
-        </StayCardVariant.BottomSection>
+      {/* Mobile view: Direct Link to StayInfoPage */}
+      <Link to={`/stay/${stay.id}`} className={`${containerClasses} md:hidden`}>
+        {cardContent}
+      </Link>
+
+      {/* Desktop view: Interactive selection handler */}
+      <div onClick={onClick} className={`${containerClasses} hidden md:block`}>
+        {cardContent}
       </div>
     </StayCardVariantContext.Provider>
   );
