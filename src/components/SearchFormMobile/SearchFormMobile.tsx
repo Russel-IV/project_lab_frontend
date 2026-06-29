@@ -23,6 +23,14 @@ import { TravelersSection } from './TravelersSection';
 interface SearchFormMobileProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultActiveSection?: 'where' | 'dates' | 'travelers';
+  onSubmit?: (data: {
+    checkIn: string;
+    checkOut: string;
+    travelers: string;
+  }) => void;
+  submitButtonText?: string;
+  children?: React.ReactNode;
 }
 
 /**
@@ -31,9 +39,17 @@ interface SearchFormMobileProps {
  * Full screen search form modal for mobile screens.
  * Orchestrates the search form state and layout sections via context.
  */
-export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
+export const SearchFormMobile: React.FC<SearchFormMobileProps> & {
+  Where: typeof WhereSection;
+  Dates: typeof DatesSection;
+  Travelers: typeof TravelersSection;
+} = ({
   isOpen,
   onClose,
+  defaultActiveSection,
+  onSubmit,
+  submitButtonText,
+  children,
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -50,7 +66,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
   // Active section inside the accordion: 'where' | 'dates' | 'travelers'
   const [activeSection, setActiveSection] = useState<
     'where' | 'dates' | 'travelers'
-  >('where');
+  >(defaultActiveSection || 'where');
 
   // Parse local travelers configuration
   const [rooms, setRooms] = useState<RoomConfig[]>(() =>
@@ -153,10 +169,20 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
     const defaultTravelers = '1 travelers, 1 rooms';
     setLocalTravelers(defaultTravelers);
     setRooms(parseTravelersValue(defaultTravelers));
-    setActiveSection('where');
+    setActiveSection(defaultActiveSection || 'where');
   };
 
   const handleSearchSubmit = () => {
+    if (onSubmit) {
+      onSubmit({
+        checkIn: localCheckIn,
+        checkOut: localCheckOut,
+        travelers: localTravelers,
+      });
+      onClose();
+      return;
+    }
+
     // Sync with Redux store
     dispatch(setPlace(localPlace));
     dispatch(setDates({ checkIn: localCheckIn, checkOut: localCheckOut }));
@@ -222,11 +248,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
         </button>
 
         {/* Main accordion list */}
-        <div className="flex flex-col gap-4 flex-1 pb-24">
-          <WhereSection />
-          <DatesSection />
-          <TravelersSection />
-        </div>
+        <div className="flex flex-col gap-4 flex-1 pb-24">{children}</div>
 
         {/* Footer bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-frui-white border-t border-[#d6c7b9] px-6 py-4 flex justify-between items-center z-10">
@@ -243,13 +265,19 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
             onClick={handleSearchSubmit}
             className="flex items-center gap-2 bg-frui-orange text-frui-white text-sm font-bold px-6 py-3.5 rounded-2xl shadow-sm cursor-pointer border-0"
           >
-            <Search className="h-4 w-4 text-frui-white" />
-            <span>Buscar</span>
+            {!submitButtonText && (
+              <Search className="h-4 w-4 text-frui-white" />
+            )}
+            <span>{submitButtonText || 'Search'}</span>
           </button>
         </div>
       </div>
     </SearchFormMobileContext.Provider>
   );
 };
+
+SearchFormMobile.Where = WhereSection;
+SearchFormMobile.Dates = DatesSection;
+SearchFormMobile.Travelers = TravelersSection;
 
 export default SearchFormMobile;

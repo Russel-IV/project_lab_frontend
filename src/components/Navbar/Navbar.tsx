@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Globe, LogIn, ChevronDown, Check } from 'lucide-react';
 import {
@@ -25,13 +26,16 @@ export function Navbar() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Brand/Logo */}
-        <div className="flex items-center gap-2 select-none">
-          <span className="text-3xl font-bold tracking-tight text-white">
-            <span className="bg-gradient-to-r from-[#E8660D] to-[#ff9900] bg-clip-text text-transparent">
+        <Link
+          to="/"
+          className="flex items-center gap-2 select-none cursor-pointer"
+        >
+          <span className="text-3xl font-bold tracking-tight text-frui-white">
+            <span className="bg-gradient-to-r from-frui-orange to-[#ff9900] bg-clip-text text-transparent">
               Frui
             </span>
           </span>
-        </div>
+        </Link>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3">

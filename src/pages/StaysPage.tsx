@@ -90,7 +90,11 @@ export default function StaysPage() {
               <SearchFormMobile
                 isOpen={isMobileSearchOpen}
                 onClose={() => setIsMobileSearchOpen(false)}
-              />
+              >
+                <SearchFormMobile.Where />
+                <SearchFormMobile.Dates />
+                <SearchFormMobile.Travelers />
+              </SearchFormMobile>
             )}
           </div>
 
