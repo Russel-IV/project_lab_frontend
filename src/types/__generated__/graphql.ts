@@ -6,6 +6,7 @@ export type Incremental<T> =
   | {
       [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
     };
+/** The type of property (hotel chain or private home). */
 export type PropertyType = 'HOME' | 'HOTEL';
 
 export type GetReviewsQueryVariables = Exact<{
@@ -20,6 +21,23 @@ export type GetReviewsQuery = {
     text: string;
     userId: number;
     stayId: number;
+  }>;
+};
+
+export type GetReviewsByStayQueryVariables = Exact<{
+  stayId: number;
+  page?: number | null | undefined;
+  size?: number | null | undefined;
+}>;
+
+export type GetReviewsByStayQuery = {
+  reviewsByStay: Array<{
+    __typename: 'Review';
+    id: number;
+    text: string;
+    rating: number;
+    stayId: number;
+    user: { __typename: 'User'; id: number; name: string };
   }>;
 };
 

@@ -10,3 +10,18 @@ export const GET_REVIEWS = gql`
     }
   }
 `;
+
+export const GET_REVIEWS_BY_STAY = gql`
+  query GetReviewsByStay($stayId: Int!, $page: Int, $size: Int) {
+    reviewsByStay(stayId: $stayId, page: $page, size: $size) {
+      id
+      text
+      rating
+      stayId
+      user {
+        id
+        name
+      }
+    }
+  }
+`;

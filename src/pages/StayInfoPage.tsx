@@ -4,38 +4,22 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { useEffect, useState, useRef } from 'react';
 import { GET_STAY_DETAILS } from '@/graphql/stays';
-import { GET_REVIEWS } from '@/graphql/reviews';
+import { GET_REVIEWS_BY_STAY } from '@/graphql/reviews';
 import type {
   GetStayDetailsQuery,
   GetStayDetailsQueryVariables,
-  GetReviewsQuery,
-  GetReviewsQueryVariables,
+  GetReviewsByStayQuery,
+  GetReviewsByStayQueryVariables,
 } from '@/types/__generated__/graphql';
 import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 
-const MOCK_NAMES = [
-  'Gino',
-  'Maria',
-  'Sophia',
-  'Alex',
-  'Diego',
-  'Paula',
-  'Lucas',
-  'Elena',
-];
 const MOCK_DATES = [
-  'enero de 2026',
-  'febrero de 2026',
-  'marzo de 2026',
-  'abril de 2026',
-  'mayo de 2026',
-];
-const MOCK_RATINGS = [
-  { val: '5.0', text: 'Exceptional' },
-  { val: '4.8', text: 'Excellent' },
-  { val: '4.9', text: 'Superb' },
-  { val: '5.0', text: 'Exceptional' },
+  'January 2026',
+  'February 2026',
+  'March 2026',
+  'April 2026',
+  'May 2026',
 ];
 
 export default function StayInfoPage() {
@@ -64,17 +48,21 @@ export default function StayInfoPage() {
     },
   );
 
+  const stayId = id ? parseInt(id, 10) : 0;
+
   const {
     data: reviewsData,
     loading: reviewsLoading,
     error: reviewsError,
-  } = useQuery<GetReviewsQuery, GetReviewsQueryVariables>(GET_REVIEWS, {
-    variables: { page: 0, size: 10 },
-  });
+  } = useQuery<GetReviewsByStayQuery, GetReviewsByStayQueryVariables>(
+    GET_REVIEWS_BY_STAY,
+    {
+      variables: { stayId, page: 0, size: 10 },
+      skip: !stayId,
+    },
+  );
 
-  const stayId = id ? parseInt(id, 10) : 0;
-  const stayReviews =
-    reviewsData?.reviews.filter((r) => r.stayId === stayId) || [];
+  const stayReviews = reviewsData?.reviewsByStay || [];
 
   useEffect(() => {
     if (data?.stay) {
@@ -239,9 +227,17 @@ export default function StayInfoPage() {
               }`}
             >
               {stayReviews.map((review) => {
-                const name = MOCK_NAMES[review.userId % MOCK_NAMES.length];
+                const name = review.user.name;
                 const date = MOCK_DATES[review.id % MOCK_DATES.length];
-                const rating = MOCK_RATINGS[review.id % MOCK_RATINGS.length];
+                const ratingVal = review.rating.toFixed(1);
+                const ratingText =
+                  ratingVal === '5.0'
+                    ? 'Exceptional'
+                    : ratingVal >= '4.0'
+                      ? 'Excellent'
+                      : ratingVal >= '3.0'
+                        ? 'Good'
+                        : 'Fair';
                 return (
                   <div
                     key={review.id}
@@ -250,7 +246,7 @@ export default function StayInfoPage() {
                     <div>
                       {/* Rating Tag */}
                       <span className="inline-block bg-frui-orange/10 text-frui-orange px-2.5 py-1 rounded-md text-xs font-semibold w-fit">
-                        {rating.val} {rating.text}
+                        {ratingVal} {ratingText}
                       </span>
                       {/* Review Text */}
                       <p className="text-sm text-gray-700 leading-relaxed mt-4 line-clamp-4">
