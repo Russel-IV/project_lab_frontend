@@ -1,26 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Search } from 'lucide-react';
-import { format, parse, startOfDay } from 'date-fns';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setPlace, setDates, setTravelers } from '@/store/searchSlice';
 import { type DateRange } from 'react-day-picker';
+import { format, parse, startOfDay } from 'date-fns';
 import {
   parseISOToDateRange,
   formatDatesRange,
   type RoomConfig,
   parseTravelersValue,
   serializeTravelersValue,
-} from '@/components/Form/searchFormUtils';
-import {
-  SearchFormMobileContext,
-  type SearchFormMobileContextProps,
-} from './SearchFormMobileContext';
-import { WhereSection } from './WhereSection';
-import { DatesSection } from './DatesSection';
-import { TravelersSection } from './TravelersSection';
+} from '../searchFormUtils';
 
-interface SearchFormMobileProps {
+interface UseSearchFormMobileStateProps {
   isOpen: boolean;
   onClose: () => void;
   defaultActiveSection?: 'where' | 'dates' | 'travelers';
@@ -29,28 +21,20 @@ interface SearchFormMobileProps {
     checkOut: string;
     travelers: string;
   }) => void;
-  submitButtonText?: string;
-  children?: React.ReactNode;
 }
 
 /**
- * SearchFormMobile
+ * useSearchFormMobileState
  *
- * Full screen search form modal for mobile screens.
- * Orchestrates the search form state and layout sections via context.
+ * Custom hook managing the temporary state for the mobile search accordion and modal.
+ * Synchronizes search state, configures rooms, parses dates, and updates store or calls onSubmit.
  */
-export const SearchFormMobile: React.FC<SearchFormMobileProps> & {
-  Where: typeof WhereSection;
-  Dates: typeof DatesSection;
-  Travelers: typeof TravelersSection;
-} = ({
+export const useSearchFormMobileState = ({
   isOpen,
   onClose,
   defaultActiveSection,
   onSubmit,
-  submitButtonText,
-  children,
-}) => {
+}: UseSearchFormMobileStateProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -73,13 +57,14 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> & {
     parseTravelersValue(reduxSearch.travelers),
   );
 
-  // Manage body scroll locking when modal is mounted
+  // Manage body scroll locking when modal is open
   useEffect(() => {
+    if (!isOpen) return;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
     };
-  }, []);
+  }, [isOpen]);
 
   // Handle select suggestion
   const handleSelectPlace = (val: string) => {
@@ -215,7 +200,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> & {
     onClose();
   };
 
-  const contextValue: SearchFormMobileContextProps = {
+  return {
     localPlace,
     setLocalPlace,
     localCheckIn,
@@ -224,60 +209,15 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> & {
     activeSection,
     setActiveSection,
     rooms,
+    displayDatesValue,
     handleSelectPlace,
     handleSelectDates,
     updateAdults,
     addRoom,
     removeRoom,
-    displayDatesValue,
-    onClose,
+    handleClearAll,
+    handleSearchSubmit,
   };
-
-  if (!isOpen) return null;
-
-  return (
-    <SearchFormMobileContext.Provider value={contextValue}>
-      <div className="fixed inset-0 z-50 flex flex-col bg-[#F2F2F2] overflow-y-auto select-none p-4">
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          className="self-end w-10 h-10 flex items-center justify-center bg-frui-white border border-[#d6c7b9] rounded-full shadow-sm text-frui-blue cursor-pointer mb-6"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Main accordion list */}
-        <div className="flex flex-col gap-4 flex-1 pb-24">{children}</div>
-
-        {/* Footer bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-frui-white border-t border-[#d6c7b9] px-6 py-4 flex justify-between items-center z-10">
-          <button
-            type="button"
-            onClick={handleClearAll}
-            className="text-sm font-bold text-frui-blue cursor-pointer bg-transparent border-0 p-0"
-          >
-            Clean Everything
-          </button>
-
-          <button
-            type="button"
-            onClick={handleSearchSubmit}
-            className="flex items-center gap-2 bg-frui-orange text-frui-white text-sm font-bold px-6 py-3.5 rounded-2xl shadow-sm cursor-pointer border-0"
-          >
-            {!submitButtonText && (
-              <Search className="h-4 w-4 text-frui-white" />
-            )}
-            <span>{submitButtonText || 'Search'}</span>
-          </button>
-        </div>
-      </div>
-    </SearchFormMobileContext.Provider>
-  );
 };
 
-SearchFormMobile.Where = WhereSection;
-SearchFormMobile.Dates = DatesSection;
-SearchFormMobile.Travelers = TravelersSection;
-
-export default SearchFormMobile;
+export default useSearchFormMobileState;

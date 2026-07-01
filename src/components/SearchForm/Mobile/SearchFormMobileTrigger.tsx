@@ -1,10 +1,7 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 import { useAppSelector } from '@/store/hooks';
-import {
-  parseISOToDateRange,
-  formatDatesRange,
-} from '@/components/Form/searchFormUtils';
+import { parseISOToDateRange, formatDatesRange } from '../searchFormUtils';
 
 interface SearchFormMobileTriggerProps {
   onClick: () => void;

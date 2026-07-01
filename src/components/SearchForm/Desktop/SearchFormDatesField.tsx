@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { type DateRange } from 'react-day-picker';
-import { parseISOToDateRange, formatDatesRange } from './searchFormUtils';
+import { parseISOToDateRange, formatDatesRange } from '../searchFormUtils';
 
 export const SearchFormDatesField: React.FC = () => {
   const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();

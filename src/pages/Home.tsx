@@ -1,15 +1,8 @@
-import { useState } from 'react';
-import SearchForm from '../components/Form/SearchForm';
-import { BedDouble, Plane, Car, Ticket, Ship } from 'lucide-react';
+import { SearchForm } from '@/components/SearchForm';
+import { Sections } from '../components/Sections';
 import PresentationGallery from '../components/PresentationGallery/PresentationGallery';
-import {
-  SearchFormMobile,
-  SearchFormMobileTrigger,
-} from '@/components/SearchFormMobile';
 
 export default function Home() {
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-
   return (
     <div className="flex-1 w-full flex flex-col items-center pt-2 pb-16 gap-10">
       <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8">
@@ -22,51 +15,13 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Desktop Search Form */}
+        {/* Categories shown only on desktop */}
         <div className="hidden md:block">
-          <SearchForm>
-            <SearchForm.Tabs>
-              <SearchForm.Tab id="stays" icon={BedDouble}>
-                STAYS
-              </SearchForm.Tab>
-              <SearchForm.Tab id="flights" icon={Plane}>
-                FLIGHTS
-              </SearchForm.Tab>
-              <SearchForm.Tab id="cars" icon={Car}>
-                CARS
-              </SearchForm.Tab>
-              <SearchForm.Tab id="things" icon={Ticket}>
-                THINGS TO DO
-              </SearchForm.Tab>
-              <SearchForm.Tab id="cruises" icon={Ship}>
-                CRUISES
-              </SearchForm.Tab>
-            </SearchForm.Tabs>
-            <SearchForm.Grid>
-              <SearchForm.PlaceField />
-              <SearchForm.DatesField />
-              <SearchForm.TravelersField />
-              <SearchForm.Submit />
-            </SearchForm.Grid>
-          </SearchForm>
+          <Sections />
         </div>
 
-        {/* Mobile Search Trigger & Modal */}
-        <div className="block md:hidden">
-          <SearchFormMobileTrigger
-            onClick={() => setIsMobileSearchOpen(true)}
-          />
-          {isMobileSearchOpen && (
-            <SearchFormMobile
-              isOpen={isMobileSearchOpen}
-              onClose={() => setIsMobileSearchOpen(false)}
-            >
-              <SearchFormMobile.Where />
-              <SearchFormMobile.Dates />
-              <SearchFormMobile.Travelers />
-            </SearchFormMobile>
-          )}
-        </div>
+        {/* Unified Responsive Search Form */}
+        <SearchForm />
       </section>
 
       <PresentationGallery />

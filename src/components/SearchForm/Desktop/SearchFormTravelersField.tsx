@@ -11,7 +11,7 @@ import {
   type RoomConfig,
   parseTravelersValue,
   serializeTravelersValue,
-} from './searchFormUtils';
+} from '../searchFormUtils';
 
 export const SearchFormTravelersField: React.FC = () => {
   const { travelersValue, onTravelersChange } = useSearchForm();

@@ -47,6 +47,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
         onInputValueChange={setInputValue}
       >
         <ComboboxInput
+          id="desktop-search-place"
           showClear={showClear && placeValue !== ''}
           placeholder={'Where are we going?'}
           className="form-field-base combobox-field"

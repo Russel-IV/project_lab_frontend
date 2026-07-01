@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import { type DateRange } from 'react-day-picker';
-import { type RoomConfig } from '@/components/Form/searchFormUtils';
+import { type RoomConfig } from '../searchFormUtils';
 
 export interface SearchFormMobileContextProps {
   localPlace: string;

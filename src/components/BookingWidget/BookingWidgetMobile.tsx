@@ -6,8 +6,8 @@ import { startOfDay } from 'date-fns';
 import {
   parseISOToDateRange,
   formatDatesRange,
-} from '@/components/Form/searchFormUtils';
-import { SearchFormMobile } from '@/components/SearchFormMobile';
+} from '@/components/SearchForm/searchFormUtils';
+import { SearchFormMobile } from '@/components/SearchForm';
 import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
 
 type GraphQLStay = NonNullable<GetStayDetailsQuery['stay']>;
@@ -165,10 +165,7 @@ export const BookingWidgetMobile: React.FC<BookingWidgetMobileProps> = ({
           defaultActiveSection="dates"
           onSubmit={handleModalSubmit}
           submitButtonText="Reserve"
-        >
-          <SearchFormMobile.Dates />
-          <SearchFormMobile.Travelers />
-        </SearchFormMobile>
+        />
       )}
     </div>
   );

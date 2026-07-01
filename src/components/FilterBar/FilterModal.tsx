@@ -188,6 +188,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                   </span>
                   <input
                     type="number"
+                    id="price-min"
                     value={draftPriceMin ?? ''}
                     placeholder={String(globalMin)}
                     className="w-full bg-transparent text-sm font-bold text-frui-blue focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -209,6 +210,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                   </span>
                   <input
                     type="number"
+                    id="price-max"
                     value={draftPriceMax ?? ''}
                     placeholder={String(globalMax)}
                     className="w-full bg-transparent text-sm font-bold text-frui-blue focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

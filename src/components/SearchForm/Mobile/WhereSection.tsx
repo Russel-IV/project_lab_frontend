@@ -72,6 +72,7 @@ export const WhereSection: React.FC = () => {
         <Search className="h-5 w-5 text-[#877D74] mr-3" />
         <input
           type="text"
+          id="mobile-search-place"
           value={localPlace}
           onChange={(e) => setLocalPlace(e.target.value)}
           placeholder="Where do you want to go?"

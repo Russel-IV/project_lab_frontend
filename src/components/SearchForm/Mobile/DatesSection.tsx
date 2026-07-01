@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { useSearchFormMobile } from './SearchFormMobileContext';
-import { parseISOToDateRange } from '@/components/Form/searchFormUtils';
+import { parseISOToDateRange } from '../searchFormUtils';
 import { type DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 
