@@ -96,10 +96,15 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
   };
 
   const handleApply = () => {
+    const shouldSwap =
+      draftPriceMin !== null &&
+      draftPriceMax !== null &&
+      draftPriceMin > draftPriceMax;
+
     dispatch(
       setFilters({
-        priceMin: draftPriceMin,
-        priceMax: draftPriceMax,
+        priceMin: shouldSwap ? draftPriceMax : draftPriceMin,
+        priceMax: shouldSwap ? draftPriceMin : draftPriceMax,
         propertyType: draftPropertyType,
         ratingMin: draftRatingMin,
         amenityIds: draftAmenityIds,
