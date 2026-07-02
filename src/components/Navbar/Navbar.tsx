@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Globe, LogIn, ChevronDown, Check } from 'lucide-react';
+import { Globe, LogIn, Sparkles, ChevronDown, Check } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -26,7 +27,10 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Brand/Logo */}
         <div className="flex items-center gap-2 select-none">
-          <span className="text-3xl font-bold tracking-tight text-white">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#E8660D] via-[#ff9900] to-[#ff9900] text-white shadow-md shadow-purple-500/20">
+            <Sparkles className="h-5 w-5 animate-pulse" />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-white">
             <span className="bg-gradient-to-r from-[#E8660D] to-[#ff9900] bg-clip-text text-transparent">
               Frui
             </span>
@@ -74,14 +78,16 @@ export function Navbar() {
           </Popover>
 
           {/* Sign In Button */}
-          <Button
-            variant="default"
-            size="sm"
-            className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
-          >
-            <LogIn className="h-4 w-4" />
-            <span>Sign In</span>
-          </Button>
+          <Link to="/login" className="no-underline">
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Sign In</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
