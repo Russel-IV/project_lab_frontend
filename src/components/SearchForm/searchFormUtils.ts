@@ -37,6 +37,21 @@ export const formatDatesRange = (range: DateRange | undefined): string => {
 };
 
 /**
+ * Checks whether a checkIn/checkOut pair of 'yyyy-MM-dd' strings forms a
+ * valid, non-empty, correctly-ordered date range.
+ *
+ * @param checkIn - The check-in ISO date string.
+ * @param checkOut - The check-out ISO date string.
+ * @returns Whether the range is valid and searchable.
+ */
+export const isValidDateRange = (
+  checkIn: string,
+  checkOut: string,
+): boolean => {
+  return !!checkIn && !!checkOut && checkIn <= checkOut;
+};
+
+/**
  * Represents the configuration of a single room.
  */
 export interface RoomConfig {

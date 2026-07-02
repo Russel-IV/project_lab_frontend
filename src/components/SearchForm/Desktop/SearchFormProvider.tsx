@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setPlace, setDates, setTravelers } from '@/store/searchSlice';
+import { isValidDateRange } from '../searchFormUtils';
 import {
   SearchFormContext,
   type SearchFormContextProps,
@@ -27,6 +28,8 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
   } = useAppSelector((state) => state.search);
 
   const handleSearch = () => {
+    if (!isValidDateRange(checkInValue, checkOutValue)) return;
+
     const params = new URLSearchParams();
     params.append('place', placeValue);
     params.append('checkIn', checkInValue);

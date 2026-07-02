@@ -10,6 +10,7 @@ import {
   type RoomConfig,
   parseTravelersValue,
   serializeTravelersValue,
+  isValidDateRange,
 } from '../searchFormUtils';
 
 interface UseSearchFormMobileStateProps {
@@ -158,6 +159,8 @@ export const useSearchFormMobileState = ({
   };
 
   const handleSearchSubmit = () => {
+    if (!isValidDateRange(localCheckIn, localCheckOut)) return;
+
     if (onSubmit) {
       onSubmit({
         checkIn: localCheckIn,
