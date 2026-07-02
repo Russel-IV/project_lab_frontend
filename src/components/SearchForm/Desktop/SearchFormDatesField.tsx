@@ -40,7 +40,11 @@ export const SearchFormDatesField: React.FC = () => {
       selectedRange.from.getTime() !== selectedRange.to.getTime();
 
     if (isCompleteRange) {
-      onDatesChange('', '');
+      if (newRange?.from) {
+        onDatesChange(format(newRange.from, 'yyyy-MM-dd'), '');
+      } else {
+        onDatesChange('', '');
+      }
     } else if (newRange) {
       const fromStr = newRange.from ? format(newRange.from, 'yyyy-MM-dd') : '';
       const toStr = newRange.to ? format(newRange.to, 'yyyy-MM-dd') : '';
