@@ -72,13 +72,14 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
   };
 
   // Format pricing
-  const price = (stay.startingFromPrice as number | null) ?? 0;
+  const price =
+    typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
   const isUSD = price < 10000;
   const formattedPrice = isUSD
     ? `$${price}`
     : `CLP ${price.toLocaleString('de-DE')}`;
 
-  const rating = (stay.starRating as number | null) ?? 4.8;
+  const rating = typeof stay.starRating === 'number' ? stay.starRating : 4.8;
   const ratingText = getRatingText(rating);
 
   // Map amenities

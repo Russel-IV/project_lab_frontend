@@ -160,7 +160,7 @@ export function StayCardVariantLocation() {
 
 export function StayCardVariantRating() {
   const { stay } = useStayCardVariantContext();
-  const rating = (stay.starRating as number | null) ?? 4.9;
+  const rating = typeof stay.starRating === 'number' ? stay.starRating : 4.9;
 
   const getRatingText = (val: number) => {
     if (val <= 5) {
@@ -187,7 +187,8 @@ export function StayCardVariantRating() {
 
 export function StayCardVariantPricing() {
   const { stay } = useStayCardVariantContext();
-  const price = (stay.startingFromPrice as number | null) ?? 0;
+  const price =
+    typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
 
   // Decide whether USD or CLP depending on numeric value
   const isUSD = price < 10000;
