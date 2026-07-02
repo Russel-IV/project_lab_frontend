@@ -57,7 +57,7 @@ export const parseTravelersValue = (val: string): RoomConfig[] => {
   const roomsMatch = val.match(/(\d+)\s+rooms?/i);
   const adultsMatch = val.match(/(\d+)\s+(adults?|travelers?)/i);
 
-  const roomCount = roomsMatch ? parseInt(roomsMatch[1], 10) : 1;
+  const roomCount = Math.max(1, roomsMatch ? parseInt(roomsMatch[1], 10) : 1);
   const totalAdults = adultsMatch ? parseInt(adultsMatch[1], 10) : 2; // default to 2 adults if not found
 
   const baseAdults = Math.floor(totalAdults / roomCount);
