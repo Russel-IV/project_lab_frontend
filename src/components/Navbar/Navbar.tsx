@@ -78,16 +78,16 @@ export function Navbar() {
           </Popover>
 
           {/* Sign In Button */}
-          <Link to="/login" className="no-underline">
-            <Button
-              variant="default"
-              size="sm"
-              className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
-            >
-              <LogIn className="h-4 w-4" />
-              <span>Sign In</span>
-            </Button>
-          </Link>
+          <Button
+            variant="default"
+            size="sm"
+            render={<Link to="/login" />}
+            nativeButton={false}
+            className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Sign In</span>
+          </Button>
         </div>
       </div>
     </header>
