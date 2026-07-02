@@ -118,8 +118,14 @@ function StaysListContent({
 }: StaysContentProps) {
   const { data } = useReadQuery(queryRef);
 
-  const { priceMin, priceMax, propertyType, ratingMin, amenityIds } =
-    useAppSelector((state) => state.filters);
+  const {
+    priceMin,
+    priceMax,
+    propertyType,
+    freeCancellation,
+    ratingMin,
+    amenityIds,
+  } = useAppSelector((state) => state.filters);
 
   const staysList: GraphQLStay[] = useMemo(() => {
     if (!data?.stays) return [];
@@ -138,7 +144,11 @@ function StaysListContent({
       if (propertyType && stay.propertyType !== propertyType) {
         return false;
       }
-      // 3. Guest Rating Filter
+      // 3. Free Cancellation Filter
+      if (freeCancellation && !stay.isRefundable) {
+        return false;
+      }
+      // 4. Guest Rating Filter
       const rating = (stay.starRating as number | null) ?? 0;
       if (ratingMin !== null) {
         if (ratingMin === 5.0) {
@@ -147,7 +157,7 @@ function StaysListContent({
           if (rating < ratingMin || rating >= ratingMin + 1.0) return false;
         }
       }
-      // 4. Amenities Filter
+      // 5. Amenities Filter
       if (amenityIds && amenityIds.length > 0) {
         const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
         const hasAllAmenities = amenityIds.every((id) =>
@@ -157,7 +167,15 @@ function StaysListContent({
       }
       return true;
     });
-  }, [data, priceMin, priceMax, propertyType, ratingMin, amenityIds]);
+  }, [
+    data,
+    priceMin,
+    priceMax,
+    propertyType,
+    freeCancellation,
+    ratingMin,
+    amenityIds,
+  ]);
 
   // Pagination state and settings
   const [currentPage, setCurrentPage] = useState(1);
@@ -274,8 +292,14 @@ function StaysDetailContent({
 }: Omit<StaysContentProps, 'favorites' | 'toggleFavorite'>) {
   const { data } = useReadQuery(queryRef);
 
-  const { priceMin, priceMax, propertyType, ratingMin, amenityIds } =
-    useAppSelector((state) => state.filters);
+  const {
+    priceMin,
+    priceMax,
+    propertyType,
+    freeCancellation,
+    ratingMin,
+    amenityIds,
+  } = useAppSelector((state) => state.filters);
 
   const staysList: GraphQLStay[] = useMemo(() => {
     if (!data?.stays) return [];
@@ -294,7 +318,11 @@ function StaysDetailContent({
       if (propertyType && stay.propertyType !== propertyType) {
         return false;
       }
-      // 3. Guest Rating Filter
+      // 3. Free Cancellation Filter
+      if (freeCancellation && !stay.isRefundable) {
+        return false;
+      }
+      // 4. Guest Rating Filter
       const rating = (stay.starRating as number | null) ?? 0;
       if (ratingMin !== null) {
         if (ratingMin === 5.0) {
@@ -303,7 +331,7 @@ function StaysDetailContent({
           if (rating < ratingMin || rating >= ratingMin + 1.0) return false;
         }
       }
-      // 4. Amenities Filter
+      // 5. Amenities Filter
       if (amenityIds && amenityIds.length > 0) {
         const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
         const hasAllAmenities = amenityIds.every((id) =>
@@ -313,7 +341,15 @@ function StaysDetailContent({
       }
       return true;
     });
-  }, [data, priceMin, priceMax, propertyType, ratingMin, amenityIds]);
+  }, [
+    data,
+    priceMin,
+    priceMax,
+    propertyType,
+    freeCancellation,
+    ratingMin,
+    amenityIds,
+  ]);
 
   const activeStayId = useMemo(() => {
     if (
