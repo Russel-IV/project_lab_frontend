@@ -1,1 +1,1 @@
-export { Sections } from './Sections';
+export { Sections, MobileSections } from './Sections';
