@@ -40,15 +40,19 @@ export default function StayInfoPage() {
     }
   };
 
-  const { data } = useQuery<GetStayDetailsQuery, GetStayDetailsQueryVariables>(
+  const stayId = id ? parseInt(id, 10) : NaN;
+
+  const {
+    data,
+    loading: stayLoading,
+    error: stayError,
+  } = useQuery<GetStayDetailsQuery, GetStayDetailsQueryVariables>(
     GET_STAY_DETAILS,
     {
-      variables: { id: id ? parseInt(id, 10) : 0 },
-      skip: !id,
+      variables: { id: stayId },
+      skip: Number.isNaN(stayId),
     },
   );
-
-  const stayId = id ? parseInt(id, 10) : 0;
 
   const {
     data: reviewsData,
@@ -58,7 +62,7 @@ export default function StayInfoPage() {
     GET_REVIEWS_BY_STAY,
     {
       variables: { stayId, page: 0, size: 10 },
-      skip: !stayId,
+      skip: Number.isNaN(stayId),
     },
   );
 
@@ -69,6 +73,32 @@ export default function StayInfoPage() {
       console.log('Stay Details Data:', data.stay);
     }
   }, [data]);
+
+  if (stayError) {
+    return (
+      <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 p-8 text-center">
+        <h1 className="text-lg font-semibold text-foreground">
+          Something went wrong
+        </h1>
+        <p className="text-sm text-muted-foreground max-w-md">
+          {stayError.message}
+        </p>
+      </div>
+    );
+  }
+
+  if (!stayLoading && !data?.stay) {
+    return (
+      <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 p-8 text-center">
+        <h1 className="text-lg font-semibold text-foreground">
+          Stay not found
+        </h1>
+        <p className="text-sm text-muted-foreground max-w-md">
+          We couldn&apos;t find the stay you&apos;re looking for.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 w-full bg-background md:py-10 px-4 sm:px-6 lg:px-8">
