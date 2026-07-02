@@ -1,4 +1,4 @@
-import { parse, format } from 'date-fns';
+import { parse, format, isValid } from 'date-fns';
 import { type DateRange } from 'react-day-picker';
 
 /**
@@ -29,8 +29,8 @@ export const parseISOToDateRange = (
  * @returns Formatted date range string (e.g., "Thu, Jun 25 - Sun, Jun 28").
  */
 export const formatDatesRange = (range: DateRange | undefined): string => {
-  if (!range || !range.from) return '';
-  if (!range.to) {
+  if (!range || !range.from || !isValid(range.from)) return '';
+  if (!range.to || !isValid(range.to)) {
     return format(range.from, 'eee, MMM d');
   }
   return `${format(range.from, 'eee, MMM d')} - ${format(range.to, 'eee, MMM d')}`;
