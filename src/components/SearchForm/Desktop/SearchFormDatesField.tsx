@@ -1,8 +1,7 @@
 import React from 'react';
-import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSearchForm } from './SearchFormContext';
-import { FormField } from './FormField';
+import { cn } from '@/lib/utils';
 import {
   Popover,
   PopoverContent,
@@ -12,7 +11,17 @@ import { Calendar } from '@/components/ui/calendar';
 import { type DateRange } from 'react-day-picker';
 import { parseISOToDateRange, formatDatesRange } from '../searchFormUtils';
 
-export const SearchFormDatesField: React.FC = () => {
+interface SearchFormDatesFieldProps {
+  isActive: boolean;
+  onActivate: () => void;
+  onDeactivate: () => void;
+}
+
+export const SearchFormDatesField: React.FC<SearchFormDatesFieldProps> = ({
+  isActive,
+  onActivate,
+  onDeactivate,
+}) => {
   const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();
 
   // Parse checkIn and checkOut ISO strings back into a DateRange object
@@ -20,7 +29,7 @@ export const SearchFormDatesField: React.FC = () => {
     return parseISOToDateRange(checkInValue, checkOutValue);
   }, [checkInValue, checkOutValue]);
 
-  // Format the range for user display in the FormField
+  // Format the range for user display in the field
   const displayValue = React.useMemo(() => {
     const isSameDay =
       selectedRange.from &&
@@ -28,7 +37,7 @@ export const SearchFormDatesField: React.FC = () => {
       selectedRange.from.getTime() === selectedRange.to.getTime();
 
     if (!selectedRange.from || isSameDay) {
-      return 'Select a range date';
+      return 'When?';
     }
     return formatDatesRange(selectedRange);
   }, [selectedRange]);
@@ -61,18 +70,42 @@ export const SearchFormDatesField: React.FC = () => {
   }, []);
 
   return (
-    <Popover>
+    <Popover
+      open={isActive}
+      onOpenChange={(isOpen) => {
+        if (isOpen) {
+          onActivate();
+        } else {
+          onDeactivate();
+        }
+      }}
+    >
       <PopoverTrigger
         render={
-          <FormField
-            label="Dates"
-            value={displayValue}
-            onClick={() => {}}
-            icon={<CalendarIcon className="w-5 h-5" strokeWidth={1.5} />}
-          />
+          <div
+            onClick={onActivate}
+            className={cn(
+              'flex flex-col flex-1 px-4 xl:px-8 py-2.5 xl:py-3 rounded-full cursor-pointer justify-center min-w-0 transition-all duration-150 select-none',
+              isActive
+                ? 'bg-frui-white shadow-[0_3px_12px_rgba(0,0,0,0.08)]'
+                : 'bg-transparent',
+            )}
+          >
+            <span className="text-[10px] xl:text-xs font-bold text-frui-blue uppercase tracking-wider select-none mb-0.5">
+              Dates
+            </span>
+            <span
+              className={cn(
+                'text-xs xl:text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis',
+                checkInValue ? 'text-frui-blue' : 'text-gray-400',
+              )}
+            >
+              {displayValue}
+            </span>
+          </div>
         }
       />
-      <PopoverContent className="w-auto p-0 bg-white border border-[#d6c7b9] rounded-lg shadow-xl text-[#121324] z-50">
+      <PopoverContent className="w-auto p-0 bg-frui-white border border-[#d6c7b9]/50 rounded-2xl shadow-xl text-frui-blue z-50 mt-3">
         <Calendar
           mode="range"
           selected={selectedRange}

@@ -19,8 +19,6 @@ import { SearchFormProvider } from './Desktop/SearchFormProvider';
 import { SearchFormPlaceField } from './Desktop/SearchFormPlaceField';
 import { SearchFormDatesField } from './Desktop/SearchFormDatesField';
 import { SearchFormTravelersField } from './Desktop/SearchFormTravelersField';
-import { FormSubmit } from './Desktop/FormSubmit';
-import './Desktop/SearchForm.css';
 
 interface SearchFormMobileProps {
   isOpen: boolean;
@@ -106,19 +104,62 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
   );
 };
 
-/**
- * SearchFormFields
- *
- * Renders the desktop form input fields inside a grid layout.
- */
-export const SearchFormFields: React.FC = () => {
+const SearchFormDesktopFields: React.FC = () => {
   const { onSubmit } = useSearchForm();
+  const [activeSection, setActiveSection] = useState<
+    'where' | 'dates' | 'travelers' | null
+  >(null);
+
   return (
-    <div className="form-grid">
-      <SearchFormPlaceField />
-      <SearchFormDatesField />
-      <SearchFormTravelersField />
-      <FormSubmit onClick={onSubmit} />
+    <div className="w-full max-w-4xl mx-auto mb-10 select-none hidden md:block">
+      <div className="bg-frui-cream rounded-full border border-[#d6c7b9]/30 p-1.5 flex items-center justify-between w-full shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        {/* Where Section */}
+        <SearchFormPlaceField
+          isActive={activeSection === 'where'}
+          onActivate={() => setActiveSection('where')}
+          onDeactivate={() => {
+            if (activeSection === 'where') setActiveSection(null);
+          }}
+        />
+
+        {/* Separator 1 */}
+        {activeSection !== 'where' && activeSection !== 'dates' && (
+          <div className="h-8 w-[1px] bg-[#d6c7b9]/50 shrink-0" />
+        )}
+
+        {/* Dates Section */}
+        <SearchFormDatesField
+          isActive={activeSection === 'dates'}
+          onActivate={() => setActiveSection('dates')}
+          onDeactivate={() => {
+            if (activeSection === 'dates') setActiveSection(null);
+          }}
+        />
+
+        {/* Separator 2 */}
+        {activeSection !== 'dates' && activeSection !== 'travelers' && (
+          <div className="h-8 w-[1px] bg-[#d6c7b9]/50 shrink-0" />
+        )}
+
+        {/* Travelers Section */}
+        <SearchFormTravelersField
+          isActive={activeSection === 'travelers'}
+          onActivate={() => setActiveSection('travelers')}
+          onDeactivate={() => {
+            if (activeSection === 'travelers') setActiveSection(null);
+          }}
+        />
+
+        {/* Search button (Buscar) */}
+        <button
+          type="button"
+          onClick={onSubmit}
+          className="bg-frui-orange text-frui-white p-3.5 xl:px-8 xl:py-3.5 rounded-full flex items-center justify-center gap-2 font-bold cursor-pointer transition-all shrink-0 ml-2 hover:bg-[#cf5505] border-0"
+        >
+          <Search className="h-4 w-4 text-frui-white" />
+          <span className="hidden xl:inline">Search</span>
+        </button>
+      </div>
     </div>
   );
 };
@@ -131,9 +172,7 @@ export const SearchFormFields: React.FC = () => {
 export const SearchFormDesktop: React.FC = () => {
   return (
     <SearchFormProvider>
-      <div className="form-card">
-        <SearchFormFields />
-      </div>
+      <SearchFormDesktopFields />
     </SearchFormProvider>
   );
 };
