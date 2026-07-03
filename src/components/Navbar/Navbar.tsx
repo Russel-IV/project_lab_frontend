@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Globe, LogIn, Sparkles, ChevronDown, Check } from 'lucide-react';
+import { Globe, LogIn, ChevronDown, Check } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
