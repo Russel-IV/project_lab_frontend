@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { MapPin, Star } from 'lucide-react';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { useNavigate } from 'react-router-dom';
+import { ImageGalleryModal } from '@/components/PhotoGallery/ImageGalleryModal';
 
 type GraphQLStay = GetStaysQuery['stays'][number];
 
@@ -26,6 +28,8 @@ const getRatingText = (val: number) => {
 
 export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   if (!stay) {
     return (
@@ -59,6 +63,14 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
     }
   }
 
+  const allImages =
+    rawPictures.length > 0 ? rawPictures.map((p) => p.url) : FALLBACK_IMAGES;
+
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsModalOpen(true);
+  };
+
   // Format pricing
   const price = (stay.startingFromPrice as number | null) ?? 0;
   const isUSD = price < 10000;
@@ -83,7 +95,10 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
         {/* 1. Image Gallery using CSS Grid */}
         <div className="grid grid-cols-3 grid-rows-2 gap-2 aspect-[16/10] w-full rounded-2xl overflow-hidden shadow-xs shrink-0">
           {/* Main Image */}
-          <div className="col-span-2 row-span-2 relative overflow-hidden bg-muted">
+          <div
+            onClick={() => handleImageClick(0)}
+            className="col-span-2 row-span-2 relative overflow-hidden bg-muted cursor-pointer"
+          >
             <img
               src={galleryImages[0]}
               alt={`${stay.name} - main view`}
@@ -91,7 +106,10 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
             />
           </div>
           {/* Top Sub-image */}
-          <div className="col-span-1 row-span-1 relative overflow-hidden bg-muted">
+          <div
+            onClick={() => handleImageClick(1)}
+            className="col-span-1 row-span-1 relative overflow-hidden bg-muted cursor-pointer"
+          >
             <img
               src={galleryImages[1]}
               alt={`${stay.name} - details 1`}
@@ -99,7 +117,10 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
             />
           </div>
           {/* Bottom Sub-image */}
-          <div className="col-span-1 row-span-1 relative overflow-hidden bg-muted">
+          <div
+            onClick={() => handleImageClick(2)}
+            className="col-span-1 row-span-1 relative overflow-hidden bg-muted cursor-pointer"
+          >
             <img
               src={galleryImages[2]}
               alt={`${stay.name} - details 2`}
@@ -196,6 +217,15 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
           </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <ImageGalleryModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          images={allImages}
+          initialIndex={selectedImageIndex}
+        />
+      )}
     </div>
   );
 }
