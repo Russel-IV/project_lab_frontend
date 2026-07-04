@@ -91,8 +91,31 @@ export function ItemInfoSkeleton({ className = '' }: { className?: string }) {
           </div>
         </div>
 
-        {/* 6. Reviews toggle Skeleton */}
-        <Skeleton className="h-4 w-24 bg-muted/60" />
+        {/* 6. Reviews & Ratings Skeleton */}
+        <div className="space-y-4">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
+            Reviews & Ratings
+          </h3>
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-8 w-16 bg-muted/60" />
+            <Skeleton className="h-2 w-full bg-muted/60 rounded-full" />
+            <Skeleton className="h-2 w-full bg-muted/60 rounded-full" />
+            <Skeleton className="h-2 w-full bg-muted/60 rounded-full" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 2 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-xl bg-muted/40 border border-border flex flex-col gap-2"
+              >
+                <Skeleton className="h-5 w-16 rounded-md bg-muted/60" />
+                <Skeleton className="h-4 w-full bg-muted/60" />
+                <Skeleton className="h-4 w-2/3 bg-muted/60" />
+                <Skeleton className="h-4 w-24 bg-muted/60 mt-2" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

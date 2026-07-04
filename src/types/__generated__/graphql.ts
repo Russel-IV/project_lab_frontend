@@ -61,6 +61,23 @@ export type GetReviewsByStayQuery = {
   }>;
 };
 
+export type GetReviewSummaryQueryVariables = Exact<{
+  stayId: number;
+}>;
+
+export type GetReviewSummaryQuery = {
+  reviewSummary: {
+    __typename: 'ReviewSummary';
+    count: number;
+    average: number | null;
+    oneStar: number;
+    twoStar: number;
+    threeStar: number;
+    fourStar: number;
+    fiveStar: number;
+  };
+};
+
 export type GetStaysQueryVariables = Exact<{
   filter?: StayFilterInput | null | undefined;
 }>;
@@ -73,11 +90,11 @@ export type GetStaysQuery = {
     about: string | null;
     propertyType: PropertyType;
     isRefundable: boolean;
-    starRating: unknown;
+    starRating: number | null;
     daysFromBookingCancellationDeadline: number | null;
     policiesText: string | null;
     importantInformation: string | null;
-    startingFromPrice: unknown;
+    startingFromPrice: number | null;
     address: {
       __typename: 'Address';
       id: number;
@@ -93,11 +110,11 @@ export type GetStaysQuery = {
       id: number;
       stayId: number;
       name: string;
-      price: unknown;
+      price: number;
       sleeps: number;
       bedroomAmount: number;
-      bathrooms: unknown;
-      size: unknown;
+      bathrooms: number;
+      size: number | null;
     }>;
     pictures: Array<{
       __typename: 'StayPicture';
@@ -134,11 +151,11 @@ export type GetStayDetailsQuery = {
     about: string | null;
     propertyType: PropertyType;
     isRefundable: boolean;
-    starRating: unknown;
+    starRating: number | null;
     daysFromBookingCancellationDeadline: number | null;
     policiesText: string | null;
     importantInformation: string | null;
-    startingFromPrice: unknown;
+    startingFromPrice: number | null;
     address: {
       __typename: 'Address';
       id: number;
@@ -154,11 +171,11 @@ export type GetStayDetailsQuery = {
       id: number;
       stayId: number;
       name: string;
-      price: unknown;
+      price: number;
       sleeps: number;
       bedroomAmount: number;
-      bathrooms: unknown;
-      size: unknown;
+      bathrooms: number;
+      size: number | null;
     }>;
     pictures: Array<{
       __typename: 'StayPicture';

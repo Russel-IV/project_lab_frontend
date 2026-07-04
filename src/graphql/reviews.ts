@@ -25,3 +25,17 @@ export const GET_REVIEWS_BY_STAY = gql`
     }
   }
 `;
+
+export const GET_REVIEW_SUMMARY = gql`
+  query GetReviewSummary($stayId: Int!) {
+    reviewSummary(stayId: $stayId) {
+      count
+      average
+      oneStar
+      twoStar
+      threeStar
+      fourStar
+      fiveStar
+    }
+  }
+`;

@@ -5,11 +5,74 @@ import type {
   GetStayDetailsQuery,
   GetReviewsByStayQuery,
   GetReviewsByStayQueryVariables,
+  GetReviewSummaryQuery,
+  GetReviewSummaryQueryVariables,
 } from '@/types/__generated__/graphql';
-import { GET_REVIEWS_BY_STAY } from '@/graphql/reviews';
+import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { ImageGalleryModal } from '@/components/PhotoGallery/ImageGalleryModal';
 import { Skeleton } from '@/components/ui/skeleton';
+
+const REVIEWS_PAGE_SIZE = 6;
+
+/**
+ * RatingBarGraph
+ *
+ * Horizontal breakdown of a stay's reviews by star value (5 down to 1).
+ * Bar length is scaled relative to the largest bucket, not the review
+ * total, so the shape of the distribution stays readable even when one
+ * rating dominates.
+ */
+function RatingBarGraph({
+  summary,
+}: {
+  summary: GetReviewSummaryQuery['reviewSummary'];
+}) {
+  const buckets: [number, number][] = [
+    [5, summary.fiveStar],
+    [4, summary.fourStar],
+    [3, summary.threeStar],
+    [2, summary.twoStar],
+    [1, summary.oneStar],
+  ];
+  const maxCount = Math.max(...buckets.map(([, count]) => count), 1);
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+      <div className="flex sm:flex-col items-center sm:items-start gap-2 shrink-0">
+        <span className="text-3xl font-bold text-foreground leading-none">
+          {summary.average?.toFixed(1) ?? '—'}
+        </span>
+        <div className="flex items-center gap-1 text-amber-500">
+          <Star className="size-3.5 fill-amber-500" />
+        </div>
+        <span className="text-xs text-muted-foreground whitespace-nowrap">
+          {summary.count} {summary.count === 1 ? 'review' : 'reviews'}
+        </span>
+      </div>
+
+      <div className="flex-1 w-full flex flex-col gap-1.5">
+        {buckets.map(([star, count]) => (
+          <div key={star} className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 text-muted-foreground font-medium tabular-nums">
+              {star}
+            </span>
+            <Star className="size-3 shrink-0 fill-muted-foreground/40 text-muted-foreground/40" />
+            <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full bg-frui-orange"
+                style={{ width: `${(count / maxCount) * 100}%` }}
+              />
+            </div>
+            <span className="w-5 text-right text-muted-foreground tabular-nums">
+              {count}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type GraphQLStay = NonNullable<GetStayDetailsQuery['stay']>;
 
@@ -67,15 +130,25 @@ const getRatingText = (val: number) => {
 export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [showReviews, setShowReviews] = useState(false);
+  const [reviewsSize, setReviewsSize] = useState(REVIEWS_PAGE_SIZE);
 
-  const { data: reviewsData, loading: reviewsLoading } = useQuery<
-    GetReviewsByStayQuery,
-    GetReviewsByStayQueryVariables
-  >(GET_REVIEWS_BY_STAY, {
-    variables: { stayId: stay.id, page: 0, size: 10 },
-    skip: !showReviews,
+  const { data: summaryData, loading: summaryLoading } = useQuery<
+    GetReviewSummaryQuery,
+    GetReviewSummaryQueryVariables
+  >(GET_REVIEW_SUMMARY, {
+    variables: { stayId: stay.id },
   });
+
+  const {
+    data: reviewsData,
+    previousData: previousReviewsData,
+    loading: reviewsLoading,
+  } = useQuery<GetReviewsByStayQuery, GetReviewsByStayQueryVariables>(
+    GET_REVIEWS_BY_STAY,
+    {
+      variables: { stayId: stay.id, page: 0, size: reviewsSize },
+    },
+  );
 
   // Gather up to 3 pictures for the preview grid; missing slots render the
   // branded placeholder instead of a stock fallback photo.
@@ -110,7 +183,14 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     .map((a) => AMENITIES_LOOKUP[a.id])
     .filter(Boolean);
 
-  const stayReviews = reviewsData?.reviewsByStay || [];
+  // Fall back to the previous page's reviews while a "Show more" refetch is
+  // in flight, so the grid doesn't blank out mid-load.
+  const loadedReviews =
+    reviewsData?.reviewsByStay ?? previousReviewsData?.reviewsByStay ?? [];
+
+  const summary = summaryData?.reviewSummary;
+  const hasMoreReviews =
+    summary !== undefined && loadedReviews.length < summary.count;
 
   return (
     <div
@@ -179,9 +259,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
                   {rating.toFixed(1)}
                 </span>
                 <span>{ratingText}</span>
-                <span className="text-muted-foreground text-xs">
-                  (124 reviews)
-                </span>
               </div>
             </div>
           </div>
@@ -266,65 +343,81 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           </div>
         )}
 
-        {/* 6. Reviews toggle */}
-        <div>
-          <button
-            type="button"
-            onClick={() => setShowReviews((prev) => !prev)}
-            className="text-sm font-semibold text-frui-orange hover:underline cursor-pointer bg-transparent border-0 p-0"
-          >
-            {showReviews ? 'Hide reviews' : 'Show reviews'}
-          </button>
-        </div>
+        {/* 6. Reviews & Ratings -- summary bar graph is visible as soon as
+            the panel opens (not gated behind a click); the review list
+            paginates 6 at a time via "Show more". */}
+        <div className="space-y-4">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
+            Reviews & Ratings
+          </h3>
 
-        {/* 7. Expanded content: Reviews */}
-        {showReviews && (
-          <div className="space-y-3">
-            <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
-              Reviews & Comments
-            </h3>
-            {reviewsLoading && (
-              <div className="flex flex-col gap-3">
-                {Array.from({ length: 2 }).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-xl bg-muted/40 border border-border flex flex-col gap-2"
-                  >
-                    <Skeleton className="h-5 w-16 rounded-md bg-muted/60" />
-                    <Skeleton className="h-4 w-full bg-muted/60" />
-                    <Skeleton className="h-4 w-2/3 bg-muted/60" />
-                    <Skeleton className="h-4 w-24 bg-muted/60 mt-2" />
-                  </div>
-                ))}
-              </div>
-            )}
-            {!reviewsLoading && stayReviews.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No reviews have been done yet.
-              </p>
-            )}
-            {!reviewsLoading && stayReviews.length > 0 && (
-              <div className="flex flex-col gap-3">
-                {stayReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="p-4 rounded-xl bg-muted/40 border border-border flex flex-col gap-2"
-                  >
-                    <span className="inline-block bg-frui-orange/10 text-frui-orange px-2.5 py-1 rounded-md text-xs font-semibold w-fit">
-                      {review.rating.toFixed(1)}
-                    </span>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {review.text}
-                    </p>
-                    <div className="text-sm font-bold text-foreground">
-                      {review.user.name}
+          {summaryLoading && !summary ? (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-8 w-16 bg-muted/60" />
+              <Skeleton className="h-2 w-full bg-muted/60 rounded-full" />
+              <Skeleton className="h-2 w-full bg-muted/60 rounded-full" />
+              <Skeleton className="h-2 w-full bg-muted/60 rounded-full" />
+            </div>
+          ) : summary && summary.count > 0 ? (
+            <RatingBarGraph summary={summary} />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              There are currently no reviews available for this stay.
+            </p>
+          )}
+
+          {summary && summary.count > 0 && (
+            <>
+              {reviewsLoading && loadedReviews.length === 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {Array.from({ length: REVIEWS_PAGE_SIZE }).map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-xl bg-muted/40 border border-border flex flex-col gap-2"
+                    >
+                      <Skeleton className="h-5 w-16 rounded-md bg-muted/60" />
+                      <Skeleton className="h-4 w-full bg-muted/60" />
+                      <Skeleton className="h-4 w-2/3 bg-muted/60" />
+                      <Skeleton className="h-4 w-24 bg-muted/60 mt-2" />
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {loadedReviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="p-4 rounded-xl bg-muted/40 border border-border flex flex-col gap-2"
+                    >
+                      <span className="inline-block bg-frui-orange/10 text-frui-orange px-2.5 py-1 rounded-md text-xs font-semibold w-fit">
+                        {review.rating.toFixed(1)}
+                      </span>
+                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">
+                        {review.text}
+                      </p>
+                      <div className="text-sm font-bold text-foreground">
+                        {review.user.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {hasMoreReviews && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setReviewsSize((size) => size + REVIEWS_PAGE_SIZE)
+                  }
+                  disabled={reviewsLoading}
+                  className="text-sm font-semibold text-frui-orange hover:underline cursor-pointer bg-transparent border-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
+                >
+                  {reviewsLoading ? 'Loading…' : 'Show more'}
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {isModalOpen && (
