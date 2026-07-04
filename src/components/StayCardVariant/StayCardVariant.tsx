@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Heart, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
@@ -84,13 +84,20 @@ export function StayCardVariant({
 
 export function StayCardVariantImage() {
   const { stay } = useStayCardVariantContext();
-  const imageUrl =
-    stay.pictures?.[0]?.url ||
-    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80';
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageUrl = stay.pictures?.[0]?.url;
+
+  if (!imageUrl || imageFailed) {
+    return (
+      <div className="absolute inset-0 w-full h-full bg-frui-placeholder animate-pulse" />
+    );
+  }
+
   return (
     <img
       src={imageUrl}
       alt={stay.name}
+      onError={() => setImageFailed(true)}
       className="absolute inset-0 w-full h-full object-cover select-none"
     />
   );

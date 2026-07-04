@@ -12,11 +12,42 @@ interface ItemInfoProps {
   className?: string;
 }
 
-const FALLBACK_IMAGES = [
-  'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
-];
+interface GalleryTileProps {
+  src?: string;
+  alt: string;
+  className: string;
+  onClick: () => void;
+}
+
+/**
+ * GalleryTile
+ *
+ * Renders one grid cell of the stay's image preview. Falls back to the
+ * branded placeholder pattern when there's no picture, or when the image
+ * fails to load, and disables the click-to-expand behavior in that case.
+ */
+function GalleryTile({ src, alt, className, onClick }: GalleryTileProps) {
+  const [failed, setFailed] = useState(false);
+  const showPlaceholder = !src || failed;
+
+  return (
+    <div
+      onClick={showPlaceholder ? undefined : onClick}
+      className={`relative overflow-hidden bg-muted ${showPlaceholder ? '' : 'cursor-pointer'} ${className}`}
+    >
+      {showPlaceholder ? (
+        <div className="absolute inset-0 w-full h-full bg-frui-placeholder animate-pulse" />
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          onError={() => setFailed(true)}
+          className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
+        />
+      )}
+    </div>
+  );
+}
 
 const getRatingText = (val: number) => {
   if (val >= 4.8) return 'Exceptional';
@@ -51,20 +82,14 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
     );
   }
 
-  // Gather pictures, supplementing with fallbacks if there are fewer than 3
+  // Gather up to 3 pictures for the preview grid; missing slots render the
+  // branded placeholder instead of a stock fallback photo.
   const rawPictures = stay.pictures || [];
-  const galleryImages: string[] = [];
+  const galleryImages: (string | undefined)[] = [0, 1, 2].map(
+    (i) => rawPictures[i]?.url,
+  );
 
-  for (let i = 0; i < 3; i++) {
-    if (rawPictures[i]?.url) {
-      galleryImages.push(rawPictures[i].url);
-    } else {
-      galleryImages.push(FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]);
-    }
-  }
-
-  const allImages =
-    rawPictures.length > 0 ? rawPictures.map((p) => p.url) : FALLBACK_IMAGES;
+  const allImages = rawPictures.map((p) => p.url);
 
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
@@ -95,39 +120,24 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
         {/* 1. Image Gallery using CSS Grid */}
         <div className="grid grid-cols-3 grid-rows-2 gap-2 aspect-[16/10] w-full rounded-2xl overflow-hidden shadow-xs shrink-0">
-          {/* Main Image */}
-          <div
+          <GalleryTile
+            src={galleryImages[0]}
+            alt={`${stay.name} - main view`}
+            className="col-span-2 row-span-2"
             onClick={() => handleImageClick(0)}
-            className="col-span-2 row-span-2 relative overflow-hidden bg-muted cursor-pointer"
-          >
-            <img
-              src={galleryImages[0]}
-              alt={`${stay.name} - main view`}
-              className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
-            />
-          </div>
-          {/* Top Sub-image */}
-          <div
+          />
+          <GalleryTile
+            src={galleryImages[1]}
+            alt={`${stay.name} - details 1`}
+            className="col-span-1 row-span-1"
             onClick={() => handleImageClick(1)}
-            className="col-span-1 row-span-1 relative overflow-hidden bg-muted cursor-pointer"
-          >
-            <img
-              src={galleryImages[1]}
-              alt={`${stay.name} - details 1`}
-              className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
-            />
-          </div>
-          {/* Bottom Sub-image */}
-          <div
+          />
+          <GalleryTile
+            src={galleryImages[2]}
+            alt={`${stay.name} - details 2`}
+            className="col-span-1 row-span-1"
             onClick={() => handleImageClick(2)}
-            className="col-span-1 row-span-1 relative overflow-hidden bg-muted cursor-pointer"
-          >
-            <img
-              src={galleryImages[2]}
-              alt={`${stay.name} - details 2`}
-              className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-80"
-            />
-          </div>
+          />
         </div>
 
         {/* 2. Title & Metadata Header */}

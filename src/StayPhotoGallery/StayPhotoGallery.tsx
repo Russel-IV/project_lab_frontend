@@ -1,9 +1,39 @@
+import { useState } from 'react';
 import { usePhotoGallery } from './usePhotoGallery';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 interface StayPhotoGalleryProps {
   images?: string[];
+}
+
+interface GalleryImageProps {
+  src: string;
+  alt: string;
+  className?: string;
+}
+
+/**
+ * GalleryImage
+ *
+ * Renders a single gallery photo, falling back to the branded placeholder
+ * pattern if the image fails to load (e.g. a broken or dead URL).
+ */
+function GalleryImage({ src, alt, className = '' }: GalleryImageProps) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return <div className={`bg-frui-placeholder animate-pulse ${className}`} />;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      className={className}
+    />
+  );
 }
 
 export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
@@ -28,7 +58,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
 
       <div className="w-full aspect-[4/3] md:aspect-[2/1] md:rounded-2xl overflow-hidden shadow-sm bg-frui-placeholder">
         {gallery.desktopLayoutMode === 'one' ? (
-          <img
+          <GalleryImage
             src={gallery.visibleImages[0]}
             alt="Stay view"
             className="w-full h-full object-cover select-none animate-fade-in"
@@ -37,7 +67,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
           <>
             {/* Mobile view (single image) */}
             <div className="block md:hidden w-full h-full">
-              <img
+              <GalleryImage
                 src={gallery.visibleImages[0]}
                 alt="Stay view mobile"
                 className="w-full h-full object-cover select-none"
@@ -46,7 +76,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
             {/* Desktop view (3-image grid) */}
             <div className="hidden md:grid grid-cols-3 gap-2 w-full h-full">
               <div className="col-span-2 relative overflow-hidden bg-frui-placeholder">
-                <img
+                <GalleryImage
                   src={gallery.visibleImages[0]}
                   alt="Main stay view"
                   className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
@@ -58,7 +88,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
                     key={index}
                     className="relative overflow-hidden bg-frui-placeholder"
                   >
-                    <img
+                    <GalleryImage
                       src={img}
                       alt={`Stay view ${index + 2}`}
                       className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
@@ -72,7 +102,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
           <>
             {/* Mobile view (single image) */}
             <div className="block md:hidden w-full h-full">
-              <img
+              <GalleryImage
                 src={gallery.visibleImages[0]}
                 alt="Stay view mobile"
                 className="w-full h-full object-cover select-none"
@@ -81,7 +111,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
             {/* Desktop view (5-image grid) */}
             <div className="hidden md:grid grid-cols-4 gap-2 w-full h-full">
               <div className="col-span-2 row-span-2 relative overflow-hidden bg-frui-placeholder">
-                <img
+                <GalleryImage
                   src={gallery.visibleImages[0]}
                   alt="Main stay view"
                   className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
@@ -92,7 +122,7 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
                   key={index}
                   className="col-span-1 relative overflow-hidden bg-frui-placeholder"
                 >
-                  <img
+                  <GalleryImage
                     src={img}
                     alt={`Detail view ${index + 1}`}
                     className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
