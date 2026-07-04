@@ -5,8 +5,14 @@ export interface FiltersState {
   priceMax: number | null;
   propertyType: string | null;
   freeCancellation: boolean;
-  ratingMin: number | null;
-  amenityIds: number[];
+  /** Selected quality tiers (1-5 stars). Empty array means no restriction. */
+  starRatings: number[];
+  /** Selected bedroom counts. 4 means "4 or more". Empty array means no restriction. */
+  bedrooms: number[];
+  /** General/overall-property services (Wi-Fi, pool, parking, gym, etc). */
+  propertyAmenityIds: number[];
+  /** In-unit features (A/C, kitchen, balcony, etc). */
+  roomAmenityIds: number[];
 }
 
 const initialState: FiltersState = {
@@ -14,8 +20,10 @@ const initialState: FiltersState = {
   priceMax: null,
   propertyType: null,
   freeCancellation: false,
-  ratingMin: null,
-  amenityIds: [],
+  starRatings: [],
+  bedrooms: [],
+  propertyAmenityIds: [],
+  roomAmenityIds: [],
 };
 
 const filtersSlice = createSlice({

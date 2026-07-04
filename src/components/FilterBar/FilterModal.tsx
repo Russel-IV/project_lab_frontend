@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { X, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@apollo/client/react';
@@ -28,11 +28,17 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
   const [draftPropertyType, setDraftPropertyType] = useState<string | null>(
     activeFilters.propertyType,
   );
-  const [draftRatingMin, setDraftRatingMin] = useState<number | null>(
-    activeFilters.ratingMin,
+  const [draftStarRatings, setDraftStarRatings] = useState<number[]>(
+    activeFilters.starRatings,
   );
-  const [draftAmenityIds, setDraftAmenityIds] = useState<number[]>(
-    activeFilters.amenityIds || [],
+  const [draftBedrooms, setDraftBedrooms] = useState<number[]>(
+    activeFilters.bedrooms,
+  );
+  const [draftPropertyAmenityIds, setDraftPropertyAmenityIds] = useState<
+    number[]
+  >(activeFilters.propertyAmenityIds);
+  const [draftRoomAmenityIds, setDraftRoomAmenityIds] = useState<number[]>(
+    activeFilters.roomAmenityIds,
   );
 
   // Retrieve stay items dynamically from Apollo Client cache (populated by StaysPage)
@@ -81,18 +87,41 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
   if (!isOpen) return null;
 
-  const handleToggleAmenity = (id: number) => {
-    setDraftAmenityIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+  const toggleInArray = (list: number[], value: number) =>
+    list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
+
+  const handleToggleStarRating = (tier: number) => {
+    setDraftStarRatings((prev) => toggleInArray(prev, tier));
+  };
+
+  const handleToggleBedroom = (bucket: number) => {
+    setDraftBedrooms((prev) => toggleInArray(prev, bucket));
+  };
+
+  const handleTogglePropertyAmenity = (id: number) => {
+    setDraftPropertyAmenityIds((prev) => toggleInArray(prev, id));
+  };
+
+  const handleToggleRoomAmenity = (id: number) => {
+    setDraftRoomAmenityIds((prev) => toggleInArray(prev, id));
+  };
+
+  const handleSelectPropertyType = (value: string | null) => {
+    if (value === null || draftPropertyType === null) {
+      setDraftPropertyType(value);
+    } else {
+      setDraftPropertyType(null);
+    }
   };
 
   const handleClearAll = () => {
     setDraftPriceMin(null);
     setDraftPriceMax(null);
     setDraftPropertyType(null);
-    setDraftRatingMin(null);
-    setDraftAmenityIds([]);
+    setDraftStarRatings([]);
+    setDraftBedrooms([]);
+    setDraftPropertyAmenityIds([]);
+    setDraftRoomAmenityIds([]);
   };
 
   const handleApply = () => {
@@ -106,8 +135,10 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
         priceMin: shouldSwap ? draftPriceMax : draftPriceMin,
         priceMax: shouldSwap ? draftPriceMin : draftPriceMax,
         propertyType: draftPropertyType,
-        ratingMin: draftRatingMin,
-        amenityIds: draftAmenityIds,
+        starRatings: draftStarRatings,
+        bedrooms: draftBedrooms,
+        propertyAmenityIds: draftPropertyAmenityIds,
+        roomAmenityIds: draftRoomAmenityIds,
       }),
     );
     onClose();
@@ -244,7 +275,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                   <button
                     key={opt.label}
                     type="button"
-                    onClick={() => setDraftPropertyType(opt.value)}
+                    onClick={() => handleSelectPropertyType(opt.value)}
                     className={`flex-1 rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
                         ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
@@ -258,23 +289,50 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 3: Guest rating */}
+          {/* Section 3: Quality tier (star rating, multi-select) */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-bold text-frui-blue">Guest rating</h3>
+            <h3 className="text-sm font-bold text-frui-blue">Quality tier</h3>
             <div className="flex flex-wrap gap-2">
-              {[
-                { value: null, label: 'Any' },
-                { value: 3.0, label: '3.0' },
-                { value: 4.0, label: '4.0' },
-                { value: 5.0, label: '5.0' },
-              ].map((opt) => {
-                const isActive = draftRatingMin === opt.value;
+              {[1, 2, 3, 4, 5].map((tier) => {
+                const isActive = draftStarRatings.includes(tier);
                 return (
                   <button
-                    key={opt.label}
+                    key={tier}
                     type="button"
-                    onClick={() => setDraftRatingMin(opt.value)}
-                    className={`flex-1 min-w-[70px] rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
+                    onClick={() => handleToggleStarRating(tier)}
+                    className={`flex-1 min-w-[56px] flex items-center justify-center gap-1 rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
+                      isActive
+                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
+                        : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
+                    }`}
+                  >
+                    {tier}
+                    <Star
+                      className={`size-3 ${isActive ? 'fill-frui-white' : 'fill-frui-blue/40'}`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Section 4: Capacity (bedrooms, multi-select) */}
+          <div className="flex flex-col gap-3">
+            <h3 className="text-sm font-bold text-frui-blue">Bedrooms</h3>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: 1, label: '1' },
+                { value: 2, label: '2' },
+                { value: 3, label: '3' },
+                { value: 4, label: '4+' },
+              ].map((opt) => {
+                const isActive = draftBedrooms.includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleToggleBedroom(opt.value)}
+                    className={`flex-1 min-w-[56px] rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
                         ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
                         : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
@@ -287,30 +345,63 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 4: Amenities */}
+          {/* Section 5: Property Amenities (general services) */}
           <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-bold text-frui-blue">Amenities</h3>
+            <h3 className="text-sm font-bold text-frui-blue">
+              Property Amenities
+            </h3>
             <div className="flex flex-wrap gap-2">
-              {Object.entries(AMENITIES_LOOKUP).map(([idStr, config]) => {
-                const id = Number(idStr);
-                const isActive = draftAmenityIds.includes(id);
-                const Icon = config.icon;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => handleToggleAmenity(id)}
-                    className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm scale-[1.02]'
-                        : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream hover:scale-[1.02]'
-                    } active:scale-95`}
-                  >
-                    <Icon className="size-4" />
-                    <span>{config.name}</span>
-                  </button>
-                );
-              })}
+              {Object.entries(AMENITIES_LOOKUP)
+                .filter(([, config]) => config.type === 'PROPERTY_AMENITY')
+                .map(([idStr, config]) => {
+                  const id = Number(idStr);
+                  const isActive = draftPropertyAmenityIds.includes(id);
+                  const Icon = config.icon;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => handleTogglePropertyAmenity(id)}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm scale-[1.02]'
+                          : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream hover:scale-[1.02]'
+                      } active:scale-95`}
+                    >
+                      <Icon className="size-4" />
+                      <span>{config.name}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* Section 6: Room Amenities (in-unit features) */}
+          <div className="flex flex-col gap-3">
+            <h3 className="text-sm font-bold text-frui-blue">Room Amenities</h3>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(AMENITIES_LOOKUP)
+                .filter(([, config]) => config.type === 'ROOM_AMENITY')
+                .map(([idStr, config]) => {
+                  const id = Number(idStr);
+                  const isActive = draftRoomAmenityIds.includes(id);
+                  const Icon = config.icon;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => handleToggleRoomAmenity(id)}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                        isActive
+                          ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm scale-[1.02]'
+                          : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream hover:scale-[1.02]'
+                      } active:scale-95`}
+                    >
+                      <Icon className="size-4" />
+                      <span>{config.name}</span>
+                    </button>
+                  );
+                })}
             </div>
           </div>
         </div>

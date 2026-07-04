@@ -11,8 +11,10 @@ export function FilterBar() {
     priceMax,
     propertyType,
     freeCancellation,
-    ratingMin,
-    amenityIds,
+    starRatings,
+    bedrooms,
+    propertyAmenityIds,
+    roomAmenityIds,
   } = useAppSelector((state) => state.filters);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,16 +23,20 @@ export function FilterBar() {
     priceMin !== null ||
     priceMax !== null ||
     propertyType !== null ||
-    ratingMin !== null ||
-    (amenityIds && amenityIds.length > 0);
+    starRatings.length > 0 ||
+    bedrooms.length > 0 ||
+    propertyAmenityIds.length > 0 ||
+    roomAmenityIds.length > 0;
   const isPropertyTypeActive = propertyType !== null;
 
   // Active count for filters button badge
   const activeFiltersCount = [
     priceMin !== null || priceMax !== null,
     propertyType !== null,
-    ratingMin !== null,
-    amenityIds && amenityIds.length > 0,
+    starRatings.length > 0,
+    bedrooms.length > 0,
+    propertyAmenityIds.length > 0,
+    roomAmenityIds.length > 0,
   ].filter(Boolean).length;
 
   const baseButtonClass =

@@ -164,8 +164,10 @@ function StaysListContent({
     priceMax,
     propertyType,
     freeCancellation,
-    ratingMin,
-    amenityIds,
+    starRatings,
+    bedrooms,
+    propertyAmenityIds,
+    roomAmenityIds,
   } = useAppSelector((state) => state.filters);
 
   const staysList: GraphQLStay[] = useMemo(() => {
@@ -189,22 +191,44 @@ function StaysListContent({
       if (freeCancellation && !stay.isRefundable) {
         return false;
       }
-      // 4. Guest Rating Filter
-      const rating = (stay.starRating as number | null) ?? 0;
-      if (ratingMin !== null) {
-        if (ratingMin === 5.0) {
-          if (rating < 5.0) return false;
-        } else {
-          if (rating < ratingMin || rating >= ratingMin + 1.0) return false;
-        }
+      // 4. Quality Tier Filter (1-5 stars, multi-select) - a stay matches if
+      // its starRating rounds to any one of the selected tiers.
+      if (starRatings.length > 0) {
+        const rating = stay.starRating as number | null;
+        const tier = rating !== null ? Math.round(rating) : null;
+        if (tier === null || !starRatings.includes(tier)) return false;
       }
-      // 5. Amenities Filter
-      if (amenityIds && amenityIds.length > 0) {
+      // 5. Capacity Filter (bedroom count, multi-select) - a stay matches if
+      // any of its rooms has one of the selected bedroom counts; 4 means "4
+      // or more".
+      if (bedrooms.length > 0) {
+        const stayRooms = stay.rooms ?? [];
+        const hasMatchingRoom = stayRooms.some((room) =>
+          bedrooms.some((bucket) =>
+            bucket >= 4
+              ? room.bedroomAmount >= 4
+              : room.bedroomAmount === bucket,
+          ),
+        );
+        if (!hasMatchingRoom) return false;
+      }
+      // 6. Property Amenities Filter (general services) - must offer ALL
+      // selected amenities.
+      if (propertyAmenityIds.length > 0) {
         const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
-        const hasAllAmenities = amenityIds.every((id) =>
+        const hasAll = propertyAmenityIds.every((id) =>
           stayAmenityIds.includes(id),
         );
-        if (!hasAllAmenities) return false;
+        if (!hasAll) return false;
+      }
+      // 7. Room Amenities Filter (in-unit features) - must offer ALL
+      // selected amenities.
+      if (roomAmenityIds.length > 0) {
+        const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
+        const hasAll = roomAmenityIds.every((id) =>
+          stayAmenityIds.includes(id),
+        );
+        if (!hasAll) return false;
       }
       return true;
     });
@@ -214,8 +238,10 @@ function StaysListContent({
     priceMax,
     propertyType,
     freeCancellation,
-    ratingMin,
-    amenityIds,
+    starRatings,
+    bedrooms,
+    propertyAmenityIds,
+    roomAmenityIds,
   ]);
 
   // Pagination state and settings
@@ -227,18 +253,30 @@ function StaysListContent({
     priceMin,
     priceMax,
     propertyType,
-    ratingMin,
-    amenityIds,
+    starRatings,
+    bedrooms,
+    propertyAmenityIds,
+    roomAmenityIds,
   }));
 
   if (
     priceMin !== prevFilters.priceMin ||
     priceMax !== prevFilters.priceMax ||
     propertyType !== prevFilters.propertyType ||
-    ratingMin !== prevFilters.ratingMin ||
-    amenityIds !== prevFilters.amenityIds
+    starRatings !== prevFilters.starRatings ||
+    bedrooms !== prevFilters.bedrooms ||
+    propertyAmenityIds !== prevFilters.propertyAmenityIds ||
+    roomAmenityIds !== prevFilters.roomAmenityIds
   ) {
-    setPrevFilters({ priceMin, priceMax, propertyType, ratingMin, amenityIds });
+    setPrevFilters({
+      priceMin,
+      priceMax,
+      propertyType,
+      starRatings,
+      bedrooms,
+      propertyAmenityIds,
+      roomAmenityIds,
+    });
     setCurrentPage(1);
   }
 
@@ -287,7 +325,7 @@ function StaysListContent({
       {noStaysFromSearch ? (
         <StaysEmptyState message="There are no stays that fit your needs available currently. Try searching again with different requirements." />
       ) : staysList.length === 0 ? (
-        <StaysEmptyState message="No stays match your search. Try adjusting your filters or destination keywords." />
+        <StaysEmptyState message="No stays match your filters. Try removing some filters to see more results." />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
