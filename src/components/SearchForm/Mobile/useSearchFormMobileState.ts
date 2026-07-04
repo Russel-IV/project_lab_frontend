@@ -22,6 +22,7 @@ interface UseSearchFormMobileStateProps {
     checkOut: string;
     travelers: string;
   }) => void;
+  hideWhereSection?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ export const useSearchFormMobileState = ({
   onClose,
   defaultActiveSection,
   onSubmit,
+  hideWhereSection = false,
 }: UseSearchFormMobileStateProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -51,7 +53,7 @@ export const useSearchFormMobileState = ({
   // Active section inside the accordion: 'where' | 'dates' | 'travelers'
   const [activeSection, setActiveSection] = useState<
     'where' | 'dates' | 'travelers'
-  >(defaultActiveSection || 'where');
+  >(defaultActiveSection || (hideWhereSection ? 'dates' : 'where'));
 
   // Parse local travelers configuration
   const [rooms, setRooms] = useState<RoomConfig[]>(() =>
@@ -155,7 +157,9 @@ export const useSearchFormMobileState = ({
     const defaultTravelers = '1 travelers, 1 rooms';
     setLocalTravelers(defaultTravelers);
     setRooms(parseTravelersValue(defaultTravelers));
-    setActiveSection(defaultActiveSection || 'where');
+    setActiveSection(
+      defaultActiveSection || (hideWhereSection ? 'dates' : 'where'),
+    );
   };
 
   const handleSearchSubmit = () => {

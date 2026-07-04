@@ -11,7 +11,7 @@ export interface SearchState {
 const today = new Date();
 const tomorrow = addDays(today, 1);
 
-const initialState: SearchState = {
+export const initialSearchState: SearchState = {
   place: '',
   checkIn: format(today, 'yyyy-MM-dd'),
   checkOut: format(tomorrow, 'yyyy-MM-dd'),
@@ -20,7 +20,7 @@ const initialState: SearchState = {
 
 const searchSlice = createSlice({
   name: 'search',
-  initialState,
+  initialState: initialSearchState,
   reducers: {
     setPlace(state, action: PayloadAction<string>) {
       state.place = action.payload;

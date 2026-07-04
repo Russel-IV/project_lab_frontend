@@ -1,5 +1,5 @@
 import { PhotoGallery } from '@/components/PhotoGallery';
-import { BookingWidgetMobile } from '@/components/BookingWidget/BookingWidgetMobile';
+import { BookingWidget } from '@/components/BookingWidget';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { useEffect, useState, useRef } from 'react';
@@ -193,17 +193,7 @@ export default function StayInfoPage() {
           </div>
           {/* Right Side: Sticky Booking Widget (Spans 1/3 width) */}
           <div className="sticky top-24 md:col-span-1 w-full">
-            {/* Desktop booking widget */}
-            <div className="hidden md:block bg-orange-500 text-white rounded-lg p-6 shadow-lg">
-              <h3 className="text-lg font-bold mb-4">Check-in / Check-out</h3>
-              {/* Dates & Pricing Details */}
-              <p>Booking details go here...</p>
-            </div>
-
-            {/* Mobile booking widget */}
-            <div className="block md:hidden">
-              <BookingWidgetMobile stay={data?.stay} />
-            </div>
+            <BookingWidget stay={data?.stay} />
           </div>
         </div>
         {/* 4. Commentary Section (Outside the Grid) */}

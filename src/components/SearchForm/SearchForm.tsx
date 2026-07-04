@@ -32,6 +32,7 @@ interface SearchFormMobileProps {
     travelers: string;
   }) => void;
   submitButtonText?: string;
+  hideWhereSection?: boolean;
 }
 
 /**
@@ -46,12 +47,14 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
   defaultActiveSection,
   onSubmit,
   submitButtonText,
+  hideWhereSection = false,
 }) => {
   const formState = useSearchFormMobileState({
     isOpen,
     onClose,
     defaultActiveSection,
     onSubmit,
+    hideWhereSection,
   });
 
   const contextValue: SearchFormMobileContextProps = {
@@ -75,7 +78,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
 
         {/* Main accordion list */}
         <div className="flex flex-col gap-4 flex-1 pb-24">
-          <WhereSection />
+          {!hideWhereSection && <WhereSection />}
           <DatesSection />
           <TravelersSection />
         </div>

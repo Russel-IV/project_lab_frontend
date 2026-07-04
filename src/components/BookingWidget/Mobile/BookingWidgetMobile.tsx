@@ -1,28 +1,39 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Info, CheckCircle2, Search } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { setDates, setTravelers } from '@/store/searchSlice';
-import { startOfDay } from 'date-fns';
+import { setBookingDates, setBookingTravelers } from '@/store/bookingSlice';
 import {
   parseISOToDateRange,
   formatDatesRange,
 } from '@/components/SearchForm/searchFormUtils';
+import { formatPrice, formatTravelers } from '@/utils/format';
+import { calculateNights } from '@/utils/date';
 import { SearchFormMobile } from '@/components/SearchForm';
-import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
 
-type GraphQLStay = NonNullable<GetStayDetailsQuery['stay']>;
+import { useBookingWidget } from '../BookingWidgetContext';
 
-interface BookingWidgetMobileProps {
-  stay: GraphQLStay | null | undefined;
-}
-
-export const BookingWidgetMobile: React.FC<BookingWidgetMobileProps> = ({
-  stay,
-}) => {
+export const BookingWidgetMobile: React.FC = () => {
+  const { stay } = useBookingWidget();
   const dispatch = useAppDispatch();
+  const searchState = useAppSelector((state) => state.search);
   const { checkIn, checkOut, travelers } = useAppSelector(
-    (state) => state.search,
+    (state) => state.booking,
   );
+
+  useEffect(() => {
+    dispatch(
+      setBookingDates({
+        checkIn: searchState.checkIn,
+        checkOut: searchState.checkOut,
+      }),
+    );
+    dispatch(setBookingTravelers(searchState.travelers));
+  }, [
+    dispatch,
+    searchState.checkIn,
+    searchState.checkOut,
+    searchState.travelers,
+  ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -33,41 +44,27 @@ export const BookingWidgetMobile: React.FC<BookingWidgetMobileProps> = ({
 
   // Compute number of nights
   const nights = useMemo(() => {
-    if (!dateRange.from || !dateRange.to) return 1;
-    const fromDate = startOfDay(dateRange.from);
-    const toDate = startOfDay(dateRange.to);
-    const diffTime = toDate.getTime() - fromDate.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(1, diffDays);
+    return calculateNights(dateRange);
   }, [dateRange]);
 
   // Compute and format prices
   const price = (stay?.startingFromPrice as number) ?? 0;
-  const isUSD = price < 10000;
 
   const formattedNightly = useMemo(() => {
-    return isUSD ? `$${price}` : `CLP ${price.toLocaleString('de-DE')}`;
-  }, [price, isUSD]);
+    return formatPrice(price);
+  }, [price]);
 
   const totalPrice = useMemo(() => {
     return price * nights;
   }, [price, nights]);
 
   const formattedTotal = useMemo(() => {
-    return isUSD
-      ? `$${totalPrice}`
-      : `CLP ${totalPrice.toLocaleString('de-DE')}`;
-  }, [totalPrice, isUSD]);
+    return formatPrice(totalPrice);
+  }, [totalPrice]);
 
   // Format travelers text
   const travelersText = useMemo(() => {
-    if (!travelers) return '1 guest';
-    const match = travelers.match(/^(\d+)\s+travelers?/i);
-    if (match) {
-      const count = match[1];
-      return `${count} ${parseInt(count, 10) === 1 ? 'guest' : 'guests'}`;
-    }
-    return travelers;
+    return formatTravelers(travelers);
   }, [travelers]);
 
   // Format dates text
@@ -85,13 +82,15 @@ export const BookingWidgetMobile: React.FC<BookingWidgetMobileProps> = ({
     travelers: string;
   }) => {
     dispatch(
-      setDates({
+      setBookingDates({
         checkIn: updatedData.checkIn,
         checkOut: updatedData.checkOut,
       }),
     );
-    dispatch(setTravelers(updatedData.travelers));
+    dispatch(setBookingTravelers(updatedData.travelers));
   };
+
+  if (!stay) return null;
 
   return (
     <div className="bg-frui-white rounded-3xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-neutral-100 w-full">
@@ -165,6 +164,7 @@ export const BookingWidgetMobile: React.FC<BookingWidgetMobileProps> = ({
           defaultActiveSection="dates"
           onSubmit={handleModalSubmit}
           submitButtonText="Reserve"
+          hideWhereSection={true}
         />
       )}
     </div>
