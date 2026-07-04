@@ -172,7 +172,19 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     ? `$${price}`
     : `CLP ${price.toLocaleString('de-DE')}`;
 
-  const rating = typeof stay.starRating === 'number' ? stay.starRating : 4.8;
+  const summary = summaryData?.reviewSummary;
+
+  // "Average user rating" means the crowd-sourced review average, not
+  // Stay.starRating (the host's official classification - a separate
+  // concept per the backend schema). Only fall back to starRating when the
+  // stay genuinely has no reviews yet.
+  const reviewAverage =
+    summary && summary.count > 0 && summary.average !== null
+      ? summary.average
+      : null;
+  const rating =
+    reviewAverage ??
+    (typeof stay.starRating === 'number' ? stay.starRating : 4.8);
   const ratingText = getRatingText(rating);
 
   const propertyTypeLabel = stay.propertyType === 'HOME' ? 'Home' : 'Hotel';
@@ -188,7 +200,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const loadedReviews =
     reviewsData?.reviewsByStay ?? previousReviewsData?.reviewsByStay ?? [];
 
-  const summary = summaryData?.reviewSummary;
   const hasMoreReviews =
     summary !== undefined && loadedReviews.length < summary.count;
 

@@ -14,14 +14,6 @@ import type {
 import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 
-const MOCK_DATES = [
-  'January 2026',
-  'February 2026',
-  'March 2026',
-  'April 2026',
-  'May 2026',
-];
-
 export default function StayInfoPage() {
   const { id } = useParams<{ id: string }>();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -258,7 +250,6 @@ export default function StayInfoPage() {
             >
               {stayReviews.map((review) => {
                 const name = review.user.name;
-                const date = MOCK_DATES[review.id % MOCK_DATES.length];
                 const ratingVal = review.rating.toFixed(1);
                 const ratingText =
                   ratingVal === '5.0'
@@ -283,12 +274,11 @@ export default function StayInfoPage() {
                         {review.text}
                       </p>
                     </div>
-                    {/* User & Date Footer */}
+                    {/* User Footer */}
                     <div className="mt-4 border-t border-neutral-100 pt-3">
                       <div className="text-sm font-bold text-frui-blue">
                         {name}
                       </div>
-                      <div className="text-xs text-gray-500 mt-0.5">{date}</div>
                     </div>
                   </div>
                 );
