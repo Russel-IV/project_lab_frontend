@@ -1,4 +1,4 @@
-import StayPhotoGallery from '@/StayPhotoGallery/StayPhotoGallery';
+import { PhotoGallery } from '@/components/PhotoGallery';
 import { BookingWidgetMobile } from '@/components/BookingWidget/BookingWidgetMobile';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
@@ -96,7 +96,10 @@ export default function StayInfoPage() {
     <div className="flex-1 w-full bg-background md:py-10 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl flex flex-col gap-8">
         {/* 2. Image Gallery */}
-        <StayPhotoGallery images={data?.stay?.pictures?.map((p) => p.url)} />
+        <PhotoGallery
+          images={data?.stay?.pictures?.map((p) => p.url)}
+          maxPhotos={5}
+        />
 
         {/* Stay Title / Header */}
         <div>
