@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { usePhotoGallery } from './usePhotoGallery';
+import { usePhotoGallery } from '@/components/PhotoGallery/usePhotoGallery';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
@@ -83,18 +83,20 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
                 />
               </div>
               <div className="col-span-1 grid grid-rows-2 gap-2 h-full">
-                {gallery.visibleImages.slice(1, 3).map((img, index) => (
-                  <div
-                    key={index}
-                    className="relative overflow-hidden bg-frui-placeholder"
-                  >
-                    <GalleryImage
-                      src={img}
-                      alt={`Stay view ${index + 2}`}
-                      className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
-                    />
-                  </div>
-                ))}
+                {gallery.visibleImages
+                  .slice(1, 3)
+                  .map((img: string, index: number) => (
+                    <div
+                      key={index}
+                      className="relative overflow-hidden bg-frui-placeholder"
+                    >
+                      <GalleryImage
+                        src={img}
+                        alt={`Stay view ${index + 2}`}
+                        className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           </>
@@ -117,18 +119,20 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
                   className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
                 />
               </div>
-              {gallery.visibleImages.slice(1, 5).map((img, index) => (
-                <div
-                  key={index}
-                  className="col-span-1 relative overflow-hidden bg-frui-placeholder"
-                >
-                  <GalleryImage
-                    src={img}
-                    alt={`Detail view ${index + 1}`}
-                    className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
-                  />
-                </div>
-              ))}
+              {gallery.visibleImages
+                .slice(1, 5)
+                .map((img: string, index: number) => (
+                  <div
+                    key={index}
+                    className="col-span-1 relative overflow-hidden bg-frui-placeholder"
+                  >
+                    <GalleryImage
+                      src={img}
+                      alt={`Detail view ${index + 1}`}
+                      className="absolute inset-0 w-full h-full object-cover select-none hover:brightness-90 transition-all duration-300"
+                    />
+                  </div>
+                ))}
             </div>
           </>
         )}
