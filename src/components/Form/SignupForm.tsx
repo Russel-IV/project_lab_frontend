@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import mountainAndes from '@/assets/images/mountain-andes.jpg';
-import { login } from '@/api/auth';
+import { signup } from '@/api/auth';
 import { setCredentials } from '@/store/authSlice';
 import { useAppDispatch } from '@/store/hooks';
 import './LoginForm.css';
 
-export const LoginForm: React.FC = () => {
+export const SignupForm: React.FC = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -20,11 +21,11 @@ export const LoginForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const { token, user } = await login(email, password);
+      const { token, user } = await signup(name, email, password);
       dispatch(setCredentials({ token, user }));
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to log in.');
+      setError(err instanceof Error ? err.message : 'Failed to sign up.');
     } finally {
       setIsSubmitting(false);
     }
@@ -39,9 +40,24 @@ export const LoginForm: React.FC = () => {
 
       {/* Right Column: Form Section */}
       <div className="login-form-section">
-        <h2 className="login-title">Login</h2>
+        <h2 className="login-title">Sign Up</h2>
 
         <form onSubmit={handleSubmit} className="login-form-fields">
+          <div className="login-field-container">
+            <label htmlFor="name" className="login-field-label">
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              required
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="login-input"
+            />
+          </div>
+
           <div className="login-field-container">
             <label htmlFor="email" className="login-field-label">
               Email
@@ -65,16 +81,12 @@ export const LoginForm: React.FC = () => {
               id="password"
               type="password"
               required
-              placeholder="Enter your password"
+              minLength={8}
+              placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="login-input"
             />
-            <div className="forgot-password-container">
-              <a href="#forgot" className="forgot-password-link">
-                forgot password?
-              </a>
-            </div>
           </div>
 
           {error && <p className="login-error">{error}</p>}
@@ -84,11 +96,11 @@ export const LoginForm: React.FC = () => {
             className="login-submit-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Logging in...' : 'Log In'}
+            {isSubmitting ? 'Signing up...' : 'Sign Up'}
           </button>
 
           <p className="auth-switch-text">
-            Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+            Already have an account? <Link to="/login">Log in</Link>
           </p>
         </form>
       </div>
@@ -96,4 +108,4 @@ export const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default SignupForm;

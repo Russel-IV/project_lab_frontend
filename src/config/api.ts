@@ -7,4 +7,6 @@ export const GRAPHQL_URL =
 export const API_ENDPOINTS = {
   STAYS: `${BASE_URL}/stays`,
   GRAPHQL: GRAPHQL_URL,
+  LOGIN: `${BASE_URL}/auth/login`,
+  SIGNUP: `${BASE_URL}/auth/signup`,
 };

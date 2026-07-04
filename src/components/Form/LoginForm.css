@@ -110,6 +110,29 @@
   color: #df583b;
 }
 
+.login-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin: -6px 0 0 0;
+}
+
+.auth-switch-text {
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  margin: 4px 0 0 0;
+}
+
+.auth-switch-text a {
+  color: #df583b;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.auth-switch-text a:hover {
+  color: #f66342;
+}
+
 /* Submit Button styling matching Home CTAs */
 .login-submit-button {
   background-color: #ff7657; /* Soft Coral Red */
@@ -134,6 +157,12 @@
 
 .login-submit-button:active {
   transform: translateY(0);
+}
+
+.login-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Social Login divider */

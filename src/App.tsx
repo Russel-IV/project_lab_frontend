@@ -5,6 +5,7 @@ import { Footer } from '@/components/Footer/Footer';
 import Home from '@/pages/Home';
 import StaysPage from '@/pages/StaysPage';
 import LoginPage from '@/pages/LoginPage';
+import SignupPage from '@/pages/SignupPage';
 import StayInfoPage from '@/pages/StayInfoPage';
 
 function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
@@ -37,6 +38,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/stays" element={<StaysPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
               <Route path="/stay/:id" element={<StayInfoPage />} />
             </Routes>
           </ErrorBoundary>

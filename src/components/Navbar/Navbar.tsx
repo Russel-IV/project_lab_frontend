@@ -1,16 +1,26 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Globe, LogIn, ChevronDown, Check } from 'lucide-react';
+import { Globe, LogIn, LogOut, ChevronDown, Check } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/authSlice';
 
 export function Navbar() {
   const [lang, setLang] = useState('English');
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
+  };
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -77,17 +87,34 @@ export function Navbar() {
             </PopoverContent>
           </Popover>
 
-          {/* Sign In Button */}
-          <Button
-            variant="default"
-            size="sm"
-            render={<Link to="/login" />}
-            nativeButton={false}
-            className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
-          >
-            <LogIn className="h-4 w-4" />
-            <span>Sign In</span>
-          </Button>
+          {user ? (
+            <>
+              <span className="hidden sm:inline text-sm text-frui-white">
+                Welcome, {user.name}!
+              </span>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleLogout}
+                className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Log Out</span>
+              </Button>
+            </>
+          ) : (
+            /* Sign In Button */
+            <Button
+              variant="default"
+              size="sm"
+              render={<Link to="/login" />}
+              nativeButton={false}
+              className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Sign In</span>
+            </Button>
+          )}
         </div>
       </div>
     </header>
