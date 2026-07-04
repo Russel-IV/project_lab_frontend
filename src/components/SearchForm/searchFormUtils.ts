@@ -104,3 +104,16 @@ export const serializeTravelersValue = (rooms: RoomConfig[]): string => {
 
   return `${totalAdults} ${travelerText}, ${roomCount} ${roomText}`;
 };
+
+/**
+ * Extracts the total number of guests from a travelers config string
+ * (e.g., "6 travelers, 2 rooms" -> 6), for use as a search filter value.
+ *
+ * @param val - The formatted travelers string.
+ * @returns The total guest count, or 0 if it can't be parsed.
+ */
+export const getTotalGuests = (val: string): number => {
+  if (!val) return 0;
+  const adultsMatch = val.match(/(\d+)\s+(adults?|travelers?)/i);
+  return adultsMatch ? parseInt(adultsMatch[1], 10) : 0;
+};

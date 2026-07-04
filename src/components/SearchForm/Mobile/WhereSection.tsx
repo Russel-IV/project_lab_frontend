@@ -2,19 +2,10 @@ import React, { useMemo } from 'react';
 import { Search, X, MapPin } from 'lucide-react';
 import { useSearchFormMobile } from './SearchFormMobileContext';
 
-// Standard options from the existing desktop dropdown
-const standardOptions = [
-  'US, New York',
-  'US, Los Angeles',
-  'US, Chicago',
-  'US, Houston',
-  'US, Phoenix',
-  'US, Philadelphia',
-  'US, San Antonio',
-  'US, San Diego',
-  'US, Dallas',
-  'US, San Jose',
-];
+// Cities that actually exist in the current stays data - matched against the
+// backend's case-insensitive city substring filter, so picking one of these
+// is guaranteed to return real results.
+const standardOptions = ['Miami', 'Tokyo', 'Valparaíso', 'Paris', 'Ubud'];
 
 /**
  * WhereSection

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Heart, MapPin } from 'lucide-react';
+import { Heart, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 
@@ -85,7 +85,9 @@ export function StayCardVariant({
 export function StayCardVariantImage() {
   const { stay } = useStayCardVariantContext();
   const [imageFailed, setImageFailed] = useState(false);
-  const imageUrl = stay.pictures?.[0]?.url;
+  const imageUrl = (
+    stay.pictures?.find((p) => p.isPrimary) ?? stay.pictures?.[0]
+  )?.url;
 
   if (!imageUrl || imageFailed) {
     return (
@@ -121,8 +123,8 @@ export function StayCardVariantFavoriteButton({
       aria-label="Add to favorites"
     >
       <Heart
-        className={`size-5 transition-colors duration-200 stroke-[#a75d2e] stroke-[2px] ${
-          isLiked ? 'fill-[#a75d2e] text-[#a75d2e]' : 'text-[#a75d2e]'
+        className={`size-5 transition-colors duration-200 stroke-frui-orange stroke-[2px] ${
+          isLiked ? 'fill-frui-orange text-frui-orange' : 'text-frui-orange'
         }`}
       />
     </button>
@@ -185,9 +187,16 @@ export function StayCardVariantRating() {
     }
   };
 
+  const isHighlyRated = rating >= 4.5;
+
   return (
-    <div className="absolute top-4 left-4 bg-white text-slate-900 text-xs md:text-sm font-semibold px-3 py-1 rounded-md shadow-xs z-10">
-      {rating.toFixed(1)} {getRatingText(rating)}
+    <div className="absolute top-4 left-4 bg-white flex items-center gap-1 text-[11px] md:text-xs font-semibold px-2 py-0.5 rounded-md shadow-xs z-10">
+      {isHighlyRated && (
+        <Star className="size-3 shrink-0 fill-frui-orange text-frui-orange" />
+      )}
+      <span className={isHighlyRated ? 'text-frui-orange' : 'text-slate-900'}>
+        {rating.toFixed(1)} {getRatingText(rating)}
+      </span>
     </div>
   );
 }
@@ -205,10 +214,10 @@ export function StayCardVariantPricing() {
 
   return (
     <div className="flex flex-col items-end text-white select-none">
-      <span className="text-xl md:text-2xl font-bold tracking-tight drop-shadow-sm">
+      <span className="text-sm md:text-base font-semibold tracking-tight drop-shadow-sm">
         {formattedPrice}
       </span>
-      <span className="text-xs md:text-sm text-gray-300/90 font-normal leading-none mt-0.5">
+      <span className="text-[11px] md:text-xs text-gray-300/90 font-normal leading-none mt-0.5">
         total
       </span>
     </div>

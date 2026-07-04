@@ -15,6 +15,10 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSearchQuery } from '@/store/searchSlice';
 import { SearchForm } from '@/components/SearchForm';
 import {
+  getTotalGuests,
+  isValidDateRange,
+} from '@/components/SearchForm/searchFormUtils';
+import {
   useBackgroundQuery,
   useReadQuery,
   useQuery,
@@ -22,8 +26,10 @@ import {
 } from '@apollo/client/react';
 import {
   type GetStaysQuery,
+  type GetStaysQueryVariables,
   type GetStayDetailsQuery,
   type GetStayDetailsQueryVariables,
+  type StayFilterInput,
 } from '@/types/__generated__/graphql';
 import { GET_STAYS, GET_STAY_DETAILS } from '@/graphql/stays';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
@@ -41,7 +47,31 @@ interface StaysContentProps {
 
 export default function StaysPage() {
   const dispatch = useAppDispatch();
-  const [queryRef] = useBackgroundQuery<GetStaysQuery>(GET_STAYS);
+
+  const { place, checkIn, checkOut, travelers } = useAppSelector(
+    (state) => state.search,
+  );
+
+  // Server-side search filter: destination, dates, and traveler count are
+  // all wired to the backend's `stays(filter: ...)` argument, so a "Search"
+  // genuinely changes which stays come back rather than just re-filtering
+  // the same list.
+  const filter: StayFilterInput | undefined = useMemo(() => {
+    const f: StayFilterInput = {};
+    if (place.trim()) f.city = place.trim();
+    if (isValidDateRange(checkIn, checkOut)) {
+      f.checkIn = checkIn;
+      f.checkOut = checkOut;
+    }
+    const guests = getTotalGuests(travelers);
+    if (guests > 0) f.guests = guests;
+    return Object.keys(f).length > 0 ? f : undefined;
+  }, [place, checkIn, checkOut, travelers]);
+
+  const [queryRef] = useBackgroundQuery<GetStaysQuery, GetStaysQueryVariables>(
+    GET_STAYS,
+    { variables: { filter } },
+  );
 
   const [searchParams] = useSearchParams();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
@@ -242,17 +272,10 @@ function StaysListContent({
     }
   }, [activeStayId, selectedStayId, setSelectedStayId]);
 
+  const noStaysFromSearch = !data?.stays || data.stays.length === 0;
+
   return (
     <>
-      {data?.stays && data.stays.length > 0 && staysList.length === 0 && (
-        <div className="mt-3 p-4 rounded-2xl border border-amber-200 bg-amber-50/50 text-amber-800 text-sm font-medium flex items-center gap-2">
-          <span>
-            No stays match the selected property type. Try changing your
-            filters.
-          </span>
-        </div>
-      )}
-
       <div className="sm:hidden">
         {/* Header Title */}
         <h1 className="text-2xl font-bold">Showing Stays in La Palma</h1>
@@ -261,15 +284,10 @@ function StaysListContent({
         </p>
       </div>
 
-      {staysList.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4 text-center border border-dashed border-border rounded-2xl bg-card">
-          <p className="text-lg font-semibold text-foreground">
-            No stays match your search
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Try adjusting your filters or destination keywords.
-          </p>
-        </div>
+      {noStaysFromSearch ? (
+        <StaysEmptyState message="There are no stays that fit your needs available currently. Try searching again with different requirements." />
+      ) : staysList.length === 0 ? (
+        <StaysEmptyState message="No stays match your search. Try adjusting your filters or destination keywords." />
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -346,6 +364,18 @@ function StaysDetailContent({
   }
 
   return <ItemInfo stay={data.stay} onClose={onClose} />;
+}
+
+// Single shared empty-state look for both "search returned nothing" and
+// "filters narrowed the results to nothing", so only one ever shows at a
+// time and they read as the same kind of message (one bold line) rather
+// than two different UI patterns (a banner vs. a title+subtitle card).
+function StaysEmptyState({ message }: { message: string }) {
+  return (
+    <div className="mt-4 flex flex-col items-center justify-center py-16 px-4 text-center border border-dashed border-border rounded-2xl bg-card">
+      <p className="text-lg font-semibold text-foreground">{message}</p>
+    </div>
+  );
 }
 
 // Grid fallback skeleton for Stay Cards

@@ -9,6 +9,26 @@ export type Incremental<T> =
 /** The type of property (hotel chain or private home). */
 export type PropertyType = 'HOME' | 'HOTEL';
 
+/** Search and availability filter for the stays query. All fields are optional and combined with AND logic. */
+export type StayFilterInput = {
+  /** Availability check start date. Must be provided together with checkOut. */
+  checkIn?: unknown;
+  /** Availability check end date. Must be provided together with checkIn. */
+  checkOut?: unknown;
+  /** Case-insensitive city name substring match. */
+  city?: string | null | undefined;
+  /** Exact ISO 3166-1 alpha-2 country code match (e.g. 'US', 'GB'). */
+  countryCode?: string | null | undefined;
+  /** Minimum number of guests that at least one available room must accommodate. */
+  guests?: number | null | undefined;
+  /** Require at least one room with a nightly rate at or below this amount. */
+  maxPricePerNight?: number | null | undefined;
+  /** Require at least one room with a nightly rate at or above this amount. */
+  minPricePerNight?: number | null | undefined;
+  /** Limit results to a specific property category. */
+  propertyType?: PropertyType | null | undefined;
+};
+
 export type GetReviewsQueryVariables = Exact<{
   page?: number | null | undefined;
   size?: number | null | undefined;
@@ -41,7 +61,9 @@ export type GetReviewsByStayQuery = {
   }>;
 };
 
-export type GetStaysQueryVariables = Exact<{ [key: string]: never }>;
+export type GetStaysQueryVariables = Exact<{
+  filter?: StayFilterInput | null | undefined;
+}>;
 
 export type GetStaysQuery = {
   stays: Array<{

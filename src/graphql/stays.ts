@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_STAYS = gql`
-  query GetStays {
-    stays(page: 0, size: 100) {
+  query GetStays($filter: StayFilterInput) {
+    stays(filter: $filter, page: 0, size: 100) {
       id
       name
       about
