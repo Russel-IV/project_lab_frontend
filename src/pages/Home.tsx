@@ -9,10 +9,12 @@ export default function Home() {
         <MobileSections />
       </div>
 
-      <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pt-2">
-        {/* Unified Responsive Search Form */}
-        <SearchForm />
+      {/* Unified Responsive Search Form: kept as a direct child of the
+          full-height page column so its sticky position tracks the whole
+          page scroll instead of only the short heading section below. */}
+      <SearchForm sticky />
 
+      <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pt-2">
         <div className="mb-8 text-left w-full">
           <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-[#121324] leading-tight !mb-2">
             Discover your next escape

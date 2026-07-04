@@ -76,10 +76,15 @@ export const SearchFormPlaceField: React.FC<SearchFormPlaceFieldProps> = ({
         <ComboboxInput
           id="desktop-search-place"
           showClear={showClear && placeValue !== ''}
-          placeholder="Search destinations"
-          showTrigger={false}
-          className="!border-none !shadow-none !ring-0 !bg-transparent h-5 w-full p-0 flex items-center [&_input]:text-xs [&_input]:xl:text-sm [&_input]:text-frui-blue [&_input]:placeholder:text-gray-400 [&_input]:font-medium [&_input]:h-auto [&_input]:p-0 [&_input]:outline-none [&_input]:ring-0 [&_[data-slot=input-group-addon]]:py-0"
-        />
+          placeholder={'Where are we going?'}
+          className="form-field-base combobox-field"
+        >
+          <InputGroupAddon align="inline-start">
+            <span className="form-field-icon-wrapper">
+              <MapPin className="w-4 h-4" strokeWidth={2} />
+            </span>
+          </InputGroupAddon>
+        </ComboboxInput>
         <ComboboxContent
           className="z-50 bg-frui-white border border-[#d6c7b9]/50 rounded-2xl shadow-xl p-2 text-frui-blue min-w-[250px]"
           collisionAvoidance={{ side: 'none' }}

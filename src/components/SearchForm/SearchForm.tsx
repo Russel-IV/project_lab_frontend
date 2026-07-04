@@ -169,27 +169,46 @@ const SearchFormDesktopFields: React.FC = () => {
  *
  * Desktop search form card layout that connects inputs to the Redux store directly.
  */
-export const SearchFormDesktop: React.FC = () => {
+export const SearchFormDesktop: React.FC<{ sticky?: boolean }> = ({
+  sticky = false,
+}) => {
   return (
     <SearchFormProvider>
+<<<<<<< HEAD
       <SearchFormDesktopFields />
+=======
+      <div className={`form-card ${sticky ? 'is-sticky' : ''}`}>
+        <SearchFormFields />
+      </div>
+>>>>>>> 82f7500 (feat: redesigned search form)
     </SearchFormProvider>
   );
 };
+
+interface SearchFormProps {
+  /** Pins the desktop search bar to the top of the viewport on scroll.
+   * Only enable this where the page has enough clearance below the bar
+   * (e.g. the Home hero) — see SearchForm.css for details. */
+  sticky?: boolean;
+}
 
 /**
  * SearchForm
  *
  * Root SearchForm component that conditionally renders mobile trigger/modal or desktop layout.
  */
-export const SearchForm: React.FC = () => {
+export const SearchForm: React.FC<SearchFormProps> = ({ sticky = false }) => {
   const isMobile = useIsMobile();
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   if (isMobile) {
     return (
       <>
-        <SearchFormMobileTrigger onClick={() => setIsMobileSearchOpen(true)} />
+        <div className="w-full px-4">
+          <SearchFormMobileTrigger
+            onClick={() => setIsMobileSearchOpen(true)}
+          />
+        </div>
         <SearchFormMobile
           isOpen={isMobileSearchOpen}
           onClose={() => setIsMobileSearchOpen(false)}
@@ -198,7 +217,7 @@ export const SearchForm: React.FC = () => {
     );
   }
 
-  return <SearchFormDesktop />;
+  return <SearchFormDesktop sticky={sticky} />;
 };
 
 export default SearchForm;

@@ -1,0 +1,201 @@
+/* Airbnb-style pill search bar */
+
+.form-card {
+  width: 100%;
+  max-width: min(880px, calc(100% - 32px));
+  margin: 0 auto;
+  margin-top: 24px;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 999px;
+  padding: 6px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 10px 30px -3px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+}
+
+/* Opt-in sticky behavior: only enabled where the page has enough clearance
+   below the search bar (e.g. the Home hero) so it doesn't ride over
+   adjacent interactive controls (e.g. the Stays page filter bar). */
+.form-card.is-sticky {
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+}
+
+/* Form inputs & submit row */
+.form-grid {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 2px;
+}
+
+/* Individual field container: also the hoverable/clickable pill segment */
+.selection-field-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 160px;
+  min-width: 140px;
+  border-radius: 999px;
+  padding: 8px 24px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.selection-field-container:hover {
+  background-color: rgba(18, 21, 41, 0.06);
+}
+
+.selection-field-container:focus-within {
+  background-color: rgba(18, 21, 41, 0.08);
+}
+
+.selection-field-label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: #877d74;
+  margin-bottom: 2px;
+  text-transform: none;
+}
+
+/* Shared base style for inputs, buttons, and dropdown controls */
+.form-field-base {
+  background-color: transparent;
+  color: #121529;
+  border: none !important;
+  border-radius: 999px;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+  box-shadow: none !important;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: none;
+  cursor: pointer;
+}
+
+/* Specific selector button rules extending base */
+.selection-field-button {
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  justify-content: flex-start;
+}
+
+.selection-field-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  color: #121529;
+}
+
+.form-field-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e8660d;
+  background-color: rgba(232, 102, 13, 0.1);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+/* Submit/Search Button actions */
+.submit-field-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-left: 4px;
+}
+
+.submit-field-label-placeholder {
+  display: none;
+}
+
+.search-button {
+  background-color: #e8660d;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+  flex-shrink: 0;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(232, 102, 13, 0.35);
+}
+
+.search-button:hover {
+  background-color: #cf5505;
+  transform: scale(1.05);
+}
+
+.search-button:active {
+  transform: scale(0.96);
+}
+
+/* Combobox adjustments extending base */
+.combobox-field {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.combobox-field [data-slot='input-group-control'] {
+  color: #121529;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  height: 100%;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+}
+
+.combobox-field [data-slot='input-group-control']::placeholder {
+  color: #a8a29e;
+}
+
+.combobox-field [data-slot='input-group-addon'] {
+  color: #877d74;
+}
+
+.combobox-field [data-slot='input-group-addon'] button {
+  color: #877d74;
+  cursor: pointer;
+}
+
+.combobox-field [data-slot='input-group-addon'] button:hover {
+  color: #121529;
+}
+
+@media (max-width: 900px) {
+  .form-card {
+    border-radius: 28px;
+  }
+}
