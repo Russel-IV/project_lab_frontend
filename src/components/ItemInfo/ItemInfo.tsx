@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState } from 'react';
 import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
@@ -11,15 +10,8 @@ import type {
 } from '@/types/__generated__/graphql';
 import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
-import { ImageGalleryModal } from '@/components/PhotoGallery/ImageGalleryModal';
-import { Skeleton } from '@/components/ui/skeleton';
-=======
-import { MapPin, Star } from 'lucide-react';
-import { type GetStaysQuery } from '@/types/__generated__/graphql';
-import { AMENITIES_LOOKUP } from '@/constants/amenities';
-import { useNavigate } from 'react-router-dom';
 import { PhotoGallery } from '@/components/PhotoGallery';
->>>>>>> 28c4980 (feat(imageGallery): refactor imageGallery)
+import { Skeleton } from '@/components/ui/skeleton';
 
 const REVIEWS_PAGE_SIZE = 6;
 
@@ -98,8 +90,8 @@ const getRatingText = (val: number) => {
   return 'Fair';
 };
 
-export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
-  const navigate = useNavigate();
+export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
+  const [reviewsSize, setReviewsSize] = useState(REVIEWS_PAGE_SIZE);
 
   const { data: summaryData, loading: summaryLoading } = useQuery<
     GetReviewSummaryQuery,
@@ -107,6 +99,21 @@ export function ItemInfo({ stay, className = '' }: ItemInfoProps) {
   >(GET_REVIEW_SUMMARY, {
     variables: { stayId: stay.id },
   });
+
+  const {
+    data: reviewsData,
+    loading: reviewsLoading,
+    previousData: previousReviewsData,
+  } = useQuery<GetReviewsByStayQuery, GetReviewsByStayQueryVariables>(
+    GET_REVIEWS_BY_STAY,
+    {
+      variables: {
+        stayId: stay.id,
+        page: 0,
+        size: reviewsSize,
+      },
+    },
+  );
 
   // Format pricing
   const price =
