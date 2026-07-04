@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronDown, Plus, Minus, CheckCircle2 } from 'lucide-react';
 import { format, startOfDay } from 'date-fns';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { RangeCalendar } from '@/components/calendar';
 
 import { useBookingWidget } from '../BookingWidgetContext';
 
@@ -50,6 +50,27 @@ export const BookingWidgetDesktop: React.FC = () => {
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isGuestsOpen, setIsGuestsOpen] = useState(false);
+  const calendarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isCalendarOpen &&
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        const trigger = document.getElementById('booking-dates-trigger');
+        if (trigger && trigger.contains(event.target as Node)) {
+          return;
+        }
+        setIsCalendarOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCalendarOpen]);
 
   // Local state for guest counters inside Popover
   const [localRooms, setLocalRooms] = useState<RoomConfig[]>(() =>
@@ -124,6 +145,9 @@ export const BookingWidgetDesktop: React.FC = () => {
       const fromStr = newRange.from ? format(newRange.from, 'yyyy-MM-dd') : '';
       const toStr = newRange.to ? format(newRange.to, 'yyyy-MM-dd') : '';
       dispatch(setBookingDates({ checkIn: fromStr, checkOut: toStr }));
+      if (fromStr && toStr) {
+        setIsCalendarOpen(false);
+      }
     } else {
       dispatch(setBookingDates({ checkIn: '', checkOut: '' }));
     }
@@ -174,180 +198,183 @@ export const BookingWidgetDesktop: React.FC = () => {
   if (!stay) return null;
 
   return (
-    <div className="bg-frui-white rounded-3xl p-6 border border-border w-full flex flex-col gap-5">
-      {/* 1. Header Price Info */}
-      <div className="flex flex-col gap-0.5 select-none">
-        <div className="flex items-baseline text-foreground">
-          <span className="text-2xl font-bold underline leading-none">
-            {formattedNightly}
-          </span>
-          <span className="text-sm font-medium text-muted-foreground ml-1">
-            per night
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-semibold mt-1">
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-          <span>Available dates</span>
-        </div>
-      </div>
-
-      {/* 2. Unified Inputs Grid */}
-      <div className="border border-neutral-300 rounded-xl overflow-hidden bg-frui-white">
-        {/* Check-In / Check-Out Row */}
-        <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-          <PopoverTrigger
-            render={
-              <div className="grid grid-cols-2 divide-x divide-neutral-300 cursor-pointer border-b border-neutral-300 select-none hover:bg-neutral-50/50">
-                {/* Check-In */}
-                <div className="p-3 flex flex-col text-left">
-                  <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
-                    Check-in
-                  </span>
-                  <span className="text-sm font-medium text-neutral-800 mt-1">
-                    {formattedCheckInLabel}
-                  </span>
-                </div>
-                {/* Check-Out */}
-                <div className="p-3 flex flex-col text-left">
-                  <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
-                    Check-out
-                  </span>
-                  <span className="text-sm font-medium text-neutral-800 mt-1">
-                    {formattedCheckOutLabel}
-                  </span>
-                </div>
-              </div>
-            }
+    <div className="relative">
+      {/* 1. Shared Calendar Panel on the Left (Side-by-side, same height) */}
+      {isCalendarOpen && (
+        <div
+          ref={calendarRef}
+          className="absolute right-[calc(100%+16px)] top-0 h-full w-[600px] bg-frui-white border border-border shadow-[0_10px_30px_rgba(0,0,0,0.06)] rounded-3xl p-6 z-50 flex flex-col justify-center select-none"
+        >
+          <RangeCalendar
+            defaultMonth={dateRange.from || new Date()}
+            selected={dateRange}
+            onSelect={handleDateSelect}
+            numberOfMonths={2}
+            disabled={(date) => date < startOfDay(new Date())}
           />
-          <PopoverContent
-            className="w-auto p-4 bg-frui-white border border-border shadow-xl rounded-xl z-55"
-            align="end"
-            side="bottom"
-          >
-            <Calendar
-              mode="range"
-              defaultMonth={dateRange.from || new Date()}
-              selected={dateRange}
-              onSelect={handleDateSelect}
-              numberOfMonths={2}
-              disabled={(date) => date < startOfDay(new Date())}
-            />
-          </PopoverContent>
-        </Popover>
+        </div>
+      )}
 
-        {/* Guests Row */}
-        <Popover open={isGuestsOpen} onOpenChange={handleGuestsOpenChange}>
-          <PopoverTrigger
-            render={
-              <div className="p-3 flex items-center justify-between cursor-pointer select-none hover:bg-neutral-50/50">
-                <div className="flex flex-col text-left">
-                  <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
-                    Guests
-                  </span>
-                  <span className="text-sm font-medium text-neutral-800 mt-1">
-                    {travelersText}
-                  </span>
-                </div>
-                <ChevronDown className="w-4 h-4 text-frui-blue shrink-0" />
-              </div>
-            }
-          />
-          <PopoverContent
-            className="w-80 p-5 bg-frui-white border border-border rounded-xl shadow-xl z-55 flex flex-col gap-4 text-foreground"
-            align="end"
-            side="bottom"
+      {/* 2. Booking Widget Card */}
+      <div className="bg-frui-white rounded-3xl p-6 border border-border w-full flex flex-col gap-5 min-h-[380px]">
+        {/* 1. Header Price Info */}
+        <div className="flex flex-col gap-0.5 select-none">
+          <div className="flex items-baseline text-foreground">
+            <span className="text-2xl font-bold underline leading-none">
+              {formattedNightly}
+            </span>
+            <span className="text-sm font-medium text-muted-foreground ml-1">
+              per night
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-semibold mt-1">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <span>Available dates</span>
+          </div>
+        </div>
+
+        {/* 2. Unified Inputs Grid */}
+        <div className="border border-neutral-300 rounded-xl overflow-hidden bg-frui-white">
+          {/* Check-In / Check-Out Row */}
+          <div
+            id="booking-dates-trigger"
+            onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+            className="grid grid-cols-2 divide-x divide-neutral-300 cursor-pointer border-b border-neutral-300 select-none hover:bg-neutral-50/50"
           >
-            <div className="flex flex-col gap-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
-              {localRooms.map((room, index) => (
-                <div
-                  key={room.id}
-                  className="flex flex-col gap-3 pb-4 border-b border-border/50 last:border-0 last:pb-0"
-                >
-                  <span className="font-bold text-foreground text-xs uppercase tracking-wide">
-                    Room {index + 1}
-                  </span>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold text-neutral-700">
-                      Adults
-                    </span>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => updateAdults(room.id, -1)}
-                        disabled={room.adults <= 1}
-                        className="size-7 rounded-full border border-neutral-300 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40 cursor-pointer"
-                      >
-                        <Minus className="size-3.5 text-neutral-600" />
-                      </button>
-                      <span className="w-4 text-center font-bold text-sm select-none">
-                        {room.adults}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => updateAdults(room.id, 1)}
-                        disabled={room.adults >= 14}
-                        className="size-7 rounded-full border border-neutral-300 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40 cursor-pointer"
-                      >
-                        <Plus className="size-3.5 text-neutral-600" />
-                      </button>
-                    </div>
-                  </div>
-                  {localRooms.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeRoom(room.id)}
-                      className="text-xs text-frui-orange font-bold hover:underline self-end cursor-pointer bg-transparent border-0 p-0"
-                    >
-                      Remove Room
-                    </button>
-                  )}
-                </div>
-              ))}
+            {/* Check-In */}
+            <div className="p-3 flex flex-col text-left">
+              <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
+                Check-in
+              </span>
+              <span className="text-sm font-medium text-neutral-800 mt-1">
+                {formattedCheckInLabel}
+              </span>
             </div>
+            {/* Check-Out */}
+            <div className="p-3 flex flex-col text-left">
+              <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
+                Check-out
+              </span>
+              <span className="text-sm font-medium text-neutral-800 mt-1">
+                {formattedCheckOutLabel}
+              </span>
+            </div>
+          </div>
 
-            <button
-              type="button"
-              onClick={addRoom}
-              className="text-xs text-frui-orange font-bold hover:underline self-start cursor-pointer flex items-center gap-1 bg-transparent border-0 p-0"
+          {/* Guests Row */}
+          <Popover open={isGuestsOpen} onOpenChange={handleGuestsOpenChange}>
+            <PopoverTrigger
+              render={
+                <div className="p-3 flex items-center justify-between cursor-pointer select-none hover:bg-neutral-50/50">
+                  <div className="flex flex-col text-left">
+                    <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
+                      Guests
+                    </span>
+                    <span className="text-sm font-medium text-neutral-800 mt-1">
+                      {travelersText}
+                    </span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-frui-blue shrink-0" />
+                </div>
+              }
+            />
+            <PopoverContent
+              className="w-80 p-5 bg-frui-white border border-border rounded-xl shadow-xl z-55 flex flex-col gap-4 text-foreground"
+              align="end"
+              side="bottom"
             >
-              <Plus className="size-3.5" /> Add Room
-            </button>
+              <div className="flex flex-col gap-4 max-h-[250px] overflow-y-auto pr-1 custom-scrollbar">
+                {localRooms.map((room, index) => (
+                  <div
+                    key={room.id}
+                    className="flex flex-col gap-3 pb-4 border-b border-border/50 last:border-0 last:pb-0"
+                  >
+                    <span className="font-bold text-foreground text-xs uppercase tracking-wide">
+                      Room {index + 1}
+                    </span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-neutral-700">
+                        Adults
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => updateAdults(room.id, -1)}
+                          disabled={room.adults <= 1}
+                          className="size-7 rounded-full border border-neutral-300 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40 cursor-pointer"
+                        >
+                          <Minus className="size-3.5 text-neutral-600" />
+                        </button>
+                        <span className="w-4 text-center font-bold text-sm select-none">
+                          {room.adults}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => updateAdults(room.id, 1)}
+                          disabled={room.adults >= 14}
+                          className="size-7 rounded-full border border-neutral-300 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40 cursor-pointer"
+                        >
+                          <Plus className="size-3.5 text-neutral-600" />
+                        </button>
+                      </div>
+                    </div>
+                    {localRooms.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeRoom(room.id)}
+                        className="text-xs text-frui-orange font-bold hover:underline self-end cursor-pointer bg-transparent border-0 p-0"
+                      >
+                        Remove Room
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
 
-            <div className="flex justify-end pt-3 border-t border-border mt-1">
               <button
                 type="button"
-                onClick={handleDone}
-                className="bg-frui-blue text-frui-white hover:opacity-90 font-bold rounded-lg px-4 py-1.5 text-xs cursor-pointer border-0"
+                onClick={addRoom}
+                className="text-xs text-frui-orange font-bold hover:underline self-start cursor-pointer flex items-center gap-1 bg-transparent border-0 p-0"
               >
-                Done
+                <Plus className="size-3.5" /> Add Room
               </button>
-            </div>
-          </PopoverContent>
-        </Popover>
+
+              <div className="flex justify-end pt-3 border-t border-border mt-1">
+                <button
+                  type="button"
+                  onClick={handleDone}
+                  className="bg-frui-blue text-frui-white hover:opacity-90 font-bold rounded-lg px-4 py-1.5 text-xs cursor-pointer border-0"
+                >
+                  Done
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* 3. Free Cancellation Banner */}
+        {freeCancellationText && (
+          <div className="bg-[#f5f5f5] rounded-xl px-4 py-2.5 text-xs font-semibold text-neutral-700 text-center select-none leading-normal">
+            {freeCancellationText}
+          </div>
+        )}
+
+        {/* 4. Action Button */}
+        <button
+          type="button"
+          className="w-full bg-frui-orange hover:bg-frui-orange/95 active:scale-[0.98] text-frui-white font-bold py-3.5 rounded-xl text-sm shadow-xs border-0 cursor-pointer text-center transition-all select-none"
+        >
+          Reserve
+        </button>
+
+        {/* 5. Total Price calculation */}
+        {nights > 1 && (
+          <div className="flex justify-between items-center text-sm font-semibold border-t border-border pt-4 mt-1 select-none">
+            <span className="text-neutral-500">Total</span>
+            <span className="text-neutral-900 font-bold">{formattedTotal}</span>
+          </div>
+        )}
       </div>
-
-      {/* 3. Free Cancellation Banner */}
-      {freeCancellationText && (
-        <div className="bg-[#f5f5f5] rounded-xl px-4 py-2.5 text-xs font-semibold text-neutral-700 text-center select-none leading-normal">
-          {freeCancellationText}
-        </div>
-      )}
-
-      {/* 4. Action Button */}
-      <button
-        type="button"
-        className="w-full bg-frui-orange hover:bg-frui-orange/95 active:scale-[0.98] text-frui-white font-bold py-3.5 rounded-xl text-sm shadow-xs border-0 cursor-pointer text-center transition-all select-none"
-      >
-        Reserve
-      </button>
-
-      {/* 5. Total Price calculation */}
-      {nights > 1 && (
-        <div className="flex justify-between items-center text-sm font-semibold border-t border-border pt-4 mt-1 select-none">
-          <span className="text-neutral-500">Total</span>
-          <span className="text-neutral-900 font-bold">{formattedTotal}</span>
-        </div>
-      )}
     </div>
   );
 };

@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { RangeCalendar } from '@/components/calendar';
 import { type DateRange } from 'react-day-picker';
 import { parseISOToDateRange, formatDatesRange } from '../searchFormUtils';
 
@@ -73,13 +73,11 @@ export const SearchFormDatesField: React.FC = () => {
         }
       />
       <PopoverContent className="w-auto p-0 bg-white border border-[#d6c7b9] rounded-lg shadow-xl text-[#121324] z-50">
-        <Calendar
-          mode="range"
+        <RangeCalendar
           selected={selectedRange}
           onSelect={handleSelect}
           numberOfMonths={2}
           disabled={{ before: today }}
-          showOutsideDays={false}
         />
       </PopoverContent>
     </Popover>
