@@ -4,7 +4,11 @@ import {
   StayCardVariant,
   StayCardSkeleton,
 } from '@/components/StayCardVariant';
-import { ItemInfo, ItemInfoSkeleton } from '@/components/ItemInfo';
+import {
+  ItemInfo,
+  ItemInfoSkeleton,
+  ItemInfoMessage,
+} from '@/components/ItemInfo';
 import { FilterBar } from '@/components/FilterBar';
 
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -13,10 +17,15 @@ import { SearchForm } from '@/components/SearchForm';
 import {
   useBackgroundQuery,
   useReadQuery,
+  useQuery,
   type QueryRef,
 } from '@apollo/client/react';
-import { type GetStaysQuery } from '@/types/__generated__/graphql';
-import { GET_STAYS } from '@/graphql/stays';
+import {
+  type GetStaysQuery,
+  type GetStayDetailsQuery,
+  type GetStayDetailsQueryVariables,
+} from '@/types/__generated__/graphql';
+import { GET_STAYS, GET_STAY_DETAILS } from '@/graphql/stays';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { Pagination } from '@/components/Pagination';
 
@@ -37,7 +46,6 @@ export default function StaysPage() {
   const [searchParams] = useSearchParams();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const placeParam = searchParams.get('place');
@@ -59,24 +67,23 @@ export default function StaysPage() {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const closeDetail = () => setSelectedStayId(null);
+
   return (
     <div className="flex-1 bg-muted/20 py-10 px-4 sm:px-6 lg:px-8">
-      {/* Main layout container with sidebar on the left and stays list on the right */}
-      <main className="flex flex-col md:flex-row h-screen w-full overflow-hidden gap-6">
-        {/* Left Panel: Stays List (Green Area) */}
-        <section className="flex-1 h-full overflow-y-auto flex flex-col gap-4">
-          {/* SearchForm */}
-          <SearchForm />
-
-          {/* Toggle Filters */}
-          <FilterBar />
+      {/* Stays grid: full width by default, search bar centered within it */}
+      <main className="h-screen w-full overflow-hidden">
+        <section className="h-full w-full max-w-6xl mx-auto overflow-y-auto flex flex-col gap-4">
+          {/* Sticky search bar + filters: stack together and stay pinned to
+              the top of the scrollable list, so neither ends up overlapping
+              the other as the grid scrolls underneath. */}
+          <div className="sticky top-0 z-40 bg-muted/20 flex flex-col gap-4 pb-2">
+            <SearchForm />
+            <FilterBar />
+          </div>
 
           {/* Stays List with fine-grained Suspense boundary */}
-          <ErrorBoundary
-            FallbackComponent={StaysErrorFallback}
-            onError={() => setHasError(true)}
-            onReset={() => setHasError(false)}
-          >
+          <ErrorBoundary FallbackComponent={StaysErrorFallback}>
             <Suspense fallback={<StayCardsGridSkeleton />}>
               <StaysListContent
                 queryRef={queryRef}
@@ -88,22 +95,26 @@ export default function StaysPage() {
             </Suspense>
           </ErrorBoundary>
         </section>
-
-        {/* Right Panel: Map/Details (Red Area) */}
-        <aside className="hidden md:block md:w-[56%] lg:w-[47%] xl:w-[50%] h-full">
-          {!hasError && (
-            <ErrorBoundary FallbackComponent={StaysErrorFallback}>
-              <Suspense fallback={<ItemInfoSkeleton />}>
-                <StaysDetailContent
-                  queryRef={queryRef}
-                  selectedStayId={selectedStayId}
-                  setSelectedStayId={setSelectedStayId}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </aside>
       </main>
+
+      {/* Detail drawer: opens on top of the grid when a stay is clicked.
+          Clicking the backdrop closes it; clicking a stay card underneath
+          is blocked by the backdrop while the drawer is open. */}
+      {selectedStayId !== null && (
+        <>
+          <div
+            className="fixed inset-0 bg-frui-blue/40 z-40"
+            onClick={closeDetail}
+            aria-hidden="true"
+          />
+          <div className="fixed top-0 right-0 z-50 h-full w-full md:w-[56%] lg:w-[47%] xl:w-[50%] p-4 md:p-6">
+            <StaysDetailContent
+              selectedStayId={selectedStayId}
+              onClose={closeDetail}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -220,13 +231,14 @@ function StaysListContent({
     ) {
       return selectedStayId;
     }
-    return paginatedStays.length > 0 ? paginatedStays[0].id : null;
+    return null;
   }, [paginatedStays, selectedStayId]);
 
-  // Synchronize selection back to parent when page changes so that StaysDetailContent updates
+  // If the selected stay drops out of view (e.g. a filter/page change), close
+  // the detail drawer instead of silently swapping to a different stay.
   useEffect(() => {
-    if (activeStayId !== selectedStayId) {
-      setSelectedStayId(activeStayId);
+    if (selectedStayId !== null && activeStayId === null) {
+      setSelectedStayId(null);
     }
   }, [activeStayId, selectedStayId, setSelectedStayId]);
 
@@ -260,7 +272,7 @@ function StaysListContent({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             {paginatedStays.map((stay) => (
               <StayCardVariant
                 key={stay.id}
@@ -285,94 +297,62 @@ function StaysListContent({
   );
 }
 
-// Right Panel Details Content Sub-component
+// Detail Drawer Content Sub-component: fetches the selected stay's full
+// details independently (rather than reusing the list query's cache), so
+// this panel has its own genuine loading/error/not-found states instead of
+// silently reusing whatever the grid already has in memory.
 function StaysDetailContent({
-  queryRef,
   selectedStayId,
-}: Omit<StaysContentProps, 'favorites' | 'toggleFavorite'>) {
-  const { data } = useReadQuery(queryRef);
+  onClose,
+}: {
+  selectedStayId: number | null;
+  onClose: () => void;
+}) {
+  const { data, loading, error } = useQuery<
+    GetStayDetailsQuery,
+    GetStayDetailsQueryVariables
+  >(GET_STAY_DETAILS, {
+    variables: { id: selectedStayId ?? 0 },
+    skip: selectedStayId === null,
+  });
 
-  const {
-    priceMin,
-    priceMax,
-    propertyType,
-    freeCancellation,
-    ratingMin,
-    amenityIds,
-  } = useAppSelector((state) => state.filters);
+  if (loading) {
+    return <ItemInfoSkeleton />;
+  }
 
-  const staysList: GraphQLStay[] = useMemo(() => {
-    if (!data?.stays) return [];
-    return data.stays.filter((stay) => {
-      // 1. Price Range Filter
-      const price = stay.startingFromPrice as number | null;
-      if (price !== null && price !== undefined) {
-        if (priceMin !== null && price < priceMin) {
-          return false;
-        }
-        if (priceMax !== null && price > priceMax) {
-          return false;
-        }
-      }
-      // 2. Property Type Filter
-      if (propertyType && stay.propertyType !== propertyType) {
-        return false;
-      }
-      // 3. Free Cancellation Filter
-      if (freeCancellation && !stay.isRefundable) {
-        return false;
-      }
-      // 4. Guest Rating Filter
-      const rating = (stay.starRating as number | null) ?? 0;
-      if (ratingMin !== null) {
-        if (ratingMin === 5.0) {
-          if (rating < 5.0) return false;
-        } else {
-          if (rating < ratingMin || rating >= ratingMin + 1.0) return false;
-        }
-      }
-      // 5. Amenities Filter
-      if (amenityIds && amenityIds.length > 0) {
-        const stayAmenityIds = stay.amenities?.map((a) => Number(a.id)) ?? [];
-        const hasAllAmenities = amenityIds.every((id) =>
-          stayAmenityIds.includes(id),
-        );
-        if (!hasAllAmenities) return false;
-      }
-      return true;
-    });
-  }, [
-    data,
-    priceMin,
-    priceMax,
-    propertyType,
-    freeCancellation,
-    ratingMin,
-    amenityIds,
-  ]);
+  // The backend returns a GraphQL error (in addition to a null `stay`) when
+  // the id doesn't exist, so a missing-stay message needs its own branch
+  // rather than falling through to the generic error fallback.
+  const isNotFound = error?.message.toLowerCase().includes('not found');
 
-  const activeStayId = useMemo(() => {
-    if (
-      selectedStayId !== null &&
-      staysList.some((s) => s.id === selectedStayId)
-    ) {
-      return selectedStayId;
-    }
-    return staysList.length > 0 ? staysList[0].id : null;
-  }, [staysList, selectedStayId]);
+  if (error && !isNotFound) {
+    return (
+      <ItemInfoMessage
+        title="Something went wrong"
+        message={error.message}
+        onClose={onClose}
+      />
+    );
+  }
 
-  const selectedStay = useMemo(() => {
-    return staysList.find((s) => s.id === activeStayId) || null;
-  }, [staysList, activeStayId]);
+  if (isNotFound || !data?.stay) {
+    return (
+      <ItemInfoMessage
+        title="Stay not found"
+        message="We couldn't find the stay you're looking for. It may have been removed."
+        onClose={onClose}
+      />
+    );
+  }
 
-  return <ItemInfo stay={selectedStay} />;
+  return <ItemInfo stay={data.stay} onClose={onClose} />;
 }
 
 // Grid fallback skeleton for Stay Cards
 function StayCardsGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-      {Array.from({ length: 4 }).map((_, idx) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      {Array.from({ length: 6 }).map((_, idx) => (
         <StayCardSkeleton key={idx} />
       ))}
     </div>
