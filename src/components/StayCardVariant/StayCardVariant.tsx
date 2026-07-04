@@ -1,7 +1,15 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Heart, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { type GetStaysQuery } from '@/types/__generated__/graphql';
+import { differenceInCalendarDays } from 'date-fns';
+import { useQuery } from '@apollo/client/react';
+import {
+  type GetStaysQuery,
+  type GetReviewSummaryQuery,
+  type GetReviewSummaryQueryVariables,
+} from '@/types/__generated__/graphql';
+import { GET_REVIEW_SUMMARY } from '@/graphql/reviews';
+import { useAppSelector } from '@/store/hooks';
 
 export type GraphQLStay = GetStaysQuery['stays'][number];
 
@@ -169,23 +177,44 @@ export function StayCardVariantLocation() {
 
 export function StayCardVariantRating() {
   const { stay } = useStayCardVariantContext();
-  const rating = typeof stay.starRating === 'number' ? stay.starRating : 4.9;
+
+  // "Average user rating" means the crowd-sourced review average, not
+  // Stay.starRating (the host's official classification, e.g. a "4-star
+  // hotel" - a different, host-set concept per the backend schema). Fetch
+  // the real review summary and only fall back to starRating when a stay
+  // genuinely has no reviews yet.
+  const { data, loading } = useQuery<
+    GetReviewSummaryQuery,
+    GetReviewSummaryQueryVariables
+  >(GET_REVIEW_SUMMARY, {
+    variables: { stayId: stay.id },
+  });
+
+  const summary = data?.reviewSummary;
+  const reviewAverage =
+    summary && summary.count > 0 && summary.average !== null
+      ? summary.average
+      : null;
+  const rating =
+    reviewAverage ??
+    (typeof stay.starRating === 'number' ? stay.starRating : null);
 
   const getRatingText = (val: number) => {
-    if (val <= 5) {
-      if (val >= 4.8) return 'Exceptional';
-      if (val >= 4.5) return 'Wonderful';
-      if (val >= 4.0) return 'Very Good';
-      if (val >= 3.5) return 'Good';
-      return 'Fair';
-    } else {
-      if (val >= 9.5) return 'Exceptional';
-      if (val >= 9.0) return 'Wonderful';
-      if (val >= 8.0) return 'Very Good';
-      if (val >= 7.0) return 'Good';
-      return 'Fair';
-    }
+    if (val >= 4.8) return 'Exceptional';
+    if (val >= 4.5) return 'Wonderful';
+    if (val >= 4.0) return 'Very Good';
+    if (val >= 3.5) return 'Good';
+    return 'Fair';
   };
+
+  if (rating === null) {
+    if (loading) {
+      return (
+        <div className="absolute top-4 left-4 h-[22px] w-24 rounded-md bg-white/70 animate-pulse z-10" />
+      );
+    }
+    return null;
+  }
 
   const isHighlyRated = rating >= 4.5;
 
@@ -203,8 +232,19 @@ export function StayCardVariantRating() {
 
 export function StayCardVariantPricing() {
   const { stay } = useStayCardVariantContext();
-  const price =
+  const { checkIn, checkOut } = useAppSelector((state) => state.search);
+
+  // Stay.startingFromPrice is documented as "lowest nightly price across all
+  // rooms" - a per-night rate, not a total. Multiply by the searched date
+  // range so the badge genuinely reflects "total price for the selected
+  // dates" instead of mislabeling the nightly rate as a total.
+  const nights = Math.max(
+    1,
+    differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
+  );
+  const nightlyPrice =
     typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
+  const price = nightlyPrice * nights;
 
   // Decide whether USD or CLP depending on numeric value
   const isUSD = price < 10000;
