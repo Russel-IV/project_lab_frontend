@@ -1,5 +1,5 @@
 import { SearchForm } from '@/components/SearchForm';
-import { Sections, MobileSections } from '../components/Sections';
+import { MobileSections } from '../components/Sections';
 import PresentationGallery from '../components/PresentationGallery/PresentationGallery';
 
 export default function Home() {
@@ -10,11 +10,6 @@ export default function Home() {
       </div>
 
       <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pt-2">
-        {/* Categories shown only on desktop */}
-        <div className="hidden md:block">
-          <Sections />
-        </div>
-
         {/* Unified Responsive Search Form */}
         <SearchForm />
 
