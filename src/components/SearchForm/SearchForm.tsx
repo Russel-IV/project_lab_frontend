@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Search } from 'lucide-react';
 import { useIsMobile } from '@/hooks/useIsMobile';
 
@@ -64,9 +65,9 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <SearchFormMobileContext.Provider value={contextValue}>
-      <div className="fixed inset-0 z-50 flex flex-col bg-[#F2F2F2] overflow-y-auto select-none p-4">
+      <div className="fixed inset-0 z-[100] flex flex-col bg-[#F2F2F2] overflow-y-auto select-none p-4">
         {/* Close Button */}
         <button
           type="button"
@@ -107,6 +108,10 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
       </div>
     </SearchFormMobileContext.Provider>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : modalContent;
 };
 
 /**
