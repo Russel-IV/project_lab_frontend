@@ -7,6 +7,7 @@ import StaysPage from '@/pages/StaysPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
 import StayInfoPage from '@/pages/StayInfoPage';
+import Payment from '@/pages/Payment';
 
 function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -40,6 +41,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/stay/:id" element={<StayInfoPage />} />
+              <Route path="/payment/:id" element={<Payment />} />
             </Routes>
           </ErrorBoundary>
         </main>

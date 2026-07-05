@@ -3,6 +3,7 @@ import searchReducer from './searchSlice';
 import filtersReducer from './filtersSlice';
 import authReducer from './authSlice';
 import bookingReducer from './bookingSlice';
+import paymentReducer from './paymentSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     filters: filtersReducer,
     auth: authReducer,
     booking: bookingReducer,
+    payment: paymentReducer,
   },
 });
 
