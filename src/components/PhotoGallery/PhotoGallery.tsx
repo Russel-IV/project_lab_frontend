@@ -58,8 +58,8 @@ export function PhotoGallery({
   } ${className}`;
 
   const aspectClass = responsive
-    ? 'w-full aspect-[4/3] md:aspect-[2/1] md:rounded-2xl overflow-hidden shadow-sm bg-frui-placeholder'
-    : 'w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-xs shrink-0 bg-frui-placeholder';
+    ? 'w-full aspect-[4/3] md:aspect-[2/1] md:rounded-2xl overflow-hidden shadow-sm bg-frui-white'
+    : 'w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-xs shrink-0 bg-frui-white';
 
   // Render Three Grid structure (flat structure using row spans)
   const renderThreeGrid = () => (
