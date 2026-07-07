@@ -61,7 +61,7 @@ export default function Payment() {
     skip: Number.isNaN(stayId),
   });
 
-  const stay = data?.stay;
+  const stay = data?.stay ?? null;
 
   // React Hook Form initialization
   const methods = useForm<PaymentFormValues>({

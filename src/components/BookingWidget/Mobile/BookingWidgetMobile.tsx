@@ -9,12 +9,14 @@ import {
 import { formatPrice, formatTravelers } from '@/utils/format';
 import { calculateNights } from '@/utils/date';
 import { SearchFormMobile } from '@/components/SearchForm';
+import { useNavigate } from 'react-router-dom';
 
 import { useBookingWidget } from '../BookingWidgetContext';
 
 export const BookingWidgetMobile: React.FC = () => {
   const { stay } = useBookingWidget();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const searchState = useAppSelector((state) => state.search);
   const { checkIn, checkOut, travelers } = useAppSelector(
     (state) => state.booking,
@@ -146,6 +148,7 @@ export const BookingWidgetMobile: React.FC = () => {
       {/* 4. Action Button */}
       <button
         type="button"
+        onClick={() => navigate(`/payment/${stay.id}`)}
         className="w-full bg-frui-blue text-frui-white font-bold py-3.5 rounded-full text-sm shadow-xs border-0 cursor-pointer text-center"
       >
         Reserve

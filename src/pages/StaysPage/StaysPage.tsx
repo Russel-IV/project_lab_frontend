@@ -1,0 +1,161 @@
+import { useEffect, useState, useMemo, Suspense } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setSearchQuery } from '@/store/searchSlice';
+import { SearchForm } from '@/components/SearchForm';
+import { FilterBar } from '@/components/FilterBar';
+import {
+  getTotalGuests,
+  isValidDateRange,
+} from '@/components/SearchForm/searchFormUtils';
+import { useBackgroundQuery } from '@apollo/client/react';
+import type {
+  GetStaysQuery,
+  GetStaysQueryVariables,
+  StayFilterInput,
+} from '@/types/__generated__/graphql';
+import { GET_STAYS } from '@/graphql/stays';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
+import { StayCardSkeleton } from '@/components/StayCardVariant';
+
+import { StaysListContent } from './StaysListContent';
+import { StaysDetailContent } from './StaysDetailContent';
+
+export default function StaysPage() {
+  const dispatch = useAppDispatch();
+
+  const { place, checkIn, checkOut, travelers } = useAppSelector(
+    (state) => state.search,
+  );
+
+  // Server-side search filter: destination, dates, and traveler count are
+  // all wired to the backend's `stays(filter: ...)` argument, so a "Search"
+  // genuinely changes which stays come back rather than just re-filtering
+  // the same list.
+  const filter: StayFilterInput | undefined = useMemo(() => {
+    const f: StayFilterInput = {};
+    if (place.trim()) f.city = place.trim();
+    if (isValidDateRange(checkIn, checkOut)) {
+      f.checkIn = checkIn;
+      f.checkOut = checkOut;
+    }
+    const guests = getTotalGuests(travelers);
+    if (guests > 0) f.guests = guests;
+    return Object.keys(f).length > 0 ? f : undefined;
+  }, [place, checkIn, checkOut, travelers]);
+
+  const [queryRef] = useBackgroundQuery<GetStaysQuery, GetStaysQueryVariables>(
+    GET_STAYS,
+    { variables: { filter } },
+  );
+
+  const [searchParams] = useSearchParams();
+  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const placeParam = searchParams.get('place');
+    const checkInParam = searchParams.get('checkIn');
+    const checkOutParam = searchParams.get('checkOut');
+    const travelersParam = searchParams.get('travelers');
+
+    dispatch(
+      setSearchQuery({
+        place: placeParam ?? undefined,
+        checkIn: checkInParam ?? undefined,
+        checkOut: checkOutParam ?? undefined,
+        travelers: travelersParam ?? undefined,
+      }),
+    );
+  }, [searchParams, dispatch]);
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const closeDetail = () => setSelectedStayId(null);
+
+  return (
+    <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8">
+      {/* Stays grid: full width by default, search bar centered within it */}
+      <main className="w-full">
+        <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">
+          {/* Sticky search bar + filters: stack together and stay pinned to
+              the top of the scrollable list, so neither ends up overlapping
+              the other as the grid scrolls underneath. */}
+          <div className="sticky top-16 z-40 bg-frui-white flex flex-col gap-4 pb-2">
+            <SearchForm />
+            <FilterBar />
+          </div>
+
+          {/* Stays List with fine-grained Suspense boundary */}
+          <ErrorBoundary FallbackComponent={StaysErrorFallback}>
+            <Suspense fallback={<StayCardsGridSkeleton />}>
+              <StaysListContent
+                queryRef={queryRef}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                selectedStayId={selectedStayId}
+                setSelectedStayId={setSelectedStayId}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        </section>
+      </main>
+
+      {/* Detail drawer: opens on top of the grid when a stay is clicked.
+          Clicking the backdrop closes it; clicking a stay card underneath
+          is blocked by the backdrop while the drawer is open. */}
+      {selectedStayId !== null && (
+        <>
+          <div
+            className="fixed inset-0 bg-frui-blue/40 z-40"
+            onClick={closeDetail}
+            aria-hidden="true"
+          />
+          <div className="fixed top-0 right-0 z-50 h-full w-full md:w-[56%] lg:w-[47%] xl:w-[50%] p-4 md:p-6">
+            <StaysDetailContent
+              selectedStayId={selectedStayId}
+              onClose={closeDetail}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Grid fallback skeleton for Stay Cards
+export function StayCardsGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <StayCardSkeleton key={idx} />
+      ))}
+    </div>
+  );
+}
+
+function StaysErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'object' && error !== null && 'message' in error
+        ? String((error as { message: unknown }).message)
+        : String(error || 'An unexpected error occurred.');
+
+  return (
+    <div className="p-6 rounded-2xl border border-destructive/20 bg-destructive/5 text-destructive text-sm font-medium flex flex-col gap-2">
+      <h3 className="font-semibold text-base text-foreground">
+        Something went wrong
+      </h3>
+      <p className="text-muted-foreground">{errorMessage}</p>
+      <button
+        onClick={resetErrorBoundary}
+        className="mt-2 w-fit bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer border-0"
+      >
+        Try Again
+      </button>
+    </div>
+  );
+}
