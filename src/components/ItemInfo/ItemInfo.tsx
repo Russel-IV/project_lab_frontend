@@ -12,9 +12,9 @@ import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StayMap } from '../StayMap/StayMap';
 
 const REVIEWS_PAGE_SIZE = 6;
-
 /**
  * RatingBarGraph
  *
@@ -289,7 +289,19 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             </div>
           </div>
         )}
-
+        {/* Section for show map*/}
+        {stay.location && (
+          <div className="space-y-4">
+            <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
+              Location
+            </h3>
+            <StayMap
+              latitude={stay.location.latitude}
+              longitude={stay.location.longitude}
+              name={stay.name}
+            />
+          </div>
+        )}
         {/* 6. Reviews & Ratings -- summary bar graph is visible as soon as
             the panel opens (not gated behind a click); the review list
             paginates 6 at a time via "Show more". */}

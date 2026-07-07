@@ -64,6 +64,10 @@ export const GET_STAYS = gql`
       travelerExperiences {
         id
       }
+      location {
+        latitude
+        longitude
+      }
     }
   }
 `;
@@ -132,6 +136,10 @@ export const GET_STAY_DETAILS = gql`
       }
       travelerExperiences {
         id
+      }
+      location {
+        latitude
+        longitude
       }
     }
   }

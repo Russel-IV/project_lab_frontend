@@ -136,6 +136,11 @@ export type GetStaysQuery = {
       __typename: 'TravelerExperience';
       id: number;
     }>;
+    location: {
+      __typename: 'Location';
+      latitude: number;
+      longitude: number;
+    } | null;
   }>;
 };
 
@@ -197,5 +202,10 @@ export type GetStayDetailsQuery = {
       __typename: 'TravelerExperience';
       id: number;
     }>;
+    location: {
+      __typename: 'Location';
+      latitude: number;
+      longitude: number;
+    } | null;
   } | null;
 };
