@@ -14,6 +14,7 @@ import { parseISOToDateRange, formatDatesRange } from '../searchFormUtils';
 
 export const SearchFormDatesField: React.FC = () => {
   const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();
+  const [isOpen, setIsOpen] = React.useState(false);
 
   // Parse checkIn and checkOut ISO strings back into a DateRange object
   const selectedRange = React.useMemo<DateRange>(() => {
@@ -33,24 +34,51 @@ export const SearchFormDatesField: React.FC = () => {
     return formatDatesRange(selectedRange);
   }, [selectedRange]);
 
-  const handleSelect = (newRange: DateRange | undefined) => {
-    const isCompleteRange =
-      selectedRange?.from &&
-      selectedRange?.to &&
-      selectedRange.from.getTime() !== selectedRange.to.getTime();
+  /**
+   * Custom date selection handler:
+   * 1. The first click marks the check-in date.
+   * 2. If the second click is before the current check-in, it becomes the new check-in.
+   *    Otherwise, it is the new check-out.
+   * 3. Once both dates are marked, the next click will mark the check-in and clear check-out.
+   */
+  const handleSelect = (_range: DateRange | undefined, selectedDay: Date) => {
+    if (!selectedDay) return;
 
-    if (isCompleteRange) {
-      if (newRange?.from) {
-        onDatesChange(format(newRange.from, 'yyyy-MM-dd'), '');
+    const clickedDay = new Date(selectedDay);
+    clickedDay.setHours(0, 0, 0, 0);
+
+    const hasOnlyCheckIn = !!checkInValue && !checkOutValue;
+
+    if (hasOnlyCheckIn) {
+      const checkInDate = new Date(checkInValue + 'T00:00:00');
+      if (clickedDay < checkInDate) {
+        // Clicked date is before current check-in: update check-in, clear check-out
+        onDatesChange(format(clickedDay, 'yyyy-MM-dd'), '');
       } else {
-        onDatesChange('', '');
+        // Clicked date is on or after check-in: update check-out (complete range)
+        onDatesChange(checkInValue, format(clickedDay, 'yyyy-MM-dd'));
       }
-    } else if (newRange) {
-      const fromStr = newRange.from ? format(newRange.from, 'yyyy-MM-dd') : '';
-      const toStr = newRange.to ? format(newRange.to, 'yyyy-MM-dd') : '';
-      onDatesChange(fromStr, toStr);
     } else {
-      onDatesChange('', '');
+      // First click, or both dates were already set: set check-in, clear check-out
+      onDatesChange(format(clickedDay, 'yyyy-MM-dd'), '');
+    }
+  };
+
+  /**
+   * Hook into popover open/close:
+   * Whenever the user only has the check-in date, when they click outside the popover,
+   * the check-out will automatically default to the check-in date plus one day.
+   */
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+
+    if (!open) {
+      if (checkInValue && !checkOutValue) {
+        const checkInDate = new Date(checkInValue + 'T00:00:00');
+        const checkOutDate = new Date(checkInDate);
+        checkOutDate.setDate(checkOutDate.getDate() + 1);
+        onDatesChange(checkInValue, format(checkOutDate, 'yyyy-MM-dd'));
+      }
     }
   };
 
@@ -61,7 +89,7 @@ export const SearchFormDatesField: React.FC = () => {
   }, []);
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         render={
           <FormField
