@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
+import { differenceInCalendarDays } from 'date-fns';
 import type {
   GetStayDetailsQuery,
   GetReviewsByStayQuery,
@@ -13,6 +14,7 @@ import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StayMap } from '../StayMap/StayMap';
+import { useAppSelector } from '@/store/hooks';
 
 const REVIEWS_PAGE_SIZE = 6;
 /**
@@ -92,6 +94,7 @@ const getRatingText = (val: number) => {
 
 export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const [reviewsSize, setReviewsSize] = useState(REVIEWS_PAGE_SIZE);
+  const { checkIn, checkOut } = useAppSelector((state) => state.search);
 
   const { data: summaryData, loading: summaryLoading } = useQuery<
     GetReviewSummaryQuery,
@@ -115,9 +118,16 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     },
   );
 
-  // Format pricing
-  const price =
+  // Format pricing. Stay.startingFromPrice is a per-night rate, so it's
+  // multiplied by the searched date range to match the "total" label below
+  // (same logic as the stay list cards in StayCardVariant).
+  const nights = Math.max(
+    1,
+    differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
+  );
+  const nightlyPrice =
     typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
+  const price = nightlyPrice * nights;
   const isUSD = price < 10000;
   const formattedPrice = isUSD
     ? `$${price}`
