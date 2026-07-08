@@ -294,8 +294,10 @@ export default function StayInfoPage() {
           {!reviewsLoading && !reviewsError && stayReviews.length > 0 && (
             <div
               ref={scrollContainerRef}
-              className={`flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-none ${
-                stayReviews.length === 1 ? 'justify-center' : 'justify-start'
+              className={`flex flex-col gap-4 md:flex-row md:gap-4 md:overflow-x-auto md:pb-4 md:scroll-smooth md:snap-x md:snap-mandatory scrollbar-none ${
+                stayReviews.length === 1
+                  ? 'md:justify-center'
+                  : 'md:justify-start'
               }`}
             >
               {stayReviews.map((review) => {
@@ -312,7 +314,7 @@ export default function StayInfoPage() {
                 return (
                   <div
                     key={review.id}
-                    className="w-[440px] md:w-[320px] min-h-[220px] shrink-0 p-5 rounded-2xl bg-frui-white border border-neutral-100 shadow-xs flex flex-col justify-between snap-start"
+                    className="w-full md:w-[320px] min-h-[220px] md:shrink-0 p-5 rounded-2xl bg-frui-white border border-neutral-100 shadow-xs flex flex-col justify-between md:snap-start"
                   >
                     <div>
                       {/* Rating Tag */}
