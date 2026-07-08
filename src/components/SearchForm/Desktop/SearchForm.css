@@ -26,6 +26,9 @@
   position: sticky;
   top: 72px;
   z-index: 40;
+  /* Sits directly under the category tabs on the Home hero, instead of the
+     default breathing room used when the search bar stands alone. */
+  margin-top: 8px;
 }
 
 /* Form inputs & submit row */

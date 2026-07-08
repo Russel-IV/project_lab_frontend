@@ -1,5 +1,5 @@
 import { SearchForm } from '@/components/SearchForm';
-import { MobileSections } from '../components/Sections';
+import { Sections, MobileSections } from '../components/Sections';
 import PresentationGallery from '../components/PresentationGallery/PresentationGallery';
 import { Seo } from '@/lib/seo';
 
@@ -14,6 +14,16 @@ export default function Home() {
 
       <div className="w-full md:hidden">
         <MobileSections />
+      </div>
+
+      {/* Categories shown only on desktop, directly above the search form.
+          Negative bottom margin cancels the flex column's gap-10 so the tabs
+          sit right above the search bar instead of leaving a large gap; the
+          search form still needs to stay a direct child of the full-height
+          page column below (see its own comment) so this can't be solved by
+          nesting them in a shared wrapper instead. */}
+      <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 -mb-10">
+        <Sections />
       </div>
 
       {/* Unified Responsive Search Form: kept as a direct child of the

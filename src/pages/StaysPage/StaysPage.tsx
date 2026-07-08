@@ -19,6 +19,7 @@ import { GET_STAYS } from '@/graphql/stays';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
 import { Seo } from '@/lib/seo';
+import { Sections, MobileSections } from '@/components/Sections';
 
 import { StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
@@ -105,6 +106,18 @@ export default function StaysPage() {
         }
         path="/stays"
       />
+
+      <div className="w-full md:hidden">
+        <MobileSections />
+      </div>
+
+      {/* Categories shown only on desktop, directly above the search form.
+          Negative margins cancel the tabs' own top margin and the search
+          form's own top margin so the gaps are exactly 16px above the tabs
+          and 8px between the tabs and the search form. */}
+      <div className="hidden md:block w-full max-w-6xl mx-auto -mt-10 -mb-6">
+        <Sections />
+      </div>
 
       {/* Stays grid: full width by default, search bar centered within it */}
       <main className="w-full">
