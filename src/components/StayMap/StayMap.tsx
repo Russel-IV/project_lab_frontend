@@ -1,4 +1,5 @@
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { MapPin } from 'lucide-react';
 
 interface StayMapProps {
   latitude: number;
@@ -20,7 +21,14 @@ export function StayMap({ latitude, longitude, name }: StayMapProps) {
           gestureHandling={'greedy'}
           disableDefaultUI={false}
         >
-          <AdvancedMarker position={position} title={name} />
+          <AdvancedMarker position={position} title={name}>
+            <MapPin
+              className="size-10 drop-shadow-md"
+              color="#121529"
+              fill="#e8660d"
+              strokeWidth={0.75}
+            />
+          </AdvancedMarker>
         </Map>
       </APIProvider>
     </div>
