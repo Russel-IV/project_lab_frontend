@@ -18,12 +18,11 @@ import type {
 import { GET_STAYS } from '@/graphql/stays';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
+import { Seo } from '@/lib/seo';
 
 import { StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
 
-// Show the scroll-to-top button only once the user has scrolled past the
-// search bar/filters, so it doesn't clutter the top of the page.
 const SCROLL_TOP_THRESHOLD = 400;
 
 export default function StaysPage() {
@@ -93,8 +92,20 @@ export default function StaysPage() {
 
   const closeDetail = () => setSelectedStayId(null);
 
+  const trimmedPlace = place.trim();
+
   return (
     <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8">
+      <Seo
+        title={trimmedPlace ? `Stays in ${trimmedPlace}` : 'Search Stays'}
+        description={
+          trimmedPlace
+            ? `Browse and book stays in ${trimmedPlace}. Compare prices, amenities, and reviews on Frui.`
+            : 'Browse and book stays worldwide. Compare prices, amenities, and reviews on Frui.'
+        }
+        path="/stays"
+      />
+
       {/* Stays grid: full width by default, search bar centered within it */}
       <main className="w-full">
         <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">

@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import PaymentMobile from './Mobile/PaymentMobile';
 import PaymentDesktop from './Desktop/PaymentDesktop';
 import { paymentSchema, type PaymentFormValues } from './Schemas/paymentSchema';
+import { Seo } from '@/lib/seo';
 
 export default function Payment() {
   const { id } = useParams<{ id: string }>();
@@ -124,6 +125,7 @@ export default function Payment() {
   if (loading) {
     return (
       <div className="flex-1 w-full bg-frui-cream flex flex-col items-center justify-center p-8 text-center min-h-[500px]">
+        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
         <div className="animate-pulse flex flex-col items-center gap-4">
           <div className="h-6 w-48 bg-neutral-200 rounded" />
           <div className="h-4 w-64 bg-neutral-200 rounded" />
@@ -136,6 +138,7 @@ export default function Payment() {
   if (error || (id && !stay)) {
     return (
       <div className="flex-1 w-full bg-frui-cream flex flex-col items-center justify-center gap-4 p-8 text-center min-h-[500px]">
+        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
         <h1 className="text-xl font-bold text-frui-blue">Stay not found</h1>
         <p className="text-sm text-neutral-500 max-w-md">
           {error?.message || "We couldn't find the stay you are looking for."}
@@ -153,6 +156,7 @@ export default function Payment() {
   return (
     <FormProvider {...methods}>
       <div className="flex-1 w-full bg-frui-cream">
+        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
         {isMobile ? (
           <div className="py-6 px-4 flex flex-col items-center">
             <PaymentMobile

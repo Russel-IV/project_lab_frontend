@@ -4,6 +4,8 @@ import { useReadQuery, type QueryRef } from '@apollo/client/react';
 import type { GetStaysQuery } from '@/types/__generated__/graphql';
 import { StayCardVariant } from '@/components/StayCardVariant';
 import { Pagination } from '@/components/Pagination';
+import { JsonLd } from '@/lib/seo';
+import { SITE_URL } from '@/config/seo';
 // Single shared empty-state look for both "search returned nothing" and
 // "filters narrowed the results to nothing", so only one ever shows at a
 // time and they read as the same kind of message (one bold line) rather
@@ -188,6 +190,22 @@ export function StaysListContent({
 
   const noStaysFromSearch = !data?.stays || data.stays.length === 0;
 
+  // ItemList structured data so search engines can surface the visible
+  // stays (and link straight to their detail pages) in rich results.
+  const itemListJsonLd = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: paginatedStays.map((stay, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${SITE_URL}/stay/${stay.id}`,
+        name: stay.name,
+      })),
+    }),
+    [paginatedStays],
+  );
+
   return (
     <>
       <div className="sm:hidden">
@@ -204,6 +222,7 @@ export function StaysListContent({
         <StaysEmptyState message="No stays match your filters. Try removing some filters to see more results." />
       ) : (
         <>
+          <JsonLd data={itemListJsonLd} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             {paginatedStays.map((stay) => (
               <StayCardVariant

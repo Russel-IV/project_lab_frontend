@@ -13,6 +13,8 @@ import type {
 } from '@/types/__generated__/graphql';
 import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
+import { Seo } from '@/lib/seo';
+import { SITE_URL } from '@/config/seo';
 
 export default function StayInfoPage() {
   const { id } = useParams<{ id: string }>();
@@ -69,6 +71,7 @@ export default function StayInfoPage() {
   if (stayError) {
     return (
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 p-8 text-center">
+        <Seo title="Something Went Wrong" path={`/stay/${id ?? ''}`} noIndex />
         <h1 className="text-lg font-semibold text-foreground">
           Something went wrong
         </h1>
@@ -82,6 +85,7 @@ export default function StayInfoPage() {
   if (!stayLoading && !data?.stay) {
     return (
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 p-8 text-center">
+        <Seo title="Stay Not Found" path={`/stay/${id ?? ''}`} noIndex />
         <h1 className="text-lg font-semibold text-foreground">
           Stay not found
         </h1>
@@ -92,8 +96,61 @@ export default function StayInfoPage() {
     );
   }
 
+  const stay = data?.stay;
+
+  // Structured data for rich results: LodgingBusiness with address, price,
+  // and an aggregate rating rolled up from the review list (when present).
+  const lodgingJsonLd = stay
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'LodgingBusiness',
+        name: stay.name,
+        description: stay.about ?? undefined,
+        url: `${SITE_URL}/stay/${stay.id}`,
+        image: stay.pictures.map((p) => p.url),
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: stay.address.streetAddress,
+          addressLocality: stay.address.city,
+          addressRegion: stay.address.stateProvince ?? undefined,
+          postalCode: stay.address.postalCode ?? undefined,
+          addressCountry: stay.address.countryCode,
+        },
+        ...(stay.startingFromPrice != null && {
+          priceRange: `$${stay.startingFromPrice}`,
+        }),
+        ...(stayReviews.length > 0 && {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: (
+              stayReviews.reduce((sum, r) => sum + r.rating, 0) /
+              stayReviews.length
+            ).toFixed(1),
+            reviewCount: stayReviews.length,
+          },
+        }),
+      }
+    : undefined;
+
   return (
     <div className="flex-1 w-full bg-background md:py-10 px-4 sm:px-6 lg:px-8">
+      {stay && (
+        <Seo
+          title={stay.name}
+          description={
+            stay.about
+              ? stay.about.slice(0, 155)
+              : `${stay.name} in ${stay.address.city} — book on Frui.`
+          }
+          path={`/stay/${stay.id}`}
+          image={
+            stay.pictures.find((p) => p.isPrimary)?.url ?? stay.pictures[0]?.url
+          }
+          type="product"
+          jsonLd={lodgingJsonLd}
+        />
+      )}
+
       <div className="mx-auto max-w-5xl flex flex-col gap-8">
         {/* 2. Image Gallery */}
         <PhotoGallery
