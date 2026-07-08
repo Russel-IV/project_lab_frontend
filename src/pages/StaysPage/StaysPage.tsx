@@ -80,10 +80,7 @@ export default function StaysPage() {
       {/* Stays grid: full width by default, search bar centered within it */}
       <main className="w-full">
         <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">
-          {/* Sticky search bar + filters: stack together and stay pinned to
-              the top of the scrollable list, so neither ends up overlapping
-              the other as the grid scrolls underneath. */}
-          <div className="sticky top-16 z-40 bg-frui-white flex flex-col gap-4 pb-2">
+          <div className="flex flex-col gap-4 pb-2">
             <SearchForm />
             <FilterBar />
           </div>
