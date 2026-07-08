@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { ArrowUp } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSearchQuery } from '@/store/searchSlice';
 import { SearchForm } from '@/components/SearchForm';
@@ -20,6 +21,10 @@ import { StayCardSkeleton } from '@/components/StayCardVariant';
 
 import { StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
+
+// Show the scroll-to-top button only once the user has scrolled past the
+// search bar/filters, so it doesn't clutter the top of the page.
+const SCROLL_TOP_THRESHOLD = 400;
 
 export default function StaysPage() {
   const dispatch = useAppDispatch();
@@ -52,6 +57,19 @@ export default function StaysPage() {
   const [searchParams] = useSearchParams();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > SCROLL_TOP_THRESHOLD);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     const placeParam = searchParams.get('place');
@@ -99,6 +117,17 @@ export default function StaysPage() {
           </ErrorBoundary>
         </section>
       </main>
+
+      {showScrollTop && (
+        <button
+          type="button"
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+          className="fixed left-4 bottom-6 md:left-8 z-40 flex size-11 items-center justify-center rounded-full bg-frui-orange text-frui-white shadow-lg transition-all hover:bg-[#cf5505] active:scale-95 cursor-pointer border-0"
+        >
+          <ArrowUp className="size-5" />
+        </button>
+      )}
 
       {/* Detail drawer: opens on top of the grid when a stay is clicked.
           Clicking the backdrop closes it; clicking a stay card underneath
