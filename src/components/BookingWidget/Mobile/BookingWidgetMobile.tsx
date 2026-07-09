@@ -18,7 +18,7 @@ export const BookingWidgetMobile: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const searchState = useAppSelector((state) => state.search);
-  const { checkIn, checkOut, travelers } = useAppSelector(
+  const { checkIn, checkOut, travelers, selectedRooms } = useAppSelector(
     (state) => state.booking,
   );
 
@@ -49,8 +49,15 @@ export const BookingWidgetMobile: React.FC = () => {
     return calculateNights(dateRange);
   }, [dateRange]);
 
-  // Compute and format prices
-  const price = (stay?.startingFromPrice as number) ?? 0;
+  // Compute and format prices. Sums the per-night price of every room the
+  // customer picked in RoomsSection; falls back to the stay's cheapest room
+  // until one is chosen.
+  const selectedRoomsNightly = useMemo(
+    () => selectedRooms.reduce((sum, room) => sum + room.price, 0),
+    [selectedRooms],
+  );
+  const price =
+    selectedRoomsNightly || (stay?.startingFromPrice as number) || 0;
 
   const formattedNightly = useMemo(() => {
     return formatPrice(price);

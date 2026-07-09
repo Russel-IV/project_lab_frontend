@@ -13,6 +13,7 @@ interface ConfirmationStepProps {
   nights: number;
   pricePerNight: number;
   roomPriceTotal: number;
+  roomCount: number;
   serviceFee: number;
   totalPayable: number;
 }
@@ -26,6 +27,7 @@ export default function ConfirmationStep({
   nights,
   pricePerNight,
   roomPriceTotal,
+  roomCount,
   serviceFee,
   totalPayable,
 }: ConfirmationStepProps) {
@@ -146,7 +148,9 @@ export default function ConfirmationStep({
         <h3 className="font-bold text-sm text-frui-blue">Price details</h3>
         <div className="flex flex-col gap-2 text-xs text-neutral-600">
           <div className="flex justify-between">
-            <span>1 room x {nights} nights</span>
+            <span>
+              {roomCount} {roomCount === 1 ? 'room' : 'rooms'} x {nights} nights
+            </span>
             <span>{formatPrice(roomPriceTotal)}</span>
           </div>
           <div className="text-[10px] text-neutral-400 -mt-1 font-medium">

@@ -6,11 +6,28 @@ export type Incremental<T> =
   | {
       [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
     };
+/** Lifecycle state of a booking. */
+export type BookingStatus = 'CANCELLED' | 'COMPLETED' | 'CONFIRMED' | 'PENDING';
+
+/** Input for creating a new booking. The booking is associated with the authenticated user. */
+export type CreateBookingInput = {
+  /** Desired check-in date. */
+  checkInDate: unknown;
+  /** Desired check-out date. Must be after `checkInDate`. */
+  checkOutDate: unknown;
+  /** Number of guests. */
+  guestsCount: number;
+  /** IDs of the rooms to include in the booking. */
+  roomIds: Array<number>;
+};
+
 /** The type of property (hotel chain or private home). */
 export type PropertyType = 'HOME' | 'HOTEL';
 
 /** Search and availability filter for the stays query. All fields are optional and combined with AND logic. */
 export type StayFilterInput = {
+  /** Limit results to properties with a room having one of these bedroom counts. Use 4 to mean 4 or more bedrooms. */
+  bedrooms?: Array<number> | null | undefined;
   /** Availability check start date. Must be provided together with checkOut. */
   checkIn?: unknown;
   /** Availability check end date. Must be provided together with checkIn. */
@@ -25,8 +42,32 @@ export type StayFilterInput = {
   maxPricePerNight?: number | null | undefined;
   /** Require at least one room with a nightly rate at or above this amount. */
   minPricePerNight?: number | null | undefined;
+  /** Limit results to properties offering ALL of these property-level amenities (e.g. Wi-Fi, pool, parking, gym, pet-friendly). */
+  propertyAmenityIds?: Array<number> | null | undefined;
   /** Limit results to a specific property category. */
   propertyType?: PropertyType | null | undefined;
+  /** Limit results to properties offering ALL of these in-room amenities (e.g. air conditioning, kitchen, balcony, private bathroom, washer) somewhere on the property. */
+  roomAmenityIds?: Array<number> | null | undefined;
+  /** Limit results to properties with one of these star rating tiers (1-5). A property matches a tier if its starRating rounds to it. */
+  starRatings?: Array<number> | null | undefined;
+};
+
+export type CreateBookingMutationVariables = Exact<{
+  input: CreateBookingInput;
+}>;
+
+export type CreateBookingMutation = {
+  createBooking: {
+    __typename: 'Booking';
+    id: number;
+    checkInDate: unknown;
+    checkOutDate: unknown;
+    status: BookingStatus;
+    guestsCount: number;
+    totalPrice: number;
+    createdAt: unknown;
+    rooms: Array<{ __typename: 'Room'; id: number; name: string }>;
+  };
 };
 
 export type GetReviewsQueryVariables = Exact<{
@@ -181,6 +222,15 @@ export type GetStayDetailsQuery = {
       bedroomAmount: number;
       bathrooms: number;
       size: number | null;
+      pictures: Array<{
+        __typename: 'RoomPicture';
+        id: number;
+        roomId: number;
+        url: string;
+        caption: string | null;
+        isPrimary: boolean;
+        displayOrder: number;
+      }>;
     }>;
     pictures: Array<{
       __typename: 'StayPicture';
@@ -208,4 +258,14 @@ export type GetStayDetailsQuery = {
       longitude: number;
     } | null;
   } | null;
+};
+
+export type AvailableRoomsQueryVariables = Exact<{
+  stayId: number;
+  checkIn: unknown;
+  checkOut: unknown;
+}>;
+
+export type AvailableRoomsQuery = {
+  availableRooms: Array<{ __typename: 'Room'; id: number }>;
 };

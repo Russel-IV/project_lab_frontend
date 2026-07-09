@@ -1,14 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@apollo/client/react';
+import { useQuery, useMutation } from '@apollo/client/react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { GET_STAY_DETAILS } from '@/graphql/stays';
+import { CREATE_BOOKING } from '@/graphql/bookings';
 import type {
   GetStayDetailsQuery,
   GetStayDetailsQueryVariables,
+  CreateBookingMutation,
+  CreateBookingMutationVariables,
 } from '@/types/__generated__/graphql';
 import { resetPaymentForm } from '@/store/paymentSlice';
-import { parseISOToDateRange } from '@/components/SearchForm/searchFormUtils';
+import { clearRoomSelection } from '@/store/bookingSlice';
+import {
+  parseISOToDateRange,
+  getTotalGuests,
+} from '@/components/SearchForm/searchFormUtils';
 import { calculateNights } from '@/utils/date';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { Button } from '@/components/ui/button';
@@ -33,8 +40,12 @@ export default function Payment() {
   // Payment states from store
   const paymentState = useAppSelector((state) => state.payment);
 
+  // Auth token, to gate booking creation (createBooking requires auth)
+  const authToken = useAppSelector((state) => state.auth.token);
+
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   // Fallbacks for stay checking dates
   const tomorrowStr = useMemo(() => {
@@ -63,6 +74,59 @@ export default function Payment() {
   });
 
   const stay = data?.stay ?? null;
+
+  const [createBookingMutation, { loading: bookingSubmitting }] = useMutation<
+    CreateBookingMutation,
+    CreateBookingMutationVariables
+  >(CREATE_BOOKING);
+
+  // Submits the actual booking to the backend, replacing what used to be a
+  // client-only fake reference. Returns whether it succeeded so the
+  // Desktop/Mobile submit flows can decide whether to advance to the
+  // confirmation view.
+  const submitBooking = async (): Promise<boolean> => {
+    setBookingError(null);
+
+    if (!authToken) {
+      navigate('/login');
+      return false;
+    }
+    if (booking.selectedRooms.length === 0) {
+      setBookingError('Please select a room before completing your booking.');
+      return false;
+    }
+
+    try {
+      const result = await createBookingMutation({
+        variables: {
+          input: {
+            checkInDate: resolvedCheckIn,
+            checkOutDate: resolvedCheckOut,
+            guestsCount: getTotalGuests(resolvedTravelers) || 1,
+            roomIds: booking.selectedRooms.map((room) => room.id),
+          },
+        },
+      });
+      const created = result.data?.createBooking;
+      if (!created) {
+        setBookingError(
+          'Something went wrong creating your booking. Please try again.',
+        );
+        return false;
+      }
+      setBookingRef(`FRUI-${created.id}`);
+      setBookingSuccess(true);
+      dispatch(clearRoomSelection());
+      return true;
+    } catch (err) {
+      setBookingError(
+        err instanceof Error
+          ? err.message
+          : 'Something went wrong creating your booking. Please try again.',
+      );
+      return false;
+    }
+  };
 
   // React Hook Form initialization
   const methods = useForm<PaymentFormValues>({
@@ -117,10 +181,16 @@ export default function Payment() {
   );
   const nights = useMemo(() => calculateNights(dateRange), [dateRange]);
 
-  const pricePerNight = (stay?.startingFromPrice as number) || 120000;
+  const selectedRoomsNightly = booking.selectedRooms.reduce(
+    (sum, room) => sum + room.price,
+    0,
+  );
+  const pricePerNight =
+    selectedRoomsNightly || (stay?.startingFromPrice as number) || 120000;
   const roomPriceTotal = pricePerNight * nights;
   const serviceFee = Math.round(roomPriceTotal * 0.1375);
   const totalPayable = roomPriceTotal + serviceFee;
+  const roomCount = booking.selectedRooms.length || 1;
 
   if (loading) {
     return (
@@ -168,12 +238,14 @@ export default function Payment() {
               nights={nights}
               pricePerNight={pricePerNight}
               roomPriceTotal={roomPriceTotal}
+              roomCount={roomCount}
               serviceFee={serviceFee}
               totalPayable={totalPayable}
               bookingSuccess={bookingSuccess}
-              setBookingSuccess={setBookingSuccess}
               bookingRef={bookingRef}
-              setBookingRef={setBookingRef}
+              submitBooking={submitBooking}
+              bookingSubmitting={bookingSubmitting}
+              bookingError={bookingError}
             />
           </div>
         ) : (
@@ -187,12 +259,14 @@ export default function Payment() {
               nights={nights}
               pricePerNight={pricePerNight}
               roomPriceTotal={roomPriceTotal}
+              roomCount={roomCount}
               serviceFee={serviceFee}
               totalPayable={totalPayable}
               bookingSuccess={bookingSuccess}
-              setBookingSuccess={setBookingSuccess}
               bookingRef={bookingRef}
-              setBookingRef={setBookingRef}
+              submitBooking={submitBooking}
+              bookingSubmitting={bookingSubmitting}
+              bookingError={bookingError}
             />
           </div>
         )}

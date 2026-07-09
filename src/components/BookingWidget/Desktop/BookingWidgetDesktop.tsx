@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronDown, Plus, Minus, CheckCircle2 } from 'lucide-react';
 import { format, startOfDay } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { setBookingDates, setBookingTravelers } from '@/store/bookingSlice';
 import { type DateRange } from 'react-day-picker';
@@ -28,8 +29,9 @@ import { useBookingWidget } from '../BookingWidgetContext';
 export const BookingWidgetDesktop: React.FC = () => {
   const { stay } = useBookingWidget();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const searchState = useAppSelector((state) => state.search);
-  const { checkIn, checkOut, travelers } = useAppSelector(
+  const { checkIn, checkOut, travelers, selectedRooms } = useAppSelector(
     (state) => state.booking,
   );
 
@@ -87,8 +89,15 @@ export const BookingWidgetDesktop: React.FC = () => {
     return calculateNights(dateRange);
   }, [dateRange]);
 
-  // Pricing computations
-  const price = (stay?.startingFromPrice as number) ?? 0;
+  // Pricing computations. Sums the per-night price of every room the
+  // customer picked in RoomsSection; falls back to the stay's cheapest room
+  // until one is chosen.
+  const selectedRoomsNightly = useMemo(
+    () => selectedRooms.reduce((sum, room) => sum + room.price, 0),
+    [selectedRooms],
+  );
+  const price =
+    selectedRoomsNightly || (stay?.startingFromPrice as number) || 0;
 
   const formattedNightly = useMemo(() => {
     return formatPrice(price, true);
@@ -362,10 +371,17 @@ export const BookingWidgetDesktop: React.FC = () => {
         {/* 4. Action Button */}
         <button
           type="button"
-          className="w-full bg-frui-orange hover:bg-frui-orange/95 active:scale-[0.98] text-frui-white font-bold py-3.5 rounded-xl text-sm shadow-xs border-0 cursor-pointer text-center transition-all select-none"
+          disabled={selectedRooms.length === 0}
+          onClick={() => stay && navigate(`/payment/${stay.id}`)}
+          className="w-full bg-frui-orange hover:bg-frui-orange/95 active:scale-[0.98] text-frui-white font-bold py-3.5 rounded-xl text-sm shadow-xs border-0 cursor-pointer text-center transition-all select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
         >
           Reserve
         </button>
+        {selectedRooms.length === 0 && (
+          <p className="text-xs text-center text-muted-foreground -mt-2">
+            Select a room to continue
+          </p>
+        )}
 
         {/* 5. Total Price calculation */}
         {nights > 1 && (

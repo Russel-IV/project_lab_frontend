@@ -47,12 +47,14 @@ interface PaymentDesktopProps {
   nights: number;
   pricePerNight: number;
   roomPriceTotal: number;
+  roomCount: number;
   serviceFee: number;
   totalPayable: number;
   bookingSuccess: boolean;
-  setBookingSuccess: (success: boolean) => void;
   bookingRef: string;
-  setBookingRef: (ref: string) => void;
+  submitBooking: () => Promise<boolean>;
+  bookingSubmitting: boolean;
+  bookingError: string | null;
 }
 
 export default function PaymentDesktop({
@@ -64,12 +66,14 @@ export default function PaymentDesktop({
   nights,
   pricePerNight,
   roomPriceTotal,
+  roomCount,
   serviceFee,
   totalPayable,
   bookingSuccess,
-  setBookingSuccess,
   bookingRef,
-  setBookingRef,
+  submitBooking,
+  bookingSubmitting,
+  bookingError,
 }: PaymentDesktopProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -105,9 +109,7 @@ export default function PaymentDesktop({
       const values = watch();
       dispatch(updateAllPaymentFields(values));
 
-      const randomRef = 'FRUI-' + Math.floor(100000 + Math.random() * 900000);
-      setBookingRef(randomRef);
-      setBookingSuccess(true);
+      await submitBooking();
     } else {
       // Auto expand sections containing error states
       if (errors.firstName || errors.lastName || errors.email || errors.phone) {
@@ -302,7 +304,10 @@ export default function PaymentDesktop({
               </h3>
               <div className="flex flex-col gap-2 text-xs text-neutral-600">
                 <div className="flex justify-between">
-                  <span>1 room x {nights} nights</span>
+                  <span>
+                    {roomCount} {roomCount === 1 ? 'room' : 'rooms'} x {nights}{' '}
+                    nights
+                  </span>
                   <span>{formatPrice(roomPriceTotal)}</span>
                 </div>
                 <div className="text-[10px] text-neutral-400 -mt-1 font-medium">
@@ -423,11 +428,18 @@ export default function PaymentDesktop({
               be charged until the host accepts your request.
             </p>
 
+            {bookingError && (
+              <p className="text-xs text-center text-destructive leading-relaxed">
+                {bookingError}
+              </p>
+            )}
+
             <Button
               onClick={handleSubmitBooking}
-              className="w-full bg-frui-orange text-frui-white font-bold h-12 rounded-xl text-sm border-0 select-none cursor-pointer flex items-center justify-center gap-1.5 transition-colors uppercase tracking-wide"
+              disabled={bookingSubmitting}
+              className="w-full bg-frui-orange text-frui-white font-bold h-12 rounded-xl text-sm border-0 select-none cursor-pointer flex items-center justify-center gap-1.5 transition-colors uppercase tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Request booking
+              {bookingSubmitting ? 'Requesting…' : 'Request booking'}
             </Button>
 
             <p className="text-[10.5px] text-center text-neutral-500 leading-relaxed">

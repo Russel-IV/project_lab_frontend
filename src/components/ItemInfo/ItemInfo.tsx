@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
 import { differenceInCalendarDays } from 'date-fns';
@@ -13,8 +13,15 @@ import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PoliciesSection } from '@/components/PoliciesSection';
+import { RoomsSection } from '@/components/RoomsSection';
 import { StayMap } from '../StayMap/StayMap';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import {
+  toggleRoomSelection,
+  setBookingDates,
+  setBookingTravelers,
+} from '@/store/bookingSlice';
 
 const REVIEWS_PAGE_SIZE = 6;
 /**
@@ -94,7 +101,30 @@ const getRatingText = (val: number) => {
 
 export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const [reviewsSize, setReviewsSize] = useState(REVIEWS_PAGE_SIZE);
-  const { checkIn, checkOut } = useAppSelector((state) => state.search);
+  const dispatch = useAppDispatch();
+  const searchState = useAppSelector((state) => state.search);
+  const booking = useAppSelector((state) => state.booking);
+  const { checkIn, checkOut } = booking;
+
+  // ItemInfo is opened from the stays list, where only `state.search` (not
+  // `state.booking`) reflects what the customer actually searched for.
+  // Mirrors the same sync BookingWidgetDesktop/Mobile do on the stay detail
+  // page, so RoomsSection's availability query below runs against the real
+  // dates instead of stale/default booking state.
+  useEffect(() => {
+    dispatch(
+      setBookingDates({
+        checkIn: searchState.checkIn,
+        checkOut: searchState.checkOut,
+      }),
+    );
+    dispatch(setBookingTravelers(searchState.travelers));
+  }, [
+    dispatch,
+    searchState.checkIn,
+    searchState.checkOut,
+    searchState.travelers,
+  ]);
 
   const { data: summaryData, loading: summaryLoading } = useQuery<
     GetReviewSummaryQuery,
@@ -118,15 +148,23 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     },
   );
 
-  // Format pricing. Stay.startingFromPrice is a per-night rate, so it's
-  // multiplied by the searched date range to match the "total" label below
-  // (same logic as the stay list cards in StayCardVariant).
+  // Format pricing. Sums the per-night price of every room selected in
+  // RoomsSection below (kept in sync with BookingWidgetDesktop/Mobile's
+  // pricing); falls back to the stay's cheapest room until one is chosen.
+  // Combined per-night rate is multiplied by the searched date range to
+  // match the "total" label below (same logic as the stay list cards in
+  // StayCardVariant).
   const nights = Math.max(
     1,
     differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
   );
+  const selectedRoomsNightly = booking.selectedRooms.reduce(
+    (sum, room) => sum + room.price,
+    0,
+  );
   const nightlyPrice =
-    typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
+    selectedRoomsNightly ||
+    (typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0);
   const price = nightlyPrice * nights;
   const isUSD = price < 10000;
   const formattedPrice = isUSD
@@ -279,6 +317,39 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             </p>
           )}
         </div>
+
+        {/* Policies section */}
+        <div className="space-y-2">
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
+            Policies
+          </h3>
+          <PoliciesSection stay={stay} checkIn={checkIn} />
+        </div>
+
+        {/* Room Types section */}
+        {stay.rooms.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
+              Room Types
+            </h3>
+            <RoomsSection
+              stayId={stay.id}
+              rooms={stay.rooms}
+              checkIn={booking.checkIn}
+              checkOut={booking.checkOut}
+              selectedRoomIds={booking.selectedRooms.map((r) => r.id)}
+              onToggle={(room) =>
+                dispatch(
+                  toggleRoomSelection({
+                    id: room.id,
+                    name: room.name,
+                    price: room.price,
+                  }),
+                )
+              }
+            />
+          </div>
+        )}
 
         {/* 5. Amenities section */}
         {amenities.length > 0 && (

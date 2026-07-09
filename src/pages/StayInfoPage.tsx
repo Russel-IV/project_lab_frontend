@@ -1,5 +1,7 @@
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { BookingWidget } from '@/components/BookingWidget';
+import { PoliciesSection } from '@/components/PoliciesSection';
+import { RoomsSection } from '@/components/RoomsSection';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { useEffect, useState, useRef } from 'react';
@@ -15,11 +17,16 @@ import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { Seo } from '@/lib/seo';
 import { SITE_URL } from '@/config/seo';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { toggleRoomSelection } from '@/store/bookingSlice';
 
 export default function StayInfoPage() {
   const { id } = useParams<{ id: string }>();
+  const dispatch = useAppDispatch();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const booking = useAppSelector((state) => state.booking);
+  const bookingCheckIn = booking.checkIn;
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -221,6 +228,29 @@ export default function StayInfoPage() {
                 <p className="text-sm text-gray-500">No amenities listed.</p>
               )}
             </section>
+            {stay && stay.rooms.length > 0 && (
+              <section className="border-b pb-6">
+                <h2 className="text-lg font-semibold mb-4 text-frui-blue">
+                  Room Types
+                </h2>
+                <RoomsSection
+                  stayId={stay.id}
+                  rooms={stay.rooms}
+                  checkIn={booking.checkIn}
+                  checkOut={booking.checkOut}
+                  selectedRoomIds={booking.selectedRooms.map((r) => r.id)}
+                  onToggle={(room) =>
+                    dispatch(
+                      toggleRoomSelection({
+                        id: room.id,
+                        name: room.name,
+                        price: room.price,
+                      }),
+                    )
+                  }
+                />
+              </section>
+            )}
             <section className="border-b pb-6">
               <h2 className="text-lg font-semibold mb-4 text-frui-blue">
                 Location Details
@@ -247,6 +277,14 @@ export default function StayInfoPage() {
                 </p>
               )}
             </section>
+            {stay && (
+              <section className="border-b pb-6">
+                <h2 className="text-lg font-semibold mb-4 text-frui-blue">
+                  Policies
+                </h2>
+                <PoliciesSection stay={stay} checkIn={bookingCheckIn} />
+              </section>
+            )}
           </div>
           {/* Right Side: Sticky Booking Widget (Spans 1/3 width) */}
           <div className="sticky top-24 md:col-span-1 w-full">

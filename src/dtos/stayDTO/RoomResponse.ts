@@ -1,3 +1,12 @@
+export interface RoomPictureResponse {
+  id: number;
+  roomId: number;
+  url: string;
+  caption: string | null;
+  isPrimary: boolean;
+  displayOrder: number;
+}
+
 export interface RoomResponse {
   id: number;
   stayId: number;
@@ -7,4 +16,5 @@ export interface RoomResponse {
   bedroomAmount: number;
   bathrooms: number;
   size: number | null;
+  pictures: RoomPictureResponse[];
 }

@@ -23,12 +23,14 @@ interface PaymentMobileProps {
   nights: number;
   pricePerNight: number;
   roomPriceTotal: number;
+  roomCount: number;
   serviceFee: number;
   totalPayable: number;
   bookingSuccess: boolean;
-  setBookingSuccess: (success: boolean) => void;
   bookingRef: string;
-  setBookingRef: (ref: string) => void;
+  submitBooking: () => Promise<boolean>;
+  bookingSubmitting: boolean;
+  bookingError: string | null;
 }
 
 export default function PaymentMobile({
@@ -40,12 +42,14 @@ export default function PaymentMobile({
   nights,
   pricePerNight,
   roomPriceTotal,
+  roomCount,
   serviceFee,
   totalPayable,
   bookingSuccess,
-  setBookingSuccess,
   bookingRef,
-  setBookingRef,
+  submitBooking,
+  bookingSubmitting,
+  bookingError,
 }: PaymentMobileProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -87,9 +91,7 @@ export default function PaymentMobile({
         dispatch(setStep(3));
       }
     } else if (currentStep === 3) {
-      const randomRef = 'FRUI-' + Math.floor(100000 + Math.random() * 900000);
-      setBookingRef(randomRef);
-      setBookingSuccess(true);
+      await submitBooking();
     }
   };
 
@@ -238,6 +240,7 @@ export default function PaymentMobile({
             nights={nights}
             pricePerNight={pricePerNight}
             roomPriceTotal={roomPriceTotal}
+            roomCount={roomCount}
             serviceFee={serviceFee}
             totalPayable={totalPayable}
           />
@@ -245,14 +248,23 @@ export default function PaymentMobile({
 
         {/* Action buttons */}
         <div className="border-t border-neutral-100 pt-4 flex flex-col gap-3">
+          {currentStep === 3 && bookingError && (
+            <p className="text-xs text-center text-destructive leading-relaxed">
+              {bookingError}
+            </p>
+          )}
+
           <Button
             onClick={handleContinue}
-            className="w-full bg-frui-orange text-frui-white font-bold h-12 rounded-xl text-sm border-0 select-none cursor-pointer flex items-center justify-center gap-1.5 transition-colors"
+            disabled={currentStep === 3 && bookingSubmitting}
+            className="w-full bg-frui-orange text-frui-white font-bold h-12 rounded-xl text-sm border-0 select-none cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {currentStep === 3 ? (
               <>
                 <Lock className="size-4 shrink-0" />
-                <span>Complete Booking</span>
+                <span>
+                  {bookingSubmitting ? 'Requesting…' : 'Complete Booking'}
+                </span>
               </>
             ) : (
               'Continue'
