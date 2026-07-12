@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { Footer } from '@/components/Footer/Footer';
+import { Chatbot } from '@/components/Chatbot/Chatbot';
 import Home from '@/pages/Home';
 import StaysPage from '@/pages/StaysPage';
 import LoginPage from '@/pages/LoginPage';
@@ -46,6 +47,7 @@ function App() {
           </ErrorBoundary>
         </main>
         <Footer />
+        <Chatbot />
       </div>
     </BrowserRouter>
   );
