@@ -38,8 +38,8 @@ import {
   type ChangePasswordFormValues,
 } from './profileSchema';
 import type { AccountSettingsContextValue } from './AccountSettingsContext';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Seo } from '@/lib/seo';
+import { cn } from '@/lib/utils';
 
 const emptyPaymentMethodValues: PaymentMethodFormValues = {
   cardholderName: '',
@@ -395,10 +395,15 @@ export default function AccountSettingsPage() {
   return (
     <div className="flex-1 w-full bg-background py-10 px-4 sm:px-6 lg:px-8">
       <Seo title="Account Settings" path="/profile" noIndex />
-      <div className="mx-auto max-w-3xl flex flex-col gap-8">
-        <h1 className="text-xl md:text-2xl font-semibold text-foreground">
-          Account Settings
-        </h1>
+      <div className="mx-auto max-w-5xl flex flex-col gap-6">
+        <div className="flex flex-col gap-1 border-b border-border pb-5">
+          <h1 className="text-xl md:text-2xl font-semibold text-foreground">
+            Settings
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your profile, payment methods, and account security.
+          </p>
+        </div>
 
         {loading && (
           <p className="text-sm text-muted-foreground">Loading your account…</p>
@@ -406,22 +411,33 @@ export default function AccountSettingsPage() {
         {loadError && <p className="text-sm text-destructive">{loadError}</p>}
 
         {!loading && !loadError && contextValue && (
-          <>
-            <Tabs
-              value={activeTab}
-              onValueChange={(value) => navigate(`/profile/${value}`)}
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-10">
+            <nav
+              aria-label="Settings sections"
+              className="flex shrink-0 flex-row gap-1 overflow-x-auto pb-1 md:w-52 md:flex-col md:overflow-visible md:pb-0"
             >
-              <TabsList>
-                {TABS.map((tab) => (
-                  <TabsTrigger key={tab.value} value={tab.value}>
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+              {TABS.map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => navigate(`/profile/${tab.value}`)}
+                  aria-current={activeTab === tab.value ? 'page' : undefined}
+                  className={cn(
+                    'shrink-0 rounded-md px-3 py-2 text-left text-sm whitespace-nowrap transition-colors cursor-pointer',
+                    activeTab === tab.value
+                      ? 'bg-muted font-semibold text-foreground'
+                      : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
 
-            <Outlet context={contextValue} />
-          </>
+            <div className="flex min-w-0 flex-1 flex-col gap-6">
+              <Outlet context={contextValue} />
+            </div>
+          </div>
         )}
       </div>
     </div>
