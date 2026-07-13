@@ -168,8 +168,9 @@ export default function PaymentMobile({
         </div>
 
         <Button
+          variant="secondary"
           onClick={() => navigate('/')}
-          className="w-full bg-frui-blue text-frui-white font-bold h-12 rounded-xl border-0"
+          className="w-full font-bold h-12 rounded-xl"
         >
           Go Back to Home
         </Button>
@@ -220,7 +221,7 @@ export default function PaymentMobile({
       {currentStep > 1 && (
         <button
           onClick={handleBack}
-          className="self-start text-xs font-bold text-frui-blue flex items-center gap-1 bg-transparent border-0 cursor-pointer p-0"
+          className="self-start text-xs font-bold text-frui-orange flex items-center gap-1 bg-transparent border-0 cursor-pointer p-0"
         >
           <ChevronLeft className="size-4" /> Back to previous step
         </button>
@@ -257,7 +258,7 @@ export default function PaymentMobile({
           <Button
             onClick={handleContinue}
             disabled={currentStep === 3 && bookingSubmitting}
-            className="w-full bg-frui-orange text-frui-white font-bold h-12 rounded-xl text-sm border-0 select-none cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full font-bold h-12 rounded-xl text-sm select-none flex items-center justify-center gap-1.5"
           >
             {currentStep === 3 ? (
               <>

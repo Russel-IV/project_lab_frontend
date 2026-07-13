@@ -124,18 +124,18 @@
 }
 
 .auth-switch-text a {
-  color: #df583b;
+  color: #e8660d;
   font-weight: 600;
   text-decoration: underline;
 }
 
 .auth-switch-text a:hover {
-  color: #f66342;
+  filter: brightness(0.95);
 }
 
 /* Submit Button styling matching Home CTAs */
 .login-submit-button {
-  background-color: #ff7657; /* Soft Coral Red */
+  background-color: #e8660d; /* Frui brand orange */
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -144,15 +144,15 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(255, 118, 87, 0.2);
+  box-shadow: 0 4px 6px rgba(232, 102, 13, 0.2);
   transition: all 0.2s ease;
   margin-top: 6px;
 }
 
 .login-submit-button:hover {
-  background-color: #f66342;
+  filter: brightness(0.95);
   transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(255, 118, 87, 0.3);
+  box-shadow: 0 6px 12px rgba(232, 102, 13, 0.3);
 }
 
 .login-submit-button:active {

@@ -202,7 +202,7 @@ function StaysErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
       <p className="text-muted-foreground">{errorMessage}</p>
       <button
         onClick={resetErrorBoundary}
-        className="mt-2 w-fit bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer border-0"
+        className="mt-2 w-fit bg-frui-orange text-frui-white hover:brightness-95 text-xs font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer border-0"
       >
         Try Again
       </button>

@@ -40,11 +40,11 @@ export function FilterBar() {
   ].filter(Boolean).length;
 
   const baseButtonClass =
-    'inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs md:text-sm font-medium shadow-2xs active:scale-[0.98] transition-all cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary';
+    'inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs md:text-sm font-medium shadow-2xs active:scale-[0.98] transition-all cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-frui-orange';
 
   const getButtonClass = (isActive: boolean) =>
     isActive
-      ? `${baseButtonClass} border-primary bg-primary/10 text-primary hover:bg-primary/20`
+      ? `${baseButtonClass} border-frui-orange bg-frui-orange/10 text-frui-orange hover:bg-frui-orange/20`
       : `${baseButtonClass} border-border bg-card text-foreground hover:bg-muted hover:border-muted-foreground/30`;
 
   return (
@@ -58,7 +58,7 @@ export function FilterBar() {
         <SlidersHorizontal className="size-3.5" />
         <span>Filters</span>
         {activeFiltersCount > 0 && (
-          <span className="flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+          <span className="flex size-4.5 items-center justify-center rounded-full bg-frui-orange text-[10px] font-bold text-frui-white">
             {activeFiltersCount}
           </span>
         )}

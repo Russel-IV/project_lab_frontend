@@ -117,7 +117,7 @@ export const SearchFormTravelersField: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => removeRoom(room.id)}
-                  className="text-xs text-primary font-semibold hover:underline self-end cursor-pointer bg-transparent border-0 p-0"
+                  className="text-xs text-frui-orange font-semibold hover:underline self-end cursor-pointer bg-transparent border-0 p-0"
                 >
                   Remove room
                 </button>
@@ -129,7 +129,7 @@ export const SearchFormTravelersField: React.FC = () => {
         <button
           type="button"
           onClick={addRoom}
-          className="text-sm text-primary font-semibold hover:underline self-end cursor-pointer flex items-center gap-1 mt-1 bg-transparent border-0 p-0"
+          className="text-sm text-frui-orange font-semibold hover:underline self-end cursor-pointer flex items-center gap-1 mt-1 bg-transparent border-0 p-0"
         >
           <Plus className="size-4" /> Add another room
         </button>
@@ -138,7 +138,7 @@ export const SearchFormTravelersField: React.FC = () => {
           <button
             type="button"
             onClick={handleDone}
-            className="bg-primary hover:bg-primary/95 text-white font-medium rounded-full px-5 py-1.5 text-sm cursor-pointer border-0"
+            className="bg-transparent text-frui-orange border border-frui-orange hover:bg-frui-orange/10 font-medium rounded-full px-5 py-1.5 text-sm cursor-pointer"
           >
             Done
           </button>

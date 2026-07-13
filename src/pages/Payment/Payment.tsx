@@ -215,7 +215,7 @@ export default function Payment() {
         </p>
         <Button
           onClick={() => navigate('/stays')}
-          className="bg-frui-orange text-frui-white font-bold border-0 h-10 px-6 rounded-xl"
+          className="font-bold h-10 px-6 rounded-xl"
         >
           Back to Stays
         </Button>

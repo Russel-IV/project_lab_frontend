@@ -278,7 +278,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                     onClick={() => handleSelectPropertyType(opt.value)}
                     className={`flex-1 rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
-                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
+                        ? 'border-frui-orange bg-frui-orange text-frui-white shadow-sm'
                         : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
                     }`}
                   >
@@ -302,7 +302,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                     onClick={() => handleToggleStarRating(tier)}
                     className={`flex-1 min-w-[56px] flex items-center justify-center gap-1 rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
-                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
+                        ? 'border-frui-orange bg-frui-orange text-frui-white shadow-sm'
                         : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
                     }`}
                   >
@@ -334,7 +334,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                     onClick={() => handleToggleBedroom(opt.value)}
                     className={`flex-1 min-w-[56px] rounded-xl border py-2.5 text-xs font-semibold transition-all cursor-pointer ${
                       isActive
-                        ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm'
+                        ? 'border-frui-orange bg-frui-orange text-frui-white shadow-sm'
                         : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream'
                     }`}
                   >
@@ -364,7 +364,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                       onClick={() => handleTogglePropertyAmenity(id)}
                       className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
                         isActive
-                          ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm scale-[1.02]'
+                          ? 'border-frui-orange bg-frui-orange text-frui-white shadow-sm scale-[1.02]'
                           : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream hover:scale-[1.02]'
                       } active:scale-95`}
                     >
@@ -393,7 +393,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
                       onClick={() => handleToggleRoomAmenity(id)}
                       className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
                         isActive
-                          ? 'border-frui-blue bg-frui-blue text-frui-white shadow-sm scale-[1.02]'
+                          ? 'border-frui-orange bg-frui-orange text-frui-white shadow-sm scale-[1.02]'
                           : 'border-frui-blue/20 bg-frui-white text-frui-blue hover:bg-frui-cream hover:scale-[1.02]'
                       } active:scale-95`}
                     >
@@ -411,14 +411,14 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
           <button
             type="button"
             onClick={handleClearAll}
-            className="rounded-xl border border-frui-blue/20 bg-transparent px-4 py-2 text-sm font-semibold text-frui-blue hover:bg-frui-blue/10 transition-all cursor-pointer"
+            className="rounded-xl border border-frui-orange bg-transparent px-4 py-2 text-sm font-semibold text-frui-orange hover:bg-frui-orange/10 transition-all cursor-pointer"
           >
             Clear all
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="rounded-xl bg-frui-blue px-4 py-2 text-sm font-semibold text-frui-white shadow-sm hover:bg-frui-blue/90 active:scale-95 transition-all cursor-pointer"
+            className="rounded-xl bg-frui-orange px-4 py-2 text-sm font-semibold text-frui-white shadow-sm hover:brightness-95 active:scale-95 transition-all cursor-pointer"
           >
             Show results
           </button>

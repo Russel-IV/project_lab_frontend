@@ -68,10 +68,10 @@ export function Navbar() {
                 )}
               </Link>
               <Button
-                variant="default"
+                variant="secondary"
                 size="sm"
                 onClick={handleLogout}
-                className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
+                className="gap-1.5"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Log Out</span>
@@ -84,7 +84,7 @@ export function Navbar() {
               size="sm"
               render={<Link to="/login" />}
               nativeButton={false}
-              className="gap-1.5 cursor-pointer bg-[#E8660D] shadow-sm hover:shadow-md transition-all duration-200 hover:bg-[#f8741f]"
+              className="gap-1.5"
             >
               <LogIn className="h-4 w-4" />
               <span>Sign In</span>

@@ -156,7 +156,7 @@ export const BookingWidgetMobile: React.FC = () => {
       <button
         type="button"
         onClick={() => navigate(`/payment/${stay.id}`)}
-        className="w-full bg-frui-blue text-frui-white font-bold py-3.5 rounded-full text-sm shadow-xs border-0 cursor-pointer text-center"
+        className="w-full bg-frui-orange hover:brightness-95 text-frui-white font-bold py-3.5 rounded-full text-sm shadow-xs border-0 cursor-pointer text-center transition-all"
       >
         Reserve
       </button>

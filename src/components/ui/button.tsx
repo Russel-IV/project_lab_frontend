@@ -8,11 +8,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
+        // Primary: the app's one "main/positive action" style — solid
+        // brand orange. This is also what a bare `<Button>` (no variant)
+        // renders, since an unlabeled action button should default to
+        // looking like the primary action of its context.
+        default:
+          'bg-frui-orange text-frui-white border-frui-orange shadow-sm hover:shadow-md hover:brightness-95 [a]:hover:brightness-95 focus-visible:border-frui-orange focus-visible:ring-frui-orange/40',
+        // Secondary: everything that isn't the primary/positive action of
+        // its context (Cancel, Change picture, Set as primary, Log Out...).
+        secondary:
+          'bg-transparent text-frui-orange border-frui-orange hover:bg-frui-orange/10 [a]:hover:bg-frui-orange/10 focus-visible:border-frui-orange focus-visible:ring-frui-orange/40',
         outline:
           'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
-        secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
         ghost:
           'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
         destructive:

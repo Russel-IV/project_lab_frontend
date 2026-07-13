@@ -89,7 +89,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
           <button
             type="button"
             onClick={formState.handleClearAll}
-            className="text-sm font-bold text-frui-blue cursor-pointer bg-transparent border-0 p-0"
+            className="text-sm font-bold text-frui-orange cursor-pointer bg-transparent border-0 p-0"
           >
             Clean Everything
           </button>

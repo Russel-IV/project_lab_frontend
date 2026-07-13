@@ -352,7 +352,7 @@ export const BookingWidgetDesktop: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleDone}
-                  className="bg-frui-blue text-frui-white hover:opacity-90 font-bold rounded-lg px-4 py-1.5 text-xs cursor-pointer border-0"
+                  className="bg-transparent text-frui-orange border border-frui-orange hover:bg-frui-orange/10 font-bold rounded-lg px-4 py-1.5 text-xs cursor-pointer"
                 >
                   Done
                 </button>

@@ -26,7 +26,7 @@ function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
       <p className="text-sm text-muted-foreground max-w-md">{errorMessage}</p>
       <button
         onClick={resetErrorBoundary}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer border-0"
+        className="bg-frui-orange text-frui-white hover:brightness-95 text-sm font-semibold px-4 py-2 rounded-xl transition-all cursor-pointer border-0"
       >
         Try Again
       </button>

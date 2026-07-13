@@ -195,8 +195,9 @@ export default function PaymentDesktop({
         </div>
 
         <Button
+          variant="secondary"
           onClick={() => navigate('/')}
-          className="w-full bg-frui-blue text-frui-white font-bold h-12 rounded-xl border-0"
+          className="w-full font-bold h-12 rounded-xl"
         >
           Go Back to Home
         </Button>
@@ -270,10 +271,10 @@ export default function PaymentDesktop({
                   </span>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => navigate(`/stay/${stay?.id}`)}
-                  className="text-xs border-neutral-300"
+                  className="text-xs"
                 >
                   Change
                 </Button>
@@ -287,10 +288,10 @@ export default function PaymentDesktop({
                   </span>
                 </div>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => navigate(`/stay/${stay?.id}`)}
-                  className="text-xs border-neutral-300"
+                  className="text-xs"
                 >
                   Change
                 </Button>
@@ -437,7 +438,7 @@ export default function PaymentDesktop({
             <Button
               onClick={handleSubmitBooking}
               disabled={bookingSubmitting}
-              className="w-full bg-frui-orange text-frui-white font-bold h-12 rounded-xl text-sm border-0 select-none cursor-pointer flex items-center justify-center gap-1.5 transition-colors uppercase tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full font-bold h-12 rounded-xl text-sm select-none flex items-center justify-center gap-1.5 uppercase tracking-wide"
             >
               {bookingSubmitting ? 'Requesting…' : 'Request booking'}
             </Button>
