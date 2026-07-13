@@ -6,6 +6,7 @@ interface MobileSectionsItemProps {
   onClick: () => void;
   icon: LucideIcon;
   label: string;
+  disabled?: boolean;
 }
 
 /**
@@ -19,21 +20,33 @@ interface MobileSectionsItemProps {
  * @param props.onClick - Event handler triggered when the button is clicked.
  * @param props.icon - LucideIcon to display next to the label.
  * @param props.label - Text label for the category.
+ * @param props.disabled - Disables and grays out the tab (not yet available).
  */
 export const MobileSectionsItem: React.FC<MobileSectionsItemProps> = ({
   active,
   onClick,
   icon: Icon,
   label,
+  disabled = false,
 }) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-semibold tracking-wide select-none cursor-pointer whitespace-nowrap transition-colors duration-150 ${
-        active
+      disabled={disabled}
+      aria-disabled={disabled}
+      className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs font-semibold tracking-wide select-none whitespace-nowrap transition-colors duration-150 ${
+        disabled
+          ? 'cursor-not-allowed bg-frui-white border-frui-blue/10 text-frui-blue/30'
+          : 'cursor-pointer'
+      } ${
+        !disabled && active
           ? 'bg-frui-orange border-frui-orange text-frui-white'
-          : 'bg-frui-white border-frui-blue/10 text-frui-blue/70'
+          : ''
+      } ${
+        !disabled && !active
+          ? 'bg-frui-white border-frui-blue/10 text-frui-blue/70'
+          : ''
       }`}
     >
       <Icon className="h-3.5 w-3.5" strokeWidth={active ? 2.5 : 2} />

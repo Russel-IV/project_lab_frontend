@@ -38,6 +38,15 @@
   border-bottom-color: #e8660d;
 }
 
+.form-tab-btn:disabled {
+  color: #cfc9c2;
+  cursor: not-allowed;
+}
+
+.form-tab-btn:disabled:hover {
+  color: #cfc9c2;
+}
+
 .form-tab-icon {
   width: 20px;
   height: 20px;
