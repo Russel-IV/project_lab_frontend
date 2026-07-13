@@ -1,4 +1,4 @@
-import { startOfDay } from 'date-fns';
+import { endOfMonth, startOfDay } from 'date-fns';
 import { type DateRange } from 'react-day-picker';
 
 /**
@@ -14,4 +14,19 @@ export function calculateNights(dateRange: DateRange): number {
   const diffTime = toDate.getTime() - fromDate.getTime();
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
   return Math.max(1, diffDays);
+}
+
+/**
+ * Whether a card's expiry month/year has already passed. A card expiring
+ * this calendar month is still valid until the month ends.
+ *
+ * @param month - 1-12 (as a string, matching form select values).
+ * @param year - 4-digit year (as a string).
+ */
+export function isCardExpired(month: string, year: string): boolean {
+  const monthNum = parseInt(month, 10);
+  const yearNum = parseInt(year, 10);
+  if (!monthNum || !yearNum) return false;
+  const expiry = endOfMonth(new Date(yearNum, monthNum - 1, 1));
+  return expiry.getTime() < startOfDay(new Date()).getTime();
 }

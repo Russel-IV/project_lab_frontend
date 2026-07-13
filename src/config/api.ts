@@ -9,4 +9,8 @@ export const API_ENDPOINTS = {
   GRAPHQL: GRAPHQL_URL,
   LOGIN: `${BASE_URL}/auth/login`,
   SIGNUP: `${BASE_URL}/auth/signup`,
+  PROFILE: `${BASE_URL}/profile`,
+  PROFILE_PICTURE: `${BASE_URL}/profile/picture`,
+  PROFILE_PASSWORD: `${BASE_URL}/profile/password`,
+  PAYMENT_METHODS: `${BASE_URL}/payment-methods`,
 };

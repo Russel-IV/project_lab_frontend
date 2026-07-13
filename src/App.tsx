@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { Footer } from '@/components/Footer/Footer';
@@ -9,6 +9,11 @@ import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
 import StayInfoPage from '@/pages/StayInfoPage';
 import Payment from '@/pages/Payment';
+import Profile from '@/pages/Profile';
+import { MyProfileTab } from '@/pages/Profile/MyProfileTab';
+import { PaymentSettingsTab } from '@/pages/Profile/PaymentSettingsTab';
+import { PrivacySettingsTab } from '@/pages/Profile/PrivacySettingsTab';
+import { DeleteAccountTab } from '@/pages/Profile/DeleteAccountTab';
 
 function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -43,6 +48,13 @@ function App() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/stay/:id" element={<StayInfoPage />} />
               <Route path="/payment/:id" element={<Payment />} />
+              <Route path="/profile" element={<Profile />}>
+                <Route index element={<Navigate to="my-profile" replace />} />
+                <Route path="my-profile" element={<MyProfileTab />} />
+                <Route path="payment" element={<PaymentSettingsTab />} />
+                <Route path="privacy" element={<PrivacySettingsTab />} />
+                <Route path="delete" element={<DeleteAccountTab />} />
+              </Route>
             </Routes>
           </ErrorBoundary>
         </main>

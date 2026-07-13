@@ -33,8 +33,18 @@ const authSlice = createSlice({
       localStorage.removeItem('authToken');
       localStorage.removeItem('authUser');
     },
+    updateUserInfo(
+      state,
+      action: PayloadAction<
+        Partial<Pick<AuthUser, 'name' | 'email' | 'profilePictureUrl'>>
+      >,
+    ) {
+      if (!state.user) return;
+      state.user = { ...state.user, ...action.payload };
+      localStorage.setItem('authUser', JSON.stringify(state.user));
+    },
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, updateUserInfo } = authSlice.actions;
 export default authSlice.reducer;

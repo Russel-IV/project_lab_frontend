@@ -1,13 +1,28 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut } from 'lucide-react';
+import { LogIn, LogOut, UserRound } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { logout } from '@/store/authSlice';
+import { logout, updateUserInfo } from '@/store/authSlice';
+import { getProfile } from '@/api/profile';
 
 export function Navbar() {
   const user = useAppSelector((state) => state.auth.user);
+  const token = useAppSelector((state) => state.auth.token);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // The cached `authUser` in localStorage can go stale (e.g. a picture
+  // uploaded in a previous session isn't reflected until next login), so
+  // refresh it from the backend once whenever a token is present.
+  useEffect(() => {
+    if (!token) return;
+    getProfile(token)
+      .then(({ name, email, profilePictureUrl }) => {
+        dispatch(updateUserInfo({ name, email, profilePictureUrl }));
+      })
+      .catch(() => {});
+  }, [token, dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -36,9 +51,22 @@ export function Navbar() {
         <div className="flex items-center gap-3 ml-auto">
           {user ? (
             <>
-              <span className="hidden sm:inline text-sm font-medium text-frui-orange">
-                Welcome, {user.name}!
-              </span>
+              <Link
+                to="/profile"
+                aria-label="View profile"
+                title={user.name}
+                className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-frui-white/10 ring-1 ring-frui-orange/40 transition-colors hover:ring-frui-orange"
+              >
+                {user.profilePictureUrl ? (
+                  <img
+                    src={user.profilePictureUrl}
+                    alt=""
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <UserRound className="h-5 w-5 text-frui-white" />
+                )}
+              </Link>
               <Button
                 variant="default"
                 size="sm"

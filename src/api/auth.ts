@@ -4,6 +4,7 @@ export interface AuthUser {
   id: number;
   name: string;
   email: string;
+  profilePictureUrl: string | null;
 }
 
 export interface LoginResponse {

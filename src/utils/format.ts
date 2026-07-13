@@ -115,3 +115,13 @@ export function splitToBullets(text?: string | null): string[] {
     .map((line) => line.trim())
     .filter(Boolean);
 }
+
+/**
+ * Masks a saved payment method down to its last four digits for display,
+ * e.g. "1234" -> "•••• •••• •••• 1234".
+ *
+ * @param lastFour - The card's last four digits.
+ */
+export function formatMaskedCard(lastFour: string): string {
+  return `•••• •••• •••• ${lastFour}`;
+}

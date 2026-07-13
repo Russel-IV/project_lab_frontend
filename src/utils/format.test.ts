@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatMaskedCard,
   formatPolicyTime,
   getCancellationPolicyText,
   splitToBullets,
@@ -53,5 +54,11 @@ describe('splitToBullets', () => {
     expect(splitToBullets(null)).toEqual([]);
     expect(splitToBullets(undefined)).toEqual([]);
     expect(splitToBullets('')).toEqual([]);
+  });
+});
+
+describe('formatMaskedCard', () => {
+  it('masks a card down to its last four digits', () => {
+    expect(formatMaskedCard('1234')).toBe('•••• •••• •••• 1234');
   });
 });
