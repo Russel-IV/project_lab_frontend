@@ -1,35 +1,65 @@
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import {
+  APIProvider,
+  Map as GoogleMap,
+  AdvancedMarker,
+} from '@vis.gl/react-google-maps';
 import { MapPin } from 'lucide-react';
 
-interface StayMapProps {
+interface MarkerInfo {
   latitude: number;
   longitude: number;
   name: string;
 }
 
-export function StayMap({ latitude, longitude, name }: StayMapProps) {
+interface StayMapProps {
+  latitude: number;
+  longitude: number;
+  name: string;
+  markers?: MarkerInfo[];
+  className?: string;
+  gestureHandling?: 'cooperative' | 'greedy' | 'none' | 'auto';
+  disableDefaultUI?: boolean;
+}
+
+export function StayMap({
+  latitude,
+  longitude,
+  name,
+  markers,
+  className = 'h-[300px] w-full rounded-2xl border border-border',
+  gestureHandling = 'none',
+  disableDefaultUI = true,
+}: StayMapProps) {
   const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const position = { lat: latitude, lng: longitude };
 
+  const activeMarkers = markers || [{ latitude, longitude, name }];
+
   return (
-    <div className="map-container relative h-[300px] w-full overflow-hidden rounded-2xl border border-border">
+    <div className={`map-container relative overflow-hidden ${className}`}>
       <APIProvider apiKey={API_KEY}>
-        <Map
+        <GoogleMap
           defaultCenter={position}
-          defaultZoom={15}
+          defaultZoom={markers ? 12 : 15}
           mapId="MAP_ID"
-          gestureHandling={'greedy'}
-          disableDefaultUI={false}
+          gestureHandling={gestureHandling}
+          disableDefaultUI={disableDefaultUI}
         >
-          <AdvancedMarker position={position} title={name}>
-            <MapPin
-              className="size-10 drop-shadow-md"
-              color="#121529"
-              fill="#e8660d"
-              strokeWidth={0.75}
-            />
-          </AdvancedMarker>
-        </Map>
+          {activeMarkers.map((marker, idx) => (
+            <AdvancedMarker
+              key={idx}
+              position={{ lat: marker.latitude, lng: marker.longitude }}
+              title={marker.name}
+            >
+              <MapPin
+                className="size-10 drop-shadow-md"
+                color="#121529"
+                fill="#e8660d"
+                strokeWidth={0.75}
+              />
+            </AdvancedMarker>
+          ))}
+        </GoogleMap>
       </APIProvider>
     </div>
   );

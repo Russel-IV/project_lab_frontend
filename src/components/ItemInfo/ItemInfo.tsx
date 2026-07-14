@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin,
@@ -17,9 +17,13 @@ import type {
   GetReviewsByStayQueryVariables,
   GetReviewSummaryQuery,
   GetReviewSummaryQueryVariables,
+  GetStaysQuery,
+  GetStaysQueryVariables,
 } from '@/types/__generated__/graphql';
 import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { ReviewsSection } from '@/components/Reviews/ReviewsSection';
+import { GET_STAYS } from '@/graphql/stays';
+import { useSearchContextFilter } from '@/hooks/useSearchContextFilter';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -157,6 +161,41 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     },
   );
 
+  const [isAllStaysMapOpen, setIsAllStaysMapOpen] = useState(false);
+
+  const searchContextFilter = useSearchContextFilter();
+
+  const { data: staysData } = useQuery<GetStaysQuery, GetStaysQueryVariables>(
+    GET_STAYS,
+    {
+      variables: {
+        filter: searchContextFilter,
+        page: 0,
+        size: 100,
+      },
+    },
+  );
+
+  const allStayMarkers = useMemo(() => {
+    const items = staysData?.stays.items ?? [];
+    return items
+      .filter(
+        (s): s is typeof s & { location: NonNullable<typeof s.location> } =>
+          s.location !== null,
+      )
+      .map((s) => ({
+        name: s.name,
+        latitude: s.location.latitude,
+        longitude: s.location.longitude,
+      }));
+  }, [staysData]);
+
+  // Format pricing. Sums the per-night price of every room selected in
+  // RoomsSection below (kept in sync with BookingWidgetDesktop/Mobile's
+  // pricing); falls back to the stay's cheapest room until one is chosen.
+  // Combined per-night rate is multiplied by the searched date range to
+  // match the "total" label below (same logic as the stay list cards in
+  // StayCardVariant).
   const nights = Math.max(
     1,
     differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
@@ -387,12 +426,62 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             <Suspense
               fallback={<Skeleton className="h-[300px] w-full rounded-2xl" />}
             >
-              <StayMap
-                latitude={stay.location.latitude}
-                longitude={stay.location.longitude}
-                name={stay.name}
-              />
+              <div className="relative rounded-2xl overflow-hidden">
+                <StayMap
+                  latitude={stay.location.latitude}
+                  longitude={stay.location.longitude}
+                  name={stay.name}
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsAllStaysMapOpen(true)}
+                  className="absolute bottom-4 right-4 bg-neutral-900/90 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-lg hover:bg-neutral-900 transition-all border-0 cursor-pointer z-10"
+                >
+                  View All Stays
+                </button>
+              </div>
             </Suspense>
+          </div>
+        )}
+
+        {isAllStaysMapOpen && stay.location && (
+          <div
+            className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 md:p-10"
+            onClick={() => setIsAllStaysMapOpen(false)}
+          >
+            <div
+              className="bg-white rounded-3xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center bg-white shrink-0">
+                <div>
+                  <h2 className="text-lg font-bold text-neutral-900">
+                    Nearby Properties
+                  </h2>
+                  <p className="text-xs text-neutral-500">
+                    Showing all available listings on the map
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAllStaysMapOpen(false)}
+                  className="text-neutral-400 hover:text-neutral-900 font-medium text-lg w-8 h-8 rounded-full hover:bg-neutral-100 flex items-center justify-center border-0 cursor-pointer transition-all"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex-1 w-full h-full relative">
+                <StayMap
+                  latitude={stay.location.latitude}
+                  longitude={stay.location.longitude}
+                  name={stay.name}
+                  markers={allStayMarkers}
+                  className="w-full h-full"
+                  gestureHandling="greedy"
+                  disableDefaultUI={false}
+                />
+              </div>
+            </div>
           </div>
         )}
         <div className="space-y-4">
