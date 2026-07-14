@@ -85,6 +85,10 @@ export const GET_STAY_DETAILS = gql`
       policiesText
       importantInformation
       startingFromPrice
+      location {
+        latitude
+        longitude
+      }
       address {
         id
         streetAddress

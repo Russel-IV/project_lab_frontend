@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
 import { differenceInCalendarDays } from 'date-fns';
@@ -8,8 +8,11 @@ import type {
   GetReviewsByStayQueryVariables,
   GetReviewSummaryQuery,
   GetReviewSummaryQueryVariables,
+  GetStaysQuery,
+  GetStaysQueryVariables,
 } from '@/types/__generated__/graphql';
 import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
+import { GET_STAYS } from '@/graphql/stays';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -147,6 +150,32 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
       },
     },
   );
+
+  const [isAllStaysMapOpen, setIsAllStaysMapOpen] = useState(false);
+
+  const { data: staysData } = useQuery<GetStaysQuery, GetStaysQueryVariables>(
+    GET_STAYS,
+    {
+      variables: {
+        filter: {
+          city: searchState.place.trim() || undefined,
+          checkIn: searchState.checkIn || undefined,
+          checkOut: searchState.checkOut || undefined,
+        },
+      },
+    },
+  );
+
+  const allStayMarkers = useMemo(() => {
+    if (!staysData?.stays) return [];
+    return staysData.stays
+      .filter((s) => s.location !== null && s.location !== undefined)
+      .map((s) => ({
+        name: s.name,
+        latitude: s.location!.latitude,
+        longitude: s.location!.longitude,
+      }));
+  }, [staysData]);
 
   // Format pricing. Sums the per-night price of every room selected in
   // RoomsSection below (kept in sync with BookingWidgetDesktop/Mobile's
@@ -376,11 +405,61 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
               Location
             </h3>
-            <StayMap
-              latitude={stay.location.latitude}
-              longitude={stay.location.longitude}
-              name={stay.name}
-            />
+            <div className="relative rounded-2xl overflow-hidden">
+              <StayMap
+                latitude={stay.location.latitude}
+                longitude={stay.location.longitude}
+                name={stay.name}
+              />
+              <button
+                type="button"
+                onClick={() => setIsAllStaysMapOpen(true)}
+                className="absolute bottom-4 right-4 bg-neutral-900/90 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-lg hover:bg-neutral-900 transition-all border-0 cursor-pointer z-10"
+              >
+                View All Stays
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isAllStaysMapOpen && stay.location && (
+          <div
+            className="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 md:p-10"
+            onClick={() => setIsAllStaysMapOpen(false)}
+          >
+            <div
+              className="bg-white rounded-3xl w-full max-w-6xl h-[85vh] flex flex-col overflow-hidden shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center bg-white shrink-0">
+                <div>
+                  <h2 className="text-lg font-bold text-neutral-900">
+                    Nearby Properties
+                  </h2>
+                  <p className="text-xs text-neutral-500">
+                    Showing all available listings on the map
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAllStaysMapOpen(false)}
+                  className="text-neutral-400 hover:text-neutral-900 font-medium text-lg w-8 h-8 rounded-full hover:bg-neutral-100 flex items-center justify-center border-0 cursor-pointer transition-all"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex-1 w-full h-full relative">
+                <StayMap
+                  latitude={stay.location.latitude}
+                  longitude={stay.location.longitude}
+                  name={stay.name}
+                  markers={allStayMarkers}
+                  className="w-full h-full"
+                  gestureHandling="greedy"
+                  disableDefaultUI={false}
+                />
+              </div>
+            </div>
           </div>
         )}
         {/* 6. Reviews & Ratings -- summary bar graph is visible as soon as
