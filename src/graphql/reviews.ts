@@ -39,3 +39,33 @@ export const GET_REVIEW_SUMMARY = gql`
     }
   }
 `;
+
+export const MY_REVIEW_FOR_STAY = gql`
+  query MyReviewForStay($stayId: Int!) {
+    myReviewForStay(stayId: $stayId) {
+      id
+      text
+      rating
+      stayId
+      user {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const CREATE_REVIEW = gql`
+  mutation CreateReview($input: CreateReviewInput!) {
+    createReview(input: $input) {
+      id
+      text
+      rating
+      stayId
+      user {
+        id
+        name
+      }
+    }
+  }
+`;

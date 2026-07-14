@@ -10,6 +10,7 @@ import type {
   GetReviewSummaryQueryVariables,
 } from '@/types/__generated__/graphql';
 import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
+import { ReviewsSection } from '@/components/Reviews/ReviewsSection';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -390,6 +391,8 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             Reviews & Ratings
           </h3>
+
+          <ReviewsSection stayId={stay.id} />
 
           {summaryLoading && !summary ? (
             <div className="flex flex-col gap-2">

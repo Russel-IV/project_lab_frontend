@@ -21,6 +21,16 @@ export type CreateBookingInput = {
   roomIds: Array<number>;
 };
 
+/** Input for submitting a review. */
+export type CreateReviewInput = {
+  /** Rating from 1 (lowest) to 5 (highest). */
+  rating: number;
+  /** ID of the stay being reviewed. */
+  stayId: number;
+  /** The written review content. */
+  text: string;
+};
+
 /** The type of property (hotel chain or private home). */
 export type PropertyType = 'HOME' | 'HOTEL';
 
@@ -70,6 +80,17 @@ export type CreateBookingMutation = {
   };
 };
 
+export type MyBookingStatusForStayQueryVariables = Exact<{
+  stayId: number;
+}>;
+
+export type MyBookingStatusForStayQuery = {
+  myBookingStatusForStay: {
+    __typename: 'BookingStatusForStay';
+    hasCompletedBooking: boolean;
+  };
+};
+
 export type GetReviewsQueryVariables = Exact<{
   page?: number | null | undefined;
   size?: number | null | undefined;
@@ -116,6 +137,36 @@ export type GetReviewSummaryQuery = {
     threeStar: number;
     fourStar: number;
     fiveStar: number;
+  };
+};
+
+export type MyReviewForStayQueryVariables = Exact<{
+  stayId: number;
+}>;
+
+export type MyReviewForStayQuery = {
+  myReviewForStay: {
+    __typename: 'Review';
+    id: number;
+    text: string;
+    rating: number;
+    stayId: number;
+    user: { __typename: 'User'; id: number; name: string };
+  } | null;
+};
+
+export type CreateReviewMutationVariables = Exact<{
+  input: CreateReviewInput;
+}>;
+
+export type CreateReviewMutation = {
+  createReview: {
+    __typename: 'Review';
+    id: number;
+    text: string;
+    rating: number;
+    stayId: number;
+    user: { __typename: 'User'; id: number; name: string };
   };
 };
 

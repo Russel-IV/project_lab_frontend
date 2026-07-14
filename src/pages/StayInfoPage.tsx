@@ -7,6 +7,7 @@ import { useQuery } from '@apollo/client/react';
 import { useEffect, useState, useRef } from 'react';
 import { GET_STAY_DETAILS } from '@/graphql/stays';
 import { GET_REVIEWS_BY_STAY } from '@/graphql/reviews';
+import { ReviewsSection } from '@/components/Reviews/ReviewsSection';
 import type {
   GetStayDetailsQuery,
   GetStayDetailsQueryVariables,
@@ -315,6 +316,12 @@ export default function StayInfoPage() {
               </div>
             )}
           </div>
+
+          {stay && (
+            <div className="mb-6">
+              <ReviewsSection stayId={stay.id} />
+            </div>
+          )}
 
           {reviewsLoading && (
             <p className="text-sm text-gray-500">Loading reviews...</p>

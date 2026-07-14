@@ -17,3 +17,11 @@ export const CREATE_BOOKING = gql`
     }
   }
 `;
+
+export const MY_BOOKING_STATUS_FOR_STAY = gql`
+  query MyBookingStatusForStay($stayId: Int!) {
+    myBookingStatusForStay(stayId: $stayId) {
+      hasCompletedBooking
+    }
+  }
+`;
