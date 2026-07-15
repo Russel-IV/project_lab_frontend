@@ -91,6 +91,38 @@ export type MyBookingStatusForStayQuery = {
   };
 };
 
+export type MyBookingsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  size?: number | null | undefined;
+}>;
+
+export type MyBookingsQuery = {
+  myBookings: Array<{
+    __typename: 'Booking';
+    id: number;
+    checkInDate: unknown;
+    checkOutDate: unknown;
+    status: BookingStatus;
+    guestsCount: number;
+    totalPrice: number;
+    createdAt: unknown;
+    rooms: Array<{
+      __typename: 'Room';
+      id: number;
+      stayId: number;
+      name: string;
+    }>;
+  }>;
+};
+
+export type DeleteBookingMutationVariables = Exact<{
+  id: number;
+}>;
+
+export type DeleteBookingMutation = {
+  deleteBooking: boolean;
+};
+
 export type GetReviewsQueryVariables = Exact<{
   page?: number | null | undefined;
   size?: number | null | undefined;

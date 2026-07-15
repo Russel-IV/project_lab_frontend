@@ -25,3 +25,28 @@ export const MY_BOOKING_STATUS_FOR_STAY = gql`
     }
   }
 `;
+
+export const MY_BOOKINGS = gql`
+  query MyBookings($page: Int, $size: Int) {
+    myBookings(page: $page, size: $size) {
+      id
+      checkInDate
+      checkOutDate
+      status
+      guestsCount
+      totalPrice
+      createdAt
+      rooms {
+        id
+        stayId
+        name
+      }
+    }
+  }
+`;
+
+export const DELETE_BOOKING = gql`
+  mutation DeleteBooking($id: Int!) {
+    deleteBooking(id: $id)
+  }
+`;
