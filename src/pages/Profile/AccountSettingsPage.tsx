@@ -58,6 +58,7 @@ const emptyChangePasswordValues: ChangePasswordFormValues = {
 const TABS = [
   { value: 'my-profile', label: 'My Profile' },
   { value: 'bookings', label: 'Booking History' },
+  { value: 'reviews', label: 'Review History' },
   { value: 'payment', label: 'Payment Settings' },
   { value: 'privacy', label: 'Privacy Settings' },
   { value: 'delete', label: 'Delete Account' },

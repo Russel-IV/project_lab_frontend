@@ -12,6 +12,7 @@ import Payment from '@/pages/Payment';
 import Profile from '@/pages/Profile';
 import { MyProfileTab } from '@/pages/Profile/MyProfileTab';
 import { BookingHistoryTab } from '@/pages/Profile/BookingHistoryTab';
+import { ReviewHistoryTab } from '@/pages/Profile/ReviewHistoryTab';
 import { PaymentSettingsTab } from '@/pages/Profile/PaymentSettingsTab';
 import { PrivacySettingsTab } from '@/pages/Profile/PrivacySettingsTab';
 import { DeleteAccountTab } from '@/pages/Profile/DeleteAccountTab';
@@ -53,6 +54,7 @@ function App() {
                 <Route index element={<Navigate to="my-profile" replace />} />
                 <Route path="my-profile" element={<MyProfileTab />} />
                 <Route path="bookings" element={<BookingHistoryTab />} />
+                <Route path="reviews" element={<ReviewHistoryTab />} />
                 <Route path="payment" element={<PaymentSettingsTab />} />
                 <Route path="privacy" element={<PrivacySettingsTab />} />
                 <Route path="delete" element={<DeleteAccountTab />} />

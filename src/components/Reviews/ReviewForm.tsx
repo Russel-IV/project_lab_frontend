@@ -9,6 +9,9 @@ export interface ReviewFormProps {
   onCancel?: () => void;
   submitting?: boolean;
   submitError?: string | null;
+  initialRating?: number;
+  initialText?: string;
+  submitLabel?: string;
 }
 
 export function ReviewForm({
@@ -16,9 +19,12 @@ export function ReviewForm({
   onCancel,
   submitting = false,
   submitError,
+  initialRating = 0,
+  initialText = '',
+  submitLabel = 'Submit',
 }: ReviewFormProps) {
-  const [rating, setRating] = useState(0);
-  const [text, setText] = useState('');
+  const [rating, setRating] = useState(initialRating);
+  const [text, setText] = useState(initialText);
   const [ratingError, setRatingError] = useState<string | null>(null);
   const [textError, setTextError] = useState<string | null>(null);
 
@@ -81,7 +87,7 @@ export function ReviewForm({
 
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={submitting}>
-          {submitting ? 'Submitting…' : 'Submit'}
+          {submitting ? 'Submitting…' : submitLabel}
         </Button>
         {onCancel && (
           <Button

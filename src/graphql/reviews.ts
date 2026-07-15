@@ -55,6 +55,25 @@ export const MY_REVIEW_FOR_STAY = gql`
   }
 `;
 
+export const MY_REVIEWS = gql`
+  query MyReviews($page: Int, $size: Int) {
+    myReviews(page: $page, size: $size) {
+      id
+      text
+      rating
+      stayId
+      stay {
+        id
+        name
+        address {
+          city
+          stateProvince
+        }
+      }
+    }
+  }
+`;
+
 export const CREATE_REVIEW = gql`
   mutation CreateReview($input: CreateReviewInput!) {
     createReview(input: $input) {
@@ -67,5 +86,26 @@ export const CREATE_REVIEW = gql`
         name
       }
     }
+  }
+`;
+
+export const UPDATE_REVIEW = gql`
+  mutation UpdateReview($id: Int!, $input: UpdateReviewInput!) {
+    updateReview(id: $id, input: $input) {
+      id
+      text
+      rating
+      stayId
+      user {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const DELETE_REVIEW = gql`
+  mutation DeleteReview($id: Int!) {
+    deleteReview(id: $id)
   }
 `;

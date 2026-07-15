@@ -62,6 +62,16 @@ export type StayFilterInput = {
   starRatings?: Array<number> | null | undefined;
 };
 
+/** Input for updating an existing review. */
+export type UpdateReviewInput = {
+  /** Updated rating from 1 (lowest) to 5 (highest). */
+  rating: number;
+  /** ID of the stay being reviewed. */
+  stayId: number;
+  /** Updated review text. */
+  text: string;
+};
+
 export type CreateBookingMutationVariables = Exact<{
   input: CreateBookingInput;
 }>;
@@ -119,9 +129,7 @@ export type DeleteBookingMutationVariables = Exact<{
   id: number;
 }>;
 
-export type DeleteBookingMutation = {
-  deleteBooking: boolean;
-};
+export type DeleteBookingMutation = { deleteBooking: boolean };
 
 export type GetReviewsQueryVariables = Exact<{
   page?: number | null | undefined;
@@ -187,6 +195,31 @@ export type MyReviewForStayQuery = {
   } | null;
 };
 
+export type MyReviewsQueryVariables = Exact<{
+  page?: number | null | undefined;
+  size?: number | null | undefined;
+}>;
+
+export type MyReviewsQuery = {
+  myReviews: Array<{
+    __typename: 'Review';
+    id: number;
+    text: string;
+    rating: number;
+    stayId: number;
+    stay: {
+      __typename: 'Stay';
+      id: number;
+      name: string;
+      address: {
+        __typename: 'Address';
+        city: string;
+        stateProvince: string | null;
+      };
+    };
+  }>;
+};
+
 export type CreateReviewMutationVariables = Exact<{
   input: CreateReviewInput;
 }>;
@@ -201,6 +234,28 @@ export type CreateReviewMutation = {
     user: { __typename: 'User'; id: number; name: string };
   };
 };
+
+export type UpdateReviewMutationVariables = Exact<{
+  id: number;
+  input: UpdateReviewInput;
+}>;
+
+export type UpdateReviewMutation = {
+  updateReview: {
+    __typename: 'Review';
+    id: number;
+    text: string;
+    rating: number;
+    stayId: number;
+    user: { __typename: 'User'; id: number; name: string };
+  };
+};
+
+export type DeleteReviewMutationVariables = Exact<{
+  id: number;
+}>;
+
+export type DeleteReviewMutation = { deleteReview: boolean };
 
 export type GetStaysQueryVariables = Exact<{
   filter?: StayFilterInput | null | undefined;

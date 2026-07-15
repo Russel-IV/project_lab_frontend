@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { Provider } from 'react-redux';
@@ -7,7 +7,12 @@ import { MockedProvider } from '@apollo/client/testing/react';
 import type { MockedResponse } from '@apollo/client/testing';
 import authReducer, { type AuthState } from '@/store/authSlice';
 import type { AuthUser } from '@/api/auth';
-import { MY_REVIEW_FOR_STAY, CREATE_REVIEW } from '@/graphql/reviews';
+import {
+  MY_REVIEW_FOR_STAY,
+  CREATE_REVIEW,
+  UPDATE_REVIEW,
+  DELETE_REVIEW,
+} from '@/graphql/reviews';
 import { MY_BOOKING_STATUS_FOR_STAY } from '@/graphql/bookings';
 import { ReviewsSection } from './ReviewsSection';
 
@@ -175,5 +180,100 @@ describe('ReviewsSection', () => {
     expect(
       screen.queryByRole('button', { name: 'Leave a Review' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('edits an existing review and shows the updated text read-only', async () => {
+    const user = userEvent.setup();
+    const originalMock = myReviewMock({
+      id: 7,
+      text: 'Amazing place!',
+      rating: 5,
+      user: { id: 1, name: 'Alice' },
+    });
+    const updatedMock = myReviewMock({
+      id: 7,
+      text: 'Even better on reflection!',
+      rating: 4,
+      user: { id: 1, name: 'Alice' },
+    });
+
+    const mocks: MockedResponse[] = [
+      bookingStatusMock(true),
+      originalMock,
+      {
+        request: {
+          query: UPDATE_REVIEW,
+          variables: {
+            id: 7,
+            input: {
+              stayId: STAY_ID,
+              rating: 4,
+              text: 'Even better on reflection!',
+            },
+          },
+        },
+        result: {
+          data: {
+            updateReview: {
+              __typename: 'Review',
+              id: 7,
+              text: 'Even better on reflection!',
+              rating: 4,
+              stayId: STAY_ID,
+              user: { __typename: 'User', id: 1, name: 'Alice' },
+            },
+          },
+        },
+      },
+      updatedMock,
+    ];
+
+    renderWithProviders(mocks);
+
+    await user.click(await screen.findByRole('button', { name: 'Edit' }));
+
+    const textbox = screen.getByLabelText('Your review');
+    expect(textbox).toHaveValue('Amazing place!');
+    await user.clear(textbox);
+    await user.type(textbox, 'Even better on reflection!');
+    await user.click(screen.getByRole('radio', { name: '4 stars' }));
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Your review')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('Even better on reflection!')).toBeInTheDocument();
+  });
+
+  it('deletes a review after confirming the dialog', async () => {
+    const user = userEvent.setup();
+    const mocks: MockedResponse[] = [
+      bookingStatusMock(false),
+      myReviewMock({
+        id: 7,
+        text: 'Amazing place!',
+        rating: 5,
+        user: { id: 1, name: 'Alice' },
+      }),
+      {
+        request: { query: DELETE_REVIEW, variables: { id: 7 } },
+        result: { data: { deleteReview: true } },
+      },
+      myReviewMock(null),
+    ];
+
+    renderWithProviders(mocks);
+
+    await user.click(
+      await screen.findByRole('button', { name: 'Delete review' }),
+    );
+    const dialog = await screen.findByRole('alertdialog');
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Delete review' }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Amazing place!')).not.toBeInTheDocument();
+    });
   });
 });
