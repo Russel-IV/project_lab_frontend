@@ -20,6 +20,7 @@ import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
 import { Seo } from '@/lib/seo';
 import { Sections, MobileSections } from '@/components/Sections';
+import { useFavorites } from '@/hooks/useFavorites';
 
 import { StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
@@ -56,7 +57,7 @@ export default function StaysPage() {
     { variables: { filter } },
   );
 
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const { favorites, toggleFavorite } = useFavorites();
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -87,10 +88,6 @@ export default function StaysPage() {
       }),
     );
   }, [searchParams, dispatch]);
-
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const closeDetail = () => setSelectedStayId(null);
 
