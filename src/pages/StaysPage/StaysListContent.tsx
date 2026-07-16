@@ -3,6 +3,7 @@ import { useAppSelector } from '@/store/hooks';
 import { useReadQuery, type QueryRef } from '@apollo/client/react';
 import type { GetStaysQuery } from '@/types/__generated__/graphql';
 import { StayCardVariant } from '@/components/StayCardVariant';
+import { useReviewSummaries } from '@/hooks/useReviewSummaries';
 import { Pagination } from '@/components/Pagination';
 import { JsonLd } from '@/lib/seo';
 import { SITE_URL } from '@/config/seo';
@@ -170,6 +171,13 @@ export function StaysListContent({
     return staysList.slice(startIndex, startIndex + pageSize);
   }, [staysList, currentPage, showPagination]);
 
+  const paginatedStayIds = useMemo(
+    () => paginatedStays.map((stay) => stay.id),
+    [paginatedStays],
+  );
+  const { summaries: reviewSummaries, loading: reviewSummariesLoading } =
+    useReviewSummaries(paginatedStayIds);
+
   const activeStayId = useMemo(() => {
     if (
       selectedStayId !== null &&
@@ -232,6 +240,8 @@ export function StaysListContent({
                 onToggleFavorite={toggleFavorite}
                 isActive={activeStayId === stay.id}
                 onClick={() => setSelectedStayId(stay.id)}
+                reviewSummary={reviewSummaries.get(stay.id)}
+                reviewSummaryLoading={reviewSummariesLoading}
               />
             ))}
           </div>

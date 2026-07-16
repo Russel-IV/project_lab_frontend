@@ -33,28 +33,29 @@ export default function StaysPage() {
     (state) => state.search,
   );
 
-  // Server-side search filter: destination, dates, and traveler count are
-  // all wired to the backend's `stays(filter: ...)` argument, so a "Search"
-  // genuinely changes which stays come back rather than just re-filtering
-  // the same list.
+  const [searchParams] = useSearchParams();
+  const effectivePlace = searchParams.get('place') ?? place;
+  const effectiveCheckIn = searchParams.get('checkIn') ?? checkIn;
+  const effectiveCheckOut = searchParams.get('checkOut') ?? checkOut;
+  const effectiveTravelers = searchParams.get('travelers') ?? travelers;
+
   const filter: StayFilterInput | undefined = useMemo(() => {
     const f: StayFilterInput = {};
-    if (place.trim()) f.city = place.trim();
-    if (isValidDateRange(checkIn, checkOut)) {
-      f.checkIn = checkIn;
-      f.checkOut = checkOut;
+    if (effectivePlace.trim()) f.city = effectivePlace.trim();
+    if (isValidDateRange(effectiveCheckIn, effectiveCheckOut)) {
+      f.checkIn = effectiveCheckIn;
+      f.checkOut = effectiveCheckOut;
     }
-    const guests = getTotalGuests(travelers);
+    const guests = getTotalGuests(effectiveTravelers);
     if (guests > 0) f.guests = guests;
     return Object.keys(f).length > 0 ? f : undefined;
-  }, [place, checkIn, checkOut, travelers]);
+  }, [effectivePlace, effectiveCheckIn, effectiveCheckOut, effectiveTravelers]);
 
   const [queryRef] = useBackgroundQuery<GetStaysQuery, GetStaysQueryVariables>(
     GET_STAYS,
     { variables: { filter } },
   );
 
-  const [searchParams] = useSearchParams();
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -153,9 +154,6 @@ export default function StaysPage() {
         </button>
       )}
 
-      {/* Detail drawer: opens on top of the grid when a stay is clicked.
-          Clicking the backdrop closes it; clicking a stay card underneath
-          is blocked by the backdrop while the drawer is open. */}
       {selectedStayId !== null && (
         <>
           <div

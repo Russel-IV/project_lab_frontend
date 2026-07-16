@@ -2,19 +2,16 @@ import React, { createContext, useContext, useState } from 'react';
 import { Heart, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { differenceInCalendarDays } from 'date-fns';
-import { useQuery } from '@apollo/client/react';
-import {
-  type GetStaysQuery,
-  type GetReviewSummaryQuery,
-  type GetReviewSummaryQueryVariables,
-} from '@/types/__generated__/graphql';
-import { GET_REVIEW_SUMMARY } from '@/graphql/reviews';
+import { type GetStaysQuery } from '@/types/__generated__/graphql';
+import type { ReviewSummaryData } from '@/hooks/useReviewSummaries';
 import { useAppSelector } from '@/store/hooks';
 
 export type GraphQLStay = GetStaysQuery['stays'][number];
 
 interface StayCardVariantContextType {
   stay: GraphQLStay;
+  reviewSummary?: ReviewSummaryData | null;
+  reviewSummaryLoading?: boolean;
 }
 
 const StayCardVariantContext = createContext<
@@ -38,6 +35,8 @@ interface StayCardVariantProps {
   onToggleFavorite?: (id: string) => void;
   onClick?: () => void;
   isActive?: boolean;
+  reviewSummary?: ReviewSummaryData | null;
+  reviewSummaryLoading?: boolean;
 }
 
 export function StayCardVariant({
@@ -45,6 +44,8 @@ export function StayCardVariant({
   isLiked,
   onToggleFavorite,
   onClick,
+  reviewSummary,
+  reviewSummaryLoading,
   //isActive,
 }: StayCardVariantProps) {
   const cardContent = (
@@ -74,7 +75,9 @@ export function StayCardVariant({
   const containerClasses = `group relative overflow-hidden w-full aspect-[4/3] rounded-2xl shadow-xs cursor-pointer p-0 bg-muted border block no-underline text-inherit`;
 
   return (
-    <StayCardVariantContext.Provider value={{ stay }}>
+    <StayCardVariantContext.Provider
+      value={{ stay, reviewSummary, reviewSummaryLoading }}
+    >
       {/* Mobile view: Direct Link to StayInfoPage */}
       <Link to={`/stay/${stay.id}`} className={`${containerClasses} md:hidden`}>
         {cardContent}
@@ -176,24 +179,19 @@ export function StayCardVariantLocation() {
 }
 
 export function StayCardVariantRating() {
-  const { stay } = useStayCardVariantContext();
+  const { stay, reviewSummary, reviewSummaryLoading } =
+    useStayCardVariantContext();
 
   // "Average user rating" means the crowd-sourced review average, not
   // Stay.starRating (the host's official classification, e.g. a "4-star
-  // hotel" - a different, host-set concept per the backend schema). Fetch
-  // the real review summary and only fall back to starRating when a stay
-  // genuinely has no reviews yet.
-  const { data, loading } = useQuery<
-    GetReviewSummaryQuery,
-    GetReviewSummaryQueryVariables
-  >(GET_REVIEW_SUMMARY, {
-    variables: { stayId: stay.id },
-  });
-
-  const summary = data?.reviewSummary;
+  // hotel" - a different, host-set concept per the backend schema). Use the
+  // real review summary (fetched in a single batched query for the whole
+  // page, see useReviewSummaries) and only fall back to starRating when a
+  // stay genuinely has no reviews yet.
+  const loading = !!reviewSummaryLoading;
   const reviewAverage =
-    summary && summary.count > 0 && summary.average !== null
-      ? summary.average
+    reviewSummary && reviewSummary.count > 0 && reviewSummary.average !== null
+      ? reviewSummary.average
       : null;
   const rating =
     reviewAverage ??
