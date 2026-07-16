@@ -18,12 +18,6 @@ const EMPTY_QUERY = gql`
   }
 `;
 
-// Stay list cards each need a review summary, but firing one
-// GetReviewSummary query per card (N+1) means a page of 12 results opens 12
-// extra HTTP round-trips on top of the GetStays request. Since the schema
-// only exposes reviewSummary(stayId) one at a time, batch it on the client
-// by aliasing every id into a single query - one round trip for the whole
-// page instead of one per card.
 export function useReviewSummaries(stayIds: number[]) {
   const uniqueIds = useMemo(
     () => Array.from(new Set(stayIds)).sort((a, b) => a - b),
