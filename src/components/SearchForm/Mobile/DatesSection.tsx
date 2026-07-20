@@ -41,7 +41,7 @@ export const DatesSection: React.FC = () => {
         onClick={() => setActiveSection('dates')}
         className="bg-frui-white rounded-2xl p-4 flex justify-between items-center shadow-sm cursor-pointer select-none text-left w-full border-0"
       >
-        <span className="text-sm text-[#877D74] font-medium">Dates</span>
+        <span className="text-sm text-[#7a7168] font-medium">Dates</span>
         <span className="text-sm text-frui-blue font-bold">
           {displayDatesValue}
         </span>
@@ -67,7 +67,7 @@ export const DatesSection: React.FC = () => {
           classNames={{
             nav: 'hidden',
             weekday:
-              'text-sm font-bold text-[#877D74] flex-none w-(--cell-size) h-(--cell-size) flex items-center justify-center',
+              'text-sm font-bold text-[#7a7168] flex-none w-(--cell-size) h-(--cell-size) flex items-center justify-center',
             caption_label: 'text-base font-bold text-frui-blue capitalize',
           }}
           formatters={{

@@ -55,7 +55,7 @@ export const SearchFormMobileTrigger: React.FC<
         <span className="text-sm font-bold truncate text-frui-blue">
           {place || 'Where to?'}
         </span>
-        <span className="text-xs text-[#877D74] truncate">
+        <span className="text-xs text-[#7a7168] truncate">
           {datesText} • {travelersText}
         </span>
       </div>

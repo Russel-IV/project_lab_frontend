@@ -8,6 +8,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { convertImageToWebp } from '@/utils/image';
 import { updateUserInfo, logout } from '@/store/authSlice';
 import type { AppDispatch } from '@/store';
 import {
@@ -176,7 +177,11 @@ export default function AccountSettingsPage() {
     setUploadingPicture(true);
     setPictureError(null);
     try {
-      const { profilePictureUrl } = await uploadProfilePicture(authToken, file);
+      const webpFile = await convertImageToWebp(file);
+      const { profilePictureUrl } = await uploadProfilePicture(
+        authToken,
+        webpFile,
+      );
       setProfile((prev) => (prev ? { ...prev, profilePictureUrl } : prev));
       dispatch(updateUserInfo({ profilePictureUrl }));
     } catch (err) {

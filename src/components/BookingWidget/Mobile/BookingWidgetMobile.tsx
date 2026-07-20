@@ -136,7 +136,7 @@ export const BookingWidgetMobile: React.FC = () => {
           <span className="text-sm font-bold truncate text-frui-blue">
             {locationText}
           </span>
-          <span className="text-xs text-[#877D74] truncate mt-0.5">
+          <span className="text-xs text-[#7a7168] truncate mt-0.5">
             {datesText} • {travelersText}
           </span>
         </div>
@@ -144,7 +144,7 @@ export const BookingWidgetMobile: React.FC = () => {
 
       {/* 3. Pricing Details */}
       <div className="flex flex-col items-end mt-5 mb-5">
-        <span className="text-xs text-[#877D74] font-medium">
+        <span className="text-xs text-[#7a7168] font-medium">
           {formattedNightly} nightly
         </span>
         <span className="text-xl font-bold text-frui-blue mt-0.5">
@@ -162,7 +162,7 @@ export const BookingWidgetMobile: React.FC = () => {
       </button>
 
       {/* 5. Warning Footer */}
-      <span className="text-[11px] text-[#877D74] text-center mt-3.5 block font-medium">
+      <span className="text-[11px] text-[#7a7168] text-center mt-3.5 block font-medium">
         You will not be charged yet
       </span>
 

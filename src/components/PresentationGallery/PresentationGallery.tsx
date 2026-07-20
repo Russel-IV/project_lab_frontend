@@ -1,8 +1,8 @@
-import galleryMountain from '../../assets/images/gallery-mountain.png';
-import galleryStreet from '../../assets/images/gallery-street.png';
-import galleryKyoto from '../../assets/images/gallery-kyoto.png';
-import gallerySantorini from '../../assets/images/gallery-santorini.png';
-import galleryAurora from '../../assets/images/gallery-aurora.png';
+import galleryMountain from '../../assets/images/gallery-mountain.webp';
+import galleryStreet from '../../assets/images/gallery-street.webp';
+import galleryKyoto from '../../assets/images/gallery-kyoto.webp';
+import gallerySantorini from '../../assets/images/gallery-santorini.webp';
+import galleryAurora from '../../assets/images/gallery-aurora.webp';
 
 export default function PresentationGallery() {
   const cards = [

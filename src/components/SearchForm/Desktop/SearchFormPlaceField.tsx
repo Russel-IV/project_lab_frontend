@@ -54,7 +54,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
           className="z-50 bg-white border border-[#d6c7b9] rounded-lg shadow-xl p-1 text-[#121324]"
           collisionAvoidance={{ side: 'none' }}
         >
-          <ComboboxEmpty className="px-3 py-2.5 text-xs text-[#877d74] italic">
+          <ComboboxEmpty className="px-3 py-2.5 text-xs text-[#7a7168] italic">
             No stays found matching
           </ComboboxEmpty>
           <ComboboxList>

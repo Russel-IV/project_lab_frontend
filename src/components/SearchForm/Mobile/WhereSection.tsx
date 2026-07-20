@@ -48,7 +48,7 @@ export const WhereSection: React.FC = () => {
         onClick={() => setActiveSection('where')}
         className="bg-frui-white rounded-2xl p-4 flex justify-between items-center shadow-sm cursor-pointer select-none text-left w-full border-0"
       >
-        <span className="text-sm text-[#877D74] font-medium">Where</span>
+        <span className="text-sm text-[#7a7168] font-medium">Where</span>
         <span className="text-sm text-frui-blue font-bold truncate max-w-[200px]">
           {localPlace || 'Around'}
         </span>
@@ -60,7 +60,7 @@ export const WhereSection: React.FC = () => {
     <div className="bg-frui-white rounded-[32px] p-6 shadow-sm flex flex-col gap-4">
       <h2 className="text-2xl font-bold text-frui-blue">Where?</h2>
       <div className="relative flex items-center border border-[#d6c7b9] rounded-2xl bg-frui-white px-3 py-3">
-        <Search className="h-5 w-5 text-[#877D74] mr-3" />
+        <Search className="h-5 w-5 text-[#7a7168] mr-3" />
         <input
           type="text"
           id="mobile-search-place"
@@ -73,7 +73,7 @@ export const WhereSection: React.FC = () => {
           <button
             type="button"
             onClick={() => setLocalPlace('')}
-            className="p-1 rounded-full text-[#877D74] hover:bg-neutral-100 cursor-pointer border-0 bg-transparent"
+            className="p-1 rounded-full text-[#7a7168] hover:bg-neutral-100 cursor-pointer border-0 bg-transparent"
           >
             <X className="h-4 w-4" />
           </button>
@@ -84,7 +84,7 @@ export const WhereSection: React.FC = () => {
       <div className="overflow-y-auto max-h-[360px] flex flex-col gap-4 pr-1 mt-2">
         {!localPlace && recentSearches.length > 0 && (
           <div className="flex flex-col gap-3">
-            <span className="text-xs font-bold text-[#877D74]">
+            <span className="text-xs font-bold text-[#7a7168]">
               Recent searches
             </span>
             {recentSearches.map((item, idx) => (
@@ -94,7 +94,7 @@ export const WhereSection: React.FC = () => {
                 onClick={() => handleSelectPlace(item)}
                 className="flex items-center gap-3 text-left w-full cursor-pointer py-1 border-0 bg-transparent"
               >
-                <MapPin className="h-5 w-5 text-[#877D74] shrink-0" />
+                <MapPin className="h-5 w-5 text-[#7a7168] shrink-0" />
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-frui-blue">
                     {item}
@@ -107,7 +107,7 @@ export const WhereSection: React.FC = () => {
 
         {localPlace && (
           <div className="flex flex-col gap-3">
-            <span className="text-xs font-bold text-[#877D74]">
+            <span className="text-xs font-bold text-[#7a7168]">
               Search's results
             </span>
             {filteredStandardOptions.map((opt, idx) => (
@@ -117,7 +117,7 @@ export const WhereSection: React.FC = () => {
                 onClick={() => handleSelectPlace(opt)}
                 className="flex items-center gap-3 text-left w-full cursor-pointer py-1 border-0 bg-transparent"
               >
-                <MapPin className="h-5 w-5 text-[#877D74] shrink-0" />
+                <MapPin className="h-5 w-5 text-[#7a7168] shrink-0" />
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-frui-blue">
                     {opt}
@@ -127,7 +127,7 @@ export const WhereSection: React.FC = () => {
             ))}
 
             {filteredStandardOptions.length === 0 && (
-              <span className="text-xs text-[#877D74] italic py-2">
+              <span className="text-xs text-[#7a7168] italic py-2">
                 Can't find any match
               </span>
             )}

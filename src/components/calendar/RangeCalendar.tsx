@@ -17,7 +17,7 @@ export const RangeCalendar: React.FC<CalendarProps> = ({
       className={`relative w-full flex justify-center border-0 p-0 bg-transparent [--cell-size:36px] [&_button]:text-sm [&_button]:font-semibold ${className || ''}`}
       classNames={{
         weekday:
-          'text-sm font-bold text-[#877D74] flex-none w-(--cell-size) h-(--cell-size) flex items-center justify-center',
+          'text-sm font-bold text-[#7a7168] flex-none w-(--cell-size) h-(--cell-size) flex items-center justify-center',
         caption_label: 'text-base font-bold text-frui-blue capitalize',
         ...classNames,
       }}

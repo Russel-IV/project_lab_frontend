@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import mountainAndes from '@/assets/images/mountain-andes.jpg';
+import mountainAndes from '@/assets/images/mountain-andes.webp';
 import './LoginForm.css';
 
 export const LoginForm: React.FC = () => {

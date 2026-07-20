@@ -28,7 +28,7 @@ export const TravelersSection: React.FC = () => {
         onClick={() => setActiveSection('travelers')}
         className="bg-frui-white rounded-2xl p-4 flex justify-between items-center shadow-sm cursor-pointer select-none text-left w-full border-0"
       >
-        <span className="text-sm text-[#877D74] font-medium">Travelers</span>
+        <span className="text-sm text-[#7a7168] font-medium">Travelers</span>
         <span className="text-sm text-frui-blue font-bold">
           {localTravelers}
         </span>

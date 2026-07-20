@@ -65,7 +65,7 @@
   font-family: var(--sans);
   font-size: 13px;
   font-weight: 500;
-  color: #877d74;
+  color: #7a7168;
   margin-bottom: 2px;
   text-transform: none;
 }
@@ -110,7 +110,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e8660d;
+  color: #ba520a;
   background-color: rgba(232, 102, 13, 0.1);
   border-radius: 999px;
   width: 36px;
@@ -132,7 +132,7 @@
 }
 
 .search-button {
-  background-color: #e8660d;
+  background-color: #ba520a;
   color: #ffffff;
   border: none;
   border-radius: 50%;
@@ -184,11 +184,11 @@
 }
 
 .combobox-field [data-slot='input-group-addon'] {
-  color: #877d74;
+  color: #7a7168;
 }
 
 .combobox-field [data-slot='input-group-addon'] button {
-  color: #877d74;
+  color: #7a7168;
   cursor: pointer;
 }
 

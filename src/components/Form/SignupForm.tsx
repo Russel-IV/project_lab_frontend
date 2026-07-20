@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import mountainAndes from '@/assets/images/mountain-andes.jpg';
+import mountainAndes from '@/assets/images/mountain-andes.webp';
 import { signup } from '@/api/auth';
 import { setCredentials } from '@/store/authSlice';
 import { useAppDispatch } from '@/store/hooks';
