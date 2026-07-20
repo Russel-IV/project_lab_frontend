@@ -71,7 +71,7 @@ export function Navbar() {
                 variant="secondary"
                 size="sm"
                 onClick={handleLogout}
-                className="gap-1.5"
+                className="gap-1.5 bg-frui-orange text-frui-white border-frui-orange hover:bg-frui-orange hover:brightness-95 focus-visible:ring-frui-orange/40"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Log Out</span>

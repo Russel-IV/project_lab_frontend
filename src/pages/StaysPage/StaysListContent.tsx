@@ -232,7 +232,7 @@ export function StaysListContent({
         <>
           <JsonLd data={itemListJsonLd} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {paginatedStays.map((stay) => (
+            {paginatedStays.map((stay, index) => (
               <StayCardVariant
                 key={stay.id}
                 stay={stay}
@@ -242,6 +242,7 @@ export function StaysListContent({
                 onClick={() => setSelectedStayId(stay.id)}
                 reviewSummary={reviewSummaries.get(stay.id)}
                 reviewSummaryLoading={reviewSummariesLoading}
+                priority={index < 3}
               />
             ))}
           </div>

@@ -12,6 +12,7 @@ interface StayCardVariantContextType {
   stay: GraphQLStay;
   reviewSummary?: ReviewSummaryData | null;
   reviewSummaryLoading?: boolean;
+  priority?: boolean;
 }
 
 const StayCardVariantContext = createContext<
@@ -37,6 +38,8 @@ interface StayCardVariantProps {
   isActive?: boolean;
   reviewSummary?: ReviewSummaryData | null;
   reviewSummaryLoading?: boolean;
+  /** First-row cards: skip lazy-loading so the likely LCP image isn't deferred. */
+  priority?: boolean;
 }
 
 export function StayCardVariant({
@@ -46,6 +49,7 @@ export function StayCardVariant({
   onClick,
   reviewSummary,
   reviewSummaryLoading,
+  priority,
   //isActive,
 }: StayCardVariantProps) {
   const cardContent = (
@@ -76,7 +80,7 @@ export function StayCardVariant({
 
   return (
     <StayCardVariantContext.Provider
-      value={{ stay, reviewSummary, reviewSummaryLoading }}
+      value={{ stay, reviewSummary, reviewSummaryLoading, priority }}
     >
       {/* Mobile view: Direct Link to StayInfoPage */}
       <Link to={`/stay/${stay.id}`} className={`${containerClasses} md:hidden`}>
@@ -94,8 +98,9 @@ export function StayCardVariant({
 // Subcomponents
 
 export function StayCardVariantImage() {
-  const { stay } = useStayCardVariantContext();
+  const { stay, priority } = useStayCardVariantContext();
   const [imageFailed, setImageFailed] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const imageUrl = (
     stay.pictures?.find((p) => p.isPrimary) ?? stay.pictures?.[0]
   )?.url;
@@ -107,12 +112,23 @@ export function StayCardVariantImage() {
   }
 
   return (
-    <img
-      src={imageUrl}
-      alt={stay.name}
-      onError={() => setImageFailed(true)}
-      className="absolute inset-0 w-full h-full object-cover select-none"
-    />
+    <>
+      {!imageLoaded && (
+        <div className="absolute inset-0 w-full h-full bg-frui-placeholder animate-pulse" />
+      )}
+      <img
+        src={imageUrl}
+        alt={stay.name}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchPriority={priority ? 'high' : 'auto'}
+        onLoad={() => setImageLoaded(true)}
+        onError={() => setImageFailed(true)}
+        className={`absolute inset-0 w-full h-full object-cover select-none transition-opacity duration-300 ${
+          imageLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+    </>
   );
 }
 
