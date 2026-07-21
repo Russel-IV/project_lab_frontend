@@ -1,4 +1,5 @@
 import { useFormContext } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { formatPrice } from '@/utils/format';
 
 interface ChooseWhenToPaySectionProps {
@@ -49,7 +50,16 @@ export default function ChooseWhenToPaySection({
             will be collected on {formattedCancelDate}.
           </span>
           <span className="text-xs text-emerald-700 font-semibold mt-1 block">
-            No additional fees. Learn more
+            No additional fees.{' '}
+            <Link
+              to="/pay-later"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="underline hover:text-emerald-800"
+            >
+              Learn more
+            </Link>
           </span>
         </div>
       </label>

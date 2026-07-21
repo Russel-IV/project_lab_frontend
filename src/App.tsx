@@ -25,6 +25,12 @@ const PrivacySettingsTab = lazy(
   () => import('@/pages/Profile/PrivacySettingsTab'),
 );
 const DeleteAccountTab = lazy(() => import('@/pages/Profile/DeleteAccountTab'));
+const PayLaterInfoPage = lazy(() => import('@/pages/Legal/PayLaterInfoPage'));
+const BookingTermsPage = lazy(() => import('@/pages/Legal/BookingTermsPage'));
+const TermsOfServicePage = lazy(
+  () => import('@/pages/Legal/TermsOfServicePage'),
+);
+const PrivacyPolicyPage = lazy(() => import('@/pages/Legal/PrivacyPolicyPage'));
 
 function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -69,6 +75,13 @@ function App() {
                   <Route path="privacy" element={<PrivacySettingsTab />} />
                   <Route path="delete" element={<DeleteAccountTab />} />
                 </Route>
+                <Route path="/pay-later" element={<PayLaterInfoPage />} />
+                <Route path="/booking-terms" element={<BookingTermsPage />} />
+                <Route
+                  path="/terms-of-service"
+                  element={<TermsOfServicePage />}
+                />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

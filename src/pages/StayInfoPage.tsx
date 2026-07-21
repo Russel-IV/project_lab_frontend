@@ -6,13 +6,15 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { useEffect, useState, useRef } from 'react';
 import { GET_STAY_DETAILS } from '@/graphql/stays';
-import { GET_REVIEWS_BY_STAY } from '@/graphql/reviews';
+import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { ReviewsSection } from '@/components/Reviews/ReviewsSection';
 import type {
   GetStayDetailsQuery,
   GetStayDetailsQueryVariables,
   GetReviewsByStayQuery,
   GetReviewsByStayQueryVariables,
+  GetReviewSummaryQuery,
+  GetReviewSummaryQueryVariables,
 } from '@/types/__generated__/graphql';
 import { HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
@@ -69,6 +71,16 @@ export default function StayInfoPage() {
   );
 
   const stayReviews = reviewsData?.reviewsByStay || [];
+
+  const { data: reviewSummaryData } = useQuery<
+    GetReviewSummaryQuery,
+    GetReviewSummaryQueryVariables
+  >(GET_REVIEW_SUMMARY, {
+    variables: { stayId },
+    skip: Number.isNaN(stayId),
+  });
+
+  const reviewCount = reviewSummaryData?.reviewSummary?.count ?? 0;
 
   useEffect(() => {
     if (data?.stay) {
@@ -141,7 +153,7 @@ export default function StayInfoPage() {
     : undefined;
 
   return (
-    <div className="flex-1 w-full bg-background md:py-10 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-frui-cream md:py-10 px-4 sm:px-6 lg:px-8">
       {stay && (
         <Seo
           title={stay.name}
@@ -298,6 +310,11 @@ export default function StayInfoPage() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-frui-blue">
               Reviews & Comments
+              {reviewCount > 0 && (
+                <span className="text-base font-normal text-muted-foreground ml-2">
+                  ({reviewCount})
+                </span>
+              )}
             </h2>
             {stayReviews.length > 1 && (
               <div className="hidden md:flex items-center gap-2">
@@ -339,10 +356,8 @@ export default function StayInfoPage() {
           {!reviewsLoading && !reviewsError && stayReviews.length > 0 && (
             <div
               ref={scrollContainerRef}
-              className={`flex flex-col gap-4 md:flex-row md:gap-4 md:overflow-x-auto md:pb-4 md:scroll-smooth md:snap-x md:snap-mandatory scrollbar-none ${
-                stayReviews.length === 1
-                  ? 'md:justify-center'
-                  : 'md:justify-start'
+              className={`flex flex-row gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-none ${
+                stayReviews.length === 1 ? 'justify-center' : 'justify-start'
               }`}
             >
               {stayReviews.map((review) => {
@@ -359,7 +374,7 @@ export default function StayInfoPage() {
                 return (
                   <div
                     key={review.id}
-                    className="w-full md:w-[320px] min-h-[220px] md:shrink-0 p-5 rounded-2xl bg-frui-white border border-neutral-100 shadow-xs flex flex-col justify-between md:snap-start"
+                    className="w-[85%] sm:w-[320px] shrink-0 min-h-[220px] p-5 rounded-2xl bg-frui-white border border-neutral-100 shadow-xs flex flex-col justify-between snap-start"
                   >
                     <div>
                       {/* Rating Tag */}

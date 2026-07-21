@@ -51,9 +51,12 @@ export function Navbar() {
         <div className="flex items-center gap-3 ml-auto">
           {user ? (
             <>
-              <span className="hidden text-sm text-frui-white sm:inline">
-                Welcome, {user.name}
-              </span>
+              <div className="hidden sm:flex flex-col items-end leading-tight">
+                <span className="text-sm font-bold text-frui-white">
+                  {user.name}
+                </span>
+                <span className="text-xs text-frui-white/60">Standard</span>
+              </div>
               <Link
                 to="/profile"
                 aria-label="View profile"

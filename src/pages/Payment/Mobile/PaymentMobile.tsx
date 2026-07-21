@@ -5,7 +5,7 @@ import { setStep, updateAllPaymentFields } from '@/store/paymentSlice';
 import { formatDatesRange } from '@/components/SearchForm/searchFormUtils';
 import { formatPrice, formatTravelers } from '@/utils/format';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Lock, Check, Building } from 'lucide-react';
+import { ChevronLeft, Lock, Check, Building, MapPin, Star } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { type DateRange } from 'react-day-picker';
 import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
@@ -214,6 +214,41 @@ export default function PaymentMobile({
           </Fragment>
         ))}
       </div>
+
+      {/* Stay Recap card -- kept out of ConfirmationStep's own richer recap
+          (step 3), shown on steps 1-2 for parity with Desktop's persistent
+          sidebar card. */}
+      {currentStep < 3 && (
+        <div className="bg-frui-white border border-border rounded-2xl p-4 flex gap-3 items-start shadow-xs">
+          {stay?.pictures && stay.pictures.length > 0 && (
+            <img
+              src={stay.pictures[0].url}
+              alt={stay.name}
+              className="size-16 rounded-xl object-cover shrink-0 border border-neutral-100"
+            />
+          )}
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className="text-[11px] text-neutral-500 font-medium">
+              Entire rental unit
+            </span>
+            <h3 className="font-bold text-sm text-frui-blue leading-snug truncate">
+              {stay?.name || 'Beautiful Brand New Apartment'}
+            </h3>
+            <div className="flex items-center gap-1 text-neutral-500">
+              <MapPin className="size-3.5 text-frui-orange shrink-0" />
+              <span className="text-xs truncate">
+                {stay?.address?.city}, {stay?.address?.countryCode}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Star className="size-3.5 fill-frui-orange stroke-frui-orange shrink-0" />
+              <span className="text-xs font-bold text-frui-blue">
+                {stay?.starRating || 4.8} Stars
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Step Navigation Back Button */}
       {currentStep > 1 && (

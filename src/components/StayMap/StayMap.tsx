@@ -25,7 +25,7 @@ export function StayMap({ latitude, longitude, name }: StayMapProps) {
             <MapPin
               className="size-10 drop-shadow-md"
               color="#121529"
-              fill="#ba520a"
+              fill="#e8660d"
               strokeWidth={0.75}
             />
           </AdvancedMarker>

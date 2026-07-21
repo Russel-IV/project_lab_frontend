@@ -216,7 +216,7 @@ export function StaysListContent({
 
   return (
     <>
-      <div className="sm:hidden">
+      <div className="sm:hidden mt-4">
         {/* Header Title */}
         <h1 className="text-2xl font-bold">Showing Stays in La Palma</h1>
         <p className="text-sm text-gray-600">

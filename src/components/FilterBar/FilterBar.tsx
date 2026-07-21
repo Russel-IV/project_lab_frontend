@@ -51,7 +51,7 @@ export function FilterBar() {
       : `${baseButtonClass} border-border bg-card text-foreground hover:bg-muted hover:border-muted-foreground/30`;
 
   return (
-    <div className="flex w-full items-center gap-2 border-b border-border bg-background/50 backdrop-blur-xs py-3 px-2">
+    <div className="flex w-full items-center gap-2 border-b border-border py-3 px-2">
       {/* Dropdown Filter: Price */}
       <button
         type="button"

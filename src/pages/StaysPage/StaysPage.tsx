@@ -111,7 +111,7 @@ export default function StaysPage() {
   const trimmedPlace = place.trim();
 
   return (
-    <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 bg-frui-cream py-10 px-4 sm:px-6 lg:px-8">
       <Seo
         title={trimmedPlace ? `Stays in ${trimmedPlace}` : 'Search Stays'}
         description={

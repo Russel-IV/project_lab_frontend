@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import { useAppDispatch } from '@/store/hooks';
 import { updateAllPaymentFields } from '@/store/paymentSlice';
@@ -13,6 +13,7 @@ import {
   Star,
   Check,
   Building,
+  MapPin,
 } from 'lucide-react';
 import { type DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
@@ -214,6 +215,12 @@ export default function PaymentDesktop({
                 <h3 className="font-bold text-sm text-frui-blue leading-snug">
                   {stay?.name || 'Beautiful Brand New Apartment'}
                 </h3>
+                <div className="flex items-center gap-1 text-neutral-500">
+                  <MapPin className="size-3.5 text-frui-orange shrink-0" />
+                  <span className="text-xs">
+                    {stay?.address?.city}, {stay?.address?.countryCode}
+                  </span>
+                </div>
                 <div className="flex items-center gap-1 mt-0.5">
                   <Star className="size-3.5 fill-frui-orange stroke-frui-orange shrink-0" />
                   <span className="text-xs font-bold text-frui-blue">
@@ -416,17 +423,32 @@ export default function PaymentDesktop({
 
             <p className="text-[10.5px] text-center text-neutral-500 leading-relaxed">
               By selecting the button, I agree to the{' '}
-              <span className="underline cursor-pointer text-frui-blue font-semibold">
+              <Link
+                to="/booking-terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-frui-blue font-semibold"
+              >
                 booking terms
-              </span>{' '}
+              </Link>{' '}
               and the{' '}
-              <span className="underline cursor-pointer text-frui-blue font-semibold">
+              <Link
+                to="/terms-of-service"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-frui-blue font-semibold"
+              >
                 updated Terms of Service
-              </span>
+              </Link>
               . Consult the{' '}
-              <span className="underline cursor-pointer text-frui-blue font-semibold">
+              <Link
+                to="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline text-frui-blue font-semibold"
+              >
                 Privacy Policy
-              </span>
+              </Link>
               .
             </p>
           </div>
