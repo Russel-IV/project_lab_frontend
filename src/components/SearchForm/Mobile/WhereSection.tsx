@@ -1,11 +1,26 @@
-import React, { useMemo } from 'react';
-import { Search, X, MapPin } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { MapPin } from 'lucide-react';
 import { useSearchFormMobile } from './SearchFormMobileContext';
+import { InputGroupAddon } from '@/components/ui/input-group';
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from '@/components/ui/combobox';
+import {
+  useDestinations,
+  usePopularDestinations,
+} from '@/hooks/useDestinations';
+import { formatDestinationLabel } from '@/utils/countryName';
+import { getRecentSearches } from '../searchFormUtils';
 
-// Cities that actually exist in the current stays data - matched against the
-// backend's case-insensitive city substring filter, so picking one of these
-// is guaranteed to return real results.
-const standardOptions = ['Miami', 'Tokyo', 'Valparaíso', 'Paris', 'Ubud'];
+interface DestinationOption {
+  value: number | string;
+  label: string;
+}
 
 /**
  * WhereSection
@@ -16,28 +31,78 @@ const standardOptions = ['Miami', 'Tokyo', 'Valparaíso', 'Paris', 'Ubud'];
 export const WhereSection: React.FC = () => {
   const {
     localPlace,
+    localPlaceRegionId,
     setLocalPlace,
     activeSection,
     setActiveSection,
     handleSelectPlace,
   } = useSearchFormMobile();
 
-  // Load recent searches from localStorage (JSON array of strings)
-  const recentSearches = useMemo<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('recent_searches') || '[]');
-    } catch (e) {
-      console.log(e);
-      return [];
-    }
-  }, []);
+  // Decoupled from `localPlace` (the committed selection) so that typing
+  // drives the Combobox's filter query independently - mirroring Desktop's
+  // SearchFormPlaceField, binding both to the same state confuses the
+  // library's internal value-vs-query tracking and silently breaks filtering.
+  const [inputValue, setInputValue] = useState(localPlace);
+  const [prevLocalPlace, setPrevLocalPlace] = useState(localPlace);
 
-  const filteredStandardOptions = useMemo(() => {
-    if (!localPlace) return [];
-    return standardOptions.filter((opt) =>
-      opt.toLowerCase().includes(localPlace.toLowerCase()),
-    );
-  }, [localPlace]);
+  if (localPlace !== prevLocalPlace) {
+    setInputValue(localPlace);
+    setPrevLocalPlace(localPlace);
+  }
+
+  const { destinations: searchResults } = useDestinations(inputValue);
+  const { destinations: popularDestinations } = usePopularDestinations();
+
+  // Recent searches (JSON array of { label, regionId? } in localStorage).
+  const recentSearches = useMemo(() => getRecentSearches(), []);
+
+  const destinationOptions: DestinationOption[] = useMemo(
+    () =>
+      searchResults.map((destination) => ({
+        value: destination.regionId,
+        label: formatDestinationLabel(
+          destination.city,
+          destination.countryCode,
+        ),
+      })),
+    [searchResults],
+  );
+
+  const popularOptions: DestinationOption[] = useMemo(
+    () =>
+      popularDestinations.map((destination) => ({
+        value: destination.regionId,
+        label: formatDestinationLabel(
+          destination.city,
+          destination.countryCode,
+        ),
+      })),
+    [popularDestinations],
+  );
+
+  // Recents were saved as { label, regionId? } - not cross-checked against
+  // live destinations, since a recent search should stay selectable even if
+  // it's no longer a known destination.
+  const recentOptions: DestinationOption[] = useMemo(
+    () =>
+      recentSearches.map((item) => ({
+        value: item.regionId ?? item.label,
+        label: item.label,
+      })),
+    [recentSearches],
+  );
+
+  const showRecents = !inputValue && recentOptions.length > 0;
+  const items: DestinationOption[] = showRecents
+    ? recentOptions
+    : inputValue.trim()
+      ? destinationOptions
+      : popularOptions;
+  const groupLabel = showRecents
+    ? 'Recent searches'
+    : inputValue
+      ? "Search's results"
+      : 'Suggestions';
 
   const isExpanded = activeSection === 'where';
 
@@ -59,81 +124,82 @@ export const WhereSection: React.FC = () => {
   return (
     <div className="bg-frui-white rounded-[32px] p-6 shadow-sm flex flex-col gap-4">
       <h2 className="text-2xl font-bold text-frui-blue">Where?</h2>
-      <div className="relative flex items-center border border-[#d6c7b9] rounded-2xl bg-frui-white px-3 py-3">
-        <Search className="h-5 w-5 text-[#7a7168] mr-3" />
-        <input
-          type="text"
+      <Combobox<number | string>
+        items={items}
+        value={localPlaceRegionId ?? (localPlace || null)}
+        onValueChange={(val) => {
+          if (val == null) return;
+          const picked = items.find((option) => option.value === val);
+          if (!picked) return;
+          // Recent entries without a regionId carry their label as `value`
+          // (see recentOptions above) - only pass a real numeric regionId.
+          const regionId =
+            typeof picked.value === 'number' ? picked.value : undefined;
+          handleSelectPlace(picked.label, regionId);
+          // Set the input text ourselves rather than relying on base-ui's
+          // own post-selection label resolution, which can fall back to
+          // stringifying the raw value if `items` doesn't contain a match
+          // at the exact moment it runs internally.
+          setInputValue(picked.label);
+        }}
+        inputValue={inputValue}
+        onInputValueChange={(val, eventDetails) => {
+          // base-ui fires this with reason "item-press" and, oddly, again
+          // with "none" right after a selection, both times trying to
+          // resync the controlled input text - sometimes with an
+          // unresolved raw value instead of the label. We already set the
+          // correct text ourselves in onValueChange above, so ignore both.
+          if (
+            eventDetails.reason === 'item-press' ||
+            eventDetails.reason === 'none'
+          ) {
+            return;
+          }
+          setInputValue(val);
+          setLocalPlace(val);
+        }}
+      >
+        <ComboboxInput
           id="mobile-search-place"
-          value={localPlace}
-          onChange={(e) => setLocalPlace(e.target.value)}
+          showClear={inputValue !== ''}
           placeholder="Where do you want to go?"
-          className="w-full bg-transparent border-0 p-0 text-sm font-medium text-frui-blue outline-none placeholder-[#A8A29E]"
-        />
-        {localPlace && (
-          <button
-            type="button"
-            onClick={() => setLocalPlace('')}
-            className="p-1 rounded-full text-[#7a7168] hover:bg-neutral-100 cursor-pointer border-0 bg-transparent"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      {/* List suggestions */}
-      <div className="overflow-y-auto max-h-[360px] flex flex-col gap-4 pr-1 mt-2">
-        {!localPlace && recentSearches.length > 0 && (
-          <div className="flex flex-col gap-3">
-            <span className="text-xs font-bold text-[#7a7168]">
-              Recent searches
+          className="form-field-base combobox-field !rounded-2xl !border !border-[#d6c7b9] !bg-frui-white !px-3 !py-3"
+        >
+          <InputGroupAddon align="inline-start">
+            <span className="form-field-icon-wrapper">
+              <MapPin className="w-4 h-4" strokeWidth={2} />
             </span>
-            {recentSearches.map((item, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleSelectPlace(item)}
-                className="flex items-center gap-3 text-left w-full cursor-pointer py-1 border-0 bg-transparent"
+          </InputGroupAddon>
+        </ComboboxInput>
+        <ComboboxContent
+          className="w-(--anchor-width) max-h-[360px] bg-white border border-[#d6c7b9] rounded-2xl shadow-xl p-2"
+          positionerClassName="z-[110]"
+          sideOffset={8}
+        >
+          {items.length > 0 && (
+            <span className="block px-1 pb-2 text-xs font-bold text-[#7a7168]">
+              {groupLabel}
+            </span>
+          )}
+          <ComboboxEmpty className="px-1 py-2 text-xs text-[#7a7168] italic">
+            Can&apos;t find any match
+          </ComboboxEmpty>
+          <ComboboxList className="flex flex-col gap-1">
+            {(option) => (
+              <ComboboxItem
+                key={option.value}
+                value={option.value}
+                className="flex items-center gap-3 text-left w-full cursor-pointer py-2 px-1 rounded-lg hover:bg-[#f7f4f2]"
               >
                 <MapPin className="h-5 w-5 text-[#7a7168] shrink-0" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-frui-blue">
-                    {item}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {localPlace && (
-          <div className="flex flex-col gap-3">
-            <span className="text-xs font-bold text-[#7a7168]">
-              Search's results
-            </span>
-            {filteredStandardOptions.map((opt, idx) => (
-              <button
-                key={`opt-${idx}`}
-                type="button"
-                onClick={() => handleSelectPlace(opt)}
-                className="flex items-center gap-3 text-left w-full cursor-pointer py-1 border-0 bg-transparent"
-              >
-                <MapPin className="h-5 w-5 text-[#7a7168] shrink-0" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-frui-blue">
-                    {opt}
-                  </span>
-                </div>
-              </button>
-            ))}
-
-            {filteredStandardOptions.length === 0 && (
-              <span className="text-xs text-[#7a7168] italic py-2">
-                Can't find any match
-              </span>
+                <span className="text-sm font-bold text-frui-blue">
+                  {option.label}
+                </span>
+              </ComboboxItem>
             )}
-          </div>
-        )}
-      </div>
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
     </div>
   );
 };

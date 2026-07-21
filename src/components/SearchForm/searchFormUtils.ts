@@ -106,6 +106,56 @@ export const serializeTravelersValue = (rooms: RoomConfig[]): string => {
 };
 
 /**
+ * A destination the user previously searched for, persisted to localStorage.
+ * `regionId` is only present when the entry came from picking a real
+ * suggestion - a plain typed-and-submitted string has none.
+ */
+export interface RecentSearch {
+  label: string;
+  regionId?: number;
+}
+
+const RECENT_SEARCHES_KEY = 'recent_searches';
+const RECENT_SEARCHES_LIMIT = 5;
+
+/**
+ * Reads `recent_searches` from localStorage, normalizing the older
+ * `string[]` shape (from before regionId existed) into `RecentSearch[]` so
+ * previously-saved entries keep working as free-text-only recents.
+ */
+export const getRecentSearches = (): RecentSearch[] => {
+  try {
+    const raw: unknown = JSON.parse(
+      localStorage.getItem(RECENT_SEARCHES_KEY) || '[]',
+    );
+    if (!Array.isArray(raw)) return [];
+    return raw.map((item) =>
+      typeof item === 'string' ? { label: item } : (item as RecentSearch),
+    );
+  } catch (e) {
+    console.error('Failed to read recent searches from localStorage:', e);
+    return [];
+  }
+};
+
+/**
+ * Saves a new recent search, de-duplicated by label, most-recent-first,
+ * capped at RECENT_SEARCHES_LIMIT entries.
+ */
+export const saveRecentSearch = (entry: RecentSearch): void => {
+  try {
+    const existing = getRecentSearches();
+    const updated = [
+      entry,
+      ...existing.filter((item) => item.label !== entry.label),
+    ].slice(0, RECENT_SEARCHES_LIMIT);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save recent search to localStorage:', e);
+  }
+};
+
+/**
  * Extracts the total number of guests from a travelers config string
  * (e.g., "6 travelers, 2 rooms" -> 6), for use as a search filter value.
  *

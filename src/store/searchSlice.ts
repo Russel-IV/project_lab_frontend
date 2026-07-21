@@ -3,6 +3,7 @@ import { format, addDays } from 'date-fns';
 
 export interface SearchState {
   place: string;
+  placeRegionId: number | null;
   checkIn: string;
   checkOut: string;
   travelers: string;
@@ -13,6 +14,7 @@ const tomorrow = addDays(today, 1);
 
 export const initialSearchState: SearchState = {
   place: '',
+  placeRegionId: null,
   checkIn: format(today, 'yyyy-MM-dd'),
   checkOut: format(tomorrow, 'yyyy-MM-dd'),
   travelers: '1 travelers, 1 rooms',
@@ -24,6 +26,14 @@ const searchSlice = createSlice({
   reducers: {
     setPlace(state, action: PayloadAction<string>) {
       state.place = action.payload;
+      state.placeRegionId = null;
+    },
+    setPlaceSelection(
+      state,
+      action: PayloadAction<{ regionId: number; label: string }>,
+    ) {
+      state.place = action.payload.label;
+      state.placeRegionId = action.payload.regionId;
     },
     setDates(
       state,
@@ -39,6 +49,7 @@ const searchSlice = createSlice({
       state,
       action: PayloadAction<{
         place?: string;
+        placeRegionId?: number | null;
         checkIn?: string;
         checkOut?: string;
         travelers?: string;
@@ -46,6 +57,13 @@ const searchSlice = createSlice({
     ) {
       if (action.payload.place !== undefined) {
         state.place = action.payload.place;
+      }
+      // Unlike the other fields, always applied when the key is present
+      // (including `null`) - the URL is the source of truth on page load,
+      // so the absence of ?regionId= must explicitly clear a stale value
+      // rather than leaving a previous regionId dangling.
+      if ('placeRegionId' in action.payload) {
+        state.placeRegionId = action.payload.placeRegionId ?? null;
       }
       if (action.payload.checkIn !== undefined) {
         state.checkIn = action.payload.checkIn;
@@ -60,6 +78,11 @@ const searchSlice = createSlice({
   },
 });
 
-export const { setPlace, setDates, setTravelers, setSearchQuery } =
-  searchSlice.actions;
+export const {
+  setPlace,
+  setPlaceSelection,
+  setDates,
+  setTravelers,
+  setSearchQuery,
+} = searchSlice.actions;
 export default searchSlice.reducer;

@@ -30,27 +30,45 @@ const SCROLL_TOP_THRESHOLD = 400;
 export default function StaysPage() {
   const dispatch = useAppDispatch();
 
-  const { place, checkIn, checkOut, travelers } = useAppSelector(
+  const { place, placeRegionId, checkIn, checkOut, travelers } = useAppSelector(
     (state) => state.search,
   );
 
   const [searchParams] = useSearchParams();
   const effectivePlace = searchParams.get('place') ?? place;
+  const regionIdParam = searchParams.get('regionId');
+  const effectiveRegionId = regionIdParam
+    ? Number(regionIdParam)
+    : placeRegionId;
   const effectiveCheckIn = searchParams.get('checkIn') ?? checkIn;
   const effectiveCheckOut = searchParams.get('checkOut') ?? checkOut;
   const effectiveTravelers = searchParams.get('travelers') ?? travelers;
 
-  const filter: StayFilterInput | undefined = useMemo(() => {
-    const f: StayFilterInput = {};
-    if (effectivePlace.trim()) f.city = effectivePlace.trim();
-    if (isValidDateRange(effectiveCheckIn, effectiveCheckOut)) {
-      f.checkIn = effectiveCheckIn;
-      f.checkOut = effectiveCheckOut;
-    }
-    const guests = getTotalGuests(effectiveTravelers);
-    if (guests > 0) f.guests = guests;
-    return Object.keys(f).length > 0 ? f : undefined;
-  }, [effectivePlace, effectiveCheckIn, effectiveCheckOut, effectiveTravelers]);
+  // StayFilterInput.regionId isn't in the generated type yet (codegen is
+  // blocked by an unrelated pre-existing issue - see useReviewSummaries.ts) -
+  // widened locally until that's fixed and codegen is re-run.
+  const filter: (StayFilterInput & { regionId?: number }) | undefined =
+    useMemo(() => {
+      const f: StayFilterInput & { regionId?: number } = {};
+      if (effectiveRegionId != null && !Number.isNaN(effectiveRegionId)) {
+        f.regionId = effectiveRegionId;
+      } else if (effectivePlace.trim()) {
+        f.city = effectivePlace.trim();
+      }
+      if (isValidDateRange(effectiveCheckIn, effectiveCheckOut)) {
+        f.checkIn = effectiveCheckIn;
+        f.checkOut = effectiveCheckOut;
+      }
+      const guests = getTotalGuests(effectiveTravelers);
+      if (guests > 0) f.guests = guests;
+      return Object.keys(f).length > 0 ? f : undefined;
+    }, [
+      effectiveRegionId,
+      effectivePlace,
+      effectiveCheckIn,
+      effectiveCheckOut,
+      effectiveTravelers,
+    ]);
 
   const [queryRef] = useBackgroundQuery<GetStaysQuery, GetStaysQueryVariables>(
     GET_STAYS,
@@ -75,6 +93,7 @@ export default function StaysPage() {
 
   useEffect(() => {
     const placeParam = searchParams.get('place');
+    const regionIdUrlParam = searchParams.get('regionId');
     const checkInParam = searchParams.get('checkIn');
     const checkOutParam = searchParams.get('checkOut');
     const travelersParam = searchParams.get('travelers');
@@ -82,6 +101,7 @@ export default function StaysPage() {
     dispatch(
       setSearchQuery({
         place: placeParam ?? undefined,
+        placeRegionId: regionIdUrlParam ? Number(regionIdUrlParam) : null,
         checkIn: checkInParam ?? undefined,
         checkOut: checkOutParam ?? undefined,
         travelers: travelersParam ?? undefined,

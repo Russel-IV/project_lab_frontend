@@ -86,6 +86,7 @@ function ComboboxInput({
 
 function ComboboxContent({
   className,
+  positionerClassName,
   side = 'bottom',
   sideOffset = 6,
   align = 'start',
@@ -102,7 +103,10 @@ function ComboboxContent({
     | 'alignOffset'
     | 'anchor'
     | 'collisionAvoidance'
-  >) {
+  > & {
+    /** Overrides the positioner's stacking context, e.g. to escape an ancestor with its own high z-index (a full-screen modal). */
+    positionerClassName?: string;
+  }) {
   return (
     <ComboboxPrimitive.Portal>
       <ComboboxPrimitive.Positioner
@@ -112,7 +116,7 @@ function ComboboxContent({
         alignOffset={alignOffset}
         anchor={anchor}
         collisionAvoidance={collisionAvoidance}
-        className="isolate z-50"
+        className={cn('isolate z-50', positionerClassName)}
       >
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"

@@ -1,7 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setPlace, setDates, setTravelers } from '@/store/searchSlice';
+import {
+  setPlace,
+  setPlaceSelection,
+  setDates,
+  setTravelers,
+} from '@/store/searchSlice';
 import { type DateRange } from 'react-day-picker';
 import { format, parse, startOfDay } from 'date-fns';
 import {
@@ -11,6 +16,7 @@ import {
   parseTravelersValue,
   serializeTravelersValue,
   isValidDateRange,
+  saveRecentSearch,
 } from '../searchFormUtils';
 
 interface UseSearchFormMobileStateProps {
@@ -45,7 +51,10 @@ export const useSearchFormMobileState = ({
   const reduxSearch = useAppSelector((state) => state.search);
 
   // Local state for form options inside modal
-  const [localPlace, setLocalPlace] = useState(reduxSearch.place);
+  const [localPlace, setLocalPlaceRaw] = useState(reduxSearch.place);
+  const [localPlaceRegionId, setLocalPlaceRegionId] = useState<number | null>(
+    reduxSearch.placeRegionId,
+  );
   const [localCheckIn, setLocalCheckIn] = useState(reduxSearch.checkIn);
   const [localCheckOut, setLocalCheckOut] = useState(reduxSearch.checkOut);
   const [localTravelers, setLocalTravelers] = useState(reduxSearch.travelers);
@@ -69,9 +78,18 @@ export const useSearchFormMobileState = ({
     };
   }, [isOpen]);
 
-  // Handle select suggestion
-  const handleSelectPlace = (val: string) => {
-    setLocalPlace(val);
+  // Free typing: clears any previously selected regionId, since it no
+  // longer necessarily matches the new text (mirrors searchSlice.setPlace).
+  const setLocalPlace = (val: string) => {
+    setLocalPlaceRaw(val);
+    setLocalPlaceRegionId(null);
+  };
+
+  // Handle select suggestion (or a recent search - which may or may not
+  // carry a regionId, depending on how it was originally saved).
+  const handleSelectPlace = (label: string, regionId?: number) => {
+    setLocalPlaceRaw(label);
+    setLocalPlaceRegionId(regionId ?? null);
     setActiveSection('dates');
   };
 
@@ -176,29 +194,30 @@ export const useSearchFormMobileState = ({
     }
 
     // Sync with Redux store
-    dispatch(setPlace(localPlace));
+    if (localPlaceRegionId != null) {
+      dispatch(
+        setPlaceSelection({ regionId: localPlaceRegionId, label: localPlace }),
+      );
+    } else {
+      dispatch(setPlace(localPlace));
+    }
     dispatch(setDates({ checkIn: localCheckIn, checkOut: localCheckOut }));
     dispatch(setTravelers(localTravelers));
 
     // Save to localStorage recent searches
     if (localPlace.trim() !== '') {
-      try {
-        const recent = JSON.parse(
-          localStorage.getItem('recent_searches') || '[]',
-        );
-        const updated = [
-          localPlace.trim(),
-          ...recent.filter((p: string) => p !== localPlace.trim()),
-        ].slice(0, 5);
-        localStorage.setItem('recent_searches', JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save recent search to localStorage:', e);
-      }
+      saveRecentSearch({
+        label: localPlace.trim(),
+        regionId: localPlaceRegionId ?? undefined,
+      });
     }
 
     // Navigate with query params
     const params = new URLSearchParams();
     params.append('place', localPlace);
+    if (localPlaceRegionId != null) {
+      params.append('regionId', String(localPlaceRegionId));
+    }
     params.append('checkIn', localCheckIn);
     params.append('checkOut', localCheckOut);
     params.append('travelers', localTravelers);
@@ -209,6 +228,7 @@ export const useSearchFormMobileState = ({
 
   return {
     localPlace,
+    localPlaceRegionId,
     setLocalPlace,
     localCheckIn,
     localCheckOut,

@@ -1,7 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setPlace, setDates, setTravelers } from '@/store/searchSlice';
+import {
+  setPlace,
+  setPlaceSelection,
+  setDates,
+  setTravelers,
+} from '@/store/searchSlice';
 import { isValidDateRange } from '../searchFormUtils';
 import {
   SearchFormContext,
@@ -22,6 +27,7 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
   // Manage state from Redux store
   const {
     place: placeValue,
+    placeRegionId,
     checkIn: checkInValue,
     checkOut: checkOutValue,
     travelers: travelersValue,
@@ -32,6 +38,9 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const params = new URLSearchParams();
     params.append('place', placeValue);
+    if (placeRegionId != null) {
+      params.append('regionId', String(placeRegionId));
+    }
     params.append('checkIn', checkInValue);
     params.append('checkOut', checkOutValue);
     params.append('travelers', travelersValue);
@@ -40,10 +49,13 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue: SearchFormContextProps = {
     placeValue,
+    placeRegionId,
     checkInValue,
     checkOutValue,
     travelersValue,
     onPlaceChange: (val) => dispatch(setPlace(val)),
+    onPlaceSelect: (regionId, label) =>
+      dispatch(setPlaceSelection({ regionId, label })),
     onDatesChange: (checkIn, checkOut) =>
       dispatch(setDates({ checkIn, checkOut })),
     onTravelersChange: (val) => dispatch(setTravelers(val)),
