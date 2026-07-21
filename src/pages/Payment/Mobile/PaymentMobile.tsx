@@ -11,7 +11,7 @@ import { type DateRange } from 'react-day-picker';
 import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
 
 import GuestDetailsStep from './GuestDetailsStep';
-import PaymentMethodStep from './PaymentMethodStep';
+import PaymentElementForm from '../PaymentElementForm';
 import ConfirmationStep from './ConfirmationStep';
 
 interface PaymentMobileProps {
@@ -76,10 +76,6 @@ export default function PaymentMobile({
     } else if (currentStep === 2) {
       const isValid = await trigger([
         'cardName',
-        'cardNumber',
-        'cardExpiryMonth',
-        'cardExpiryYear',
-        'cardCvv',
         'billingCountry',
         'billingAddress1',
         'billingAddress2',
@@ -230,7 +226,14 @@ export default function PaymentMobile({
       {/* Wizard Card Containers */}
       <div className="bg-frui-white border border-border rounded-3xl p-6 shadow-xs flex flex-col gap-6">
         {currentStep === 1 && <GuestDetailsStep />}
-        {currentStep === 2 && <PaymentMethodStep />}
+        {/* Stays mounted (just hidden) once reached, rather than
+            unmounting on step 3 - Stripe's PaymentElement must still be
+            mounted when confirmPayment() runs at final submit. */}
+        {currentStep >= 2 && (
+          <div className={currentStep === 2 ? undefined : 'hidden'}>
+            <PaymentElementForm variant="mobile" />
+          </div>
+        )}
         {currentStep === 3 && (
           <ConfirmationStep
             stay={stay}

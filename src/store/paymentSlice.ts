@@ -8,12 +8,7 @@ export interface PaymentState {
   countryCode: string;
   phone: string;
 
-  // Phase 2
   cardName: string;
-  cardNumber: string;
-  cardExpiryMonth: string;
-  cardExpiryYear: string;
-  cardCvv: string;
   billingCountry: string;
   billingAddress1: string;
   billingAddress2: string;
@@ -31,11 +26,7 @@ const initialState: PaymentState = {
   countryCode: 'USA +1',
   phone: '',
   cardName: '',
-  cardNumber: '',
-  cardExpiryMonth: '',
-  cardExpiryYear: '',
-  cardCvv: '',
-  billingCountry: 'United States of America',
+  billingCountry: 'US',
   billingAddress1: '',
   billingAddress2: '',
   billingCity: '',

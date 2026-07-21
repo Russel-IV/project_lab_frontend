@@ -20,23 +20,7 @@ import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
 
 import ChooseWhenToPaySection from './ChooseWhenToPaySection';
 import GuestDetailsSection from './GuestDetailsSection';
-import PaymentMethodSection from './PaymentMethodSection';
-
-// Custom Visa SVG for preview header
-const VisaIcon = () => (
-  <svg
-    className="w-10 h-6 rounded border border-neutral-200"
-    viewBox="0 0 24 15"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <rect width="24" height="15" fill="#1A1F71" />
-    <path
-      d="M4 11L5.5 4H7L5.5 11H4ZM12 4.3C11.6 4.1 11 4 10.4 4C8.9 4 7.9 4.8 7.9 6C7.9 6.8 8.6 7.3 9.1 7.6C9.7 7.9 9.9 8.1 9.9 8.4C9.9 8.8 9.4 9 9 9C8.4 9 8 8.8 7.7 8.6L7.2 9.7C7.6 9.9 8.2 10 8.8 10C10.4 10 11.4 9.2 11.4 8C11.4 7.2 10.9 6.7 10.1 6.3C9.6 6 9.3 5.8 9.3 5.5C9.3 5.2 9.7 5 10.2 5C10.7 5 11.1 5.1 11.4 5.3L12 4.3ZM16.5 4H15.1C14.7 4 14.4 4.2 14.2 4.6L12.1 9.6H13.7L14 8.7H15.8L16 9.6H17.5L16.5 4ZM14.4 7.5L14.9 5.8L15.4 7.5H14.4ZM20 4H18.5L16.7 9.6H18.2L18.5 8.7H20.3L20.4 9.6H21.9L20 4ZM18.8 7.5L19.4 5.8L19.9 7.5H18.8Z"
-      fill="white"
-    />
-  </svg>
-);
+import PaymentElementForm from '../PaymentElementForm';
 
 interface PaymentDesktopProps {
   stay: GetStayDetailsQuery['stay'];
@@ -116,10 +100,6 @@ export default function PaymentDesktop({
         setActiveSection('guestInfo');
       } else if (
         errors.cardName ||
-        errors.cardNumber ||
-        errors.cardExpiryMonth ||
-        errors.cardExpiryYear ||
-        errors.cardCvv ||
         errors.billingAddress1 ||
         errors.billingCity
       ) {
@@ -127,14 +107,6 @@ export default function PaymentDesktop({
       }
     }
   };
-
-  // Helper values for display summary
-  const hasCardEntered =
-    !!currentValues.cardNumber &&
-    currentValues.cardNumber.replace(/\s+/g, '').length === 16;
-  const truncatedCardNum = hasCardEntered
-    ? currentValues.cardNumber.substring(currentValues.cardNumber.length - 4)
-    : '';
 
   if (bookingSuccess) {
     return (
@@ -406,11 +378,6 @@ export default function PaymentDesktop({
             >
               <div className="flex gap-2 items-center">
                 <span>3. Payment method</span>
-                {hasCardEntered && (
-                  <span className="text-xs font-medium text-neutral-500 flex gap-2 items-center">
-                    <VisaIcon /> ending in {truncatedCardNum}
-                  </span>
-                )}
               </div>
               {activeSection === 'paymentMethod' ? (
                 <ChevronUp className="size-4" />
@@ -419,7 +386,9 @@ export default function PaymentDesktop({
               )}
             </button>
 
-            {activeSection === 'paymentMethod' && <PaymentMethodSection />}
+            {activeSection === 'paymentMethod' && (
+              <PaymentElementForm variant="desktop" />
+            )}
           </div>
 
           {/* Submit block */}

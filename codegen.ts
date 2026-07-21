@@ -4,7 +4,10 @@ const config: CodegenConfig = {
   overwrite: true,
   schema: 'http://localhost:8080/graphql',
   // This assumes that all your source files are in a top-level `src/` directory - you might need to adjust this to your file structure
-  documents: ['src/**/*.{ts,tsx}'],
+  // useReviewSummaries.ts builds its query from a runtime template literal
+  // (per-batch field aliases), which codegen's static document loader can't
+  // parse — excluded so codegen can run against the rest of the app.
+  documents: ['src/**/*.{ts,tsx}', '!src/hooks/useReviewSummaries.ts'],
   // Don't exit with non-zero status when there are no documents
   ignoreNoDocuments: true,
   generates: {

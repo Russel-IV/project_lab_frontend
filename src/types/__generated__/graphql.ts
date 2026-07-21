@@ -17,6 +17,22 @@ export type CreateBookingInput = {
   checkOutDate: unknown;
   /** Number of guests. */
   guestsCount: number;
+  /** ID of a payment intent previously created via createPaymentIntent, for the same rooms/dates/guests. Verified server-side before the booking is created. */
+  paymentIntentId: string;
+  /** IDs of the rooms to include in the booking. */
+  roomIds: Array<number>;
+};
+
+/** Input for creating a payment intent prior to booking. Card payments only, always captured immediately — there is no pay-later/manual-capture path. */
+export type CreatePaymentIntentInput = {
+  /** Desired check-in date. */
+  checkInDate: unknown;
+  /** Desired check-out date. Must be after `checkInDate`. */
+  checkOutDate: unknown;
+  /** Number of guests. */
+  guestsCount: number;
+  /** Client-generated key. Retrying createPaymentIntent with the same key returns the original intent instead of creating a duplicate. */
+  idempotencyKey: string;
   /** IDs of the rooms to include in the booking. */
   roomIds: Array<number>;
 };
@@ -42,10 +58,6 @@ export type StayFilterInput = {
   checkIn?: unknown;
   /** Availability check end date. Must be provided together with checkIn. */
   checkOut?: unknown;
-  /** Case-insensitive city name substring match. */
-  city?: string | null | undefined;
-  /** Exact ISO 3166-1 alpha-2 country code match (e.g. 'US', 'GB'). */
-  countryCode?: string | null | undefined;
   /** Minimum number of guests that at least one available room must accommodate. */
   guests?: number | null | undefined;
   /** Require at least one room with a nightly rate at or below this amount. */
@@ -56,6 +68,8 @@ export type StayFilterInput = {
   propertyAmenityIds?: Array<number> | null | undefined;
   /** Limit results to a specific property category. */
   propertyType?: PropertyType | null | undefined;
+  /** Stable destination identifier (docs/adr/0018) — the preferred replacement for city/countryCode, immune to same-name-different-region collisions. */
+  regionId?: number | null | undefined;
   /** Limit results to properties offering ALL of these in-room amenities (e.g. air conditioning, kitchen, balcony, private bathroom, washer) somewhere on the property. */
   roomAmenityIds?: Array<number> | null | undefined;
   /** Limit results to properties with one of these star rating tiers (1-5). A property matches a tier if its starRating rounds to it. */
@@ -130,6 +144,63 @@ export type DeleteBookingMutationVariables = Exact<{
 }>;
 
 export type DeleteBookingMutation = { deleteBooking: boolean };
+
+export type GetDestinationsQueryVariables = Exact<{
+  search?: string | null | undefined;
+  limit?: number | null | undefined;
+}>;
+
+export type GetDestinationsQuery = {
+  destinations: Array<{
+    __typename: 'Destination';
+    city: string;
+    countryCode: string;
+    regionId: number;
+  }>;
+};
+
+export type GetPopularDestinationsQueryVariables = Exact<{
+  limit?: number | null | undefined;
+}>;
+
+export type GetPopularDestinationsQuery = {
+  popularDestinations: Array<{
+    __typename: 'Destination';
+    city: string;
+    countryCode: string;
+    regionId: number;
+  }>;
+};
+
+export type MyFavoriteStayIdsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type MyFavoriteStayIdsQuery = { myFavoriteStayIds: Array<number> };
+
+export type AddFavoriteMutationVariables = Exact<{
+  stayId: number;
+}>;
+
+export type AddFavoriteMutation = { addFavorite: boolean };
+
+export type RemoveFavoriteMutationVariables = Exact<{
+  stayId: number;
+}>;
+
+export type RemoveFavoriteMutation = { removeFavorite: boolean };
+
+export type CreatePaymentIntentMutationVariables = Exact<{
+  input: CreatePaymentIntentInput;
+}>;
+
+export type CreatePaymentIntentMutation = {
+  createPaymentIntent: {
+    __typename: 'PaymentIntentPayload';
+    clientSecret: string;
+    paymentIntentId: string;
+    amount: number;
+    currency: string;
+  };
+};
 
 export type GetReviewsQueryVariables = Exact<{
   page?: number | null | undefined;
