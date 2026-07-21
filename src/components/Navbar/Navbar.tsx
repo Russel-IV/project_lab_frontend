@@ -51,6 +51,9 @@ export function Navbar() {
         <div className="flex items-center gap-3 ml-auto">
           {user ? (
             <>
+              <span className="hidden text-sm text-frui-white sm:inline">
+                Welcome, {user.name}
+              </span>
               <Link
                 to="/profile"
                 aria-label="View profile"

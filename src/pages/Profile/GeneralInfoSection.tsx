@@ -83,6 +83,9 @@ export function GeneralInfoSection({
               >
                 {uploadingPicture ? 'Uploading…' : 'Change picture'}
               </Button>
+              <span className="text-[10px] text-muted-foreground">
+                PNG, JPG, GIF, WebP or AVIF, up to 5MB
+              </span>
               {pictureError && (
                 <span className="text-[10px] text-destructive font-medium flex items-center gap-0.5">
                   <ShieldAlert className="size-3 shrink-0" />

@@ -42,6 +42,8 @@ import type { AccountSettingsContextValue } from './AccountSettingsContext';
 import { Seo } from '@/lib/seo';
 import { cn } from '@/lib/utils';
 
+const MAX_PROFILE_PICTURE_SIZE_BYTES = 5 * 1024 * 1024;
+
 const emptyPaymentMethodValues: PaymentMethodFormValues = {
   cardholderName: '',
   cardNumber: '',
@@ -174,8 +176,12 @@ export default function AccountSettingsPage() {
 
   const handleUploadPicture = async (file: File) => {
     if (!authToken) return;
-    setUploadingPicture(true);
     setPictureError(null);
+    if (file.size > MAX_PROFILE_PICTURE_SIZE_BYTES) {
+      setPictureError('Image must be 5MB or smaller.');
+      return;
+    }
+    setUploadingPicture(true);
     try {
       const webpFile = await convertImageToWebp(file);
       const { profilePictureUrl } = await uploadProfilePicture(
