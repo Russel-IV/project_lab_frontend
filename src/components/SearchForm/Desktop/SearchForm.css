@@ -57,8 +57,8 @@
    ("Where are we going?") and destination labels ("City, Country") both run
    longer than the other fields' content. */
 .place-field-container {
-  flex: 2 1 260px;
-  min-width: 220px;
+  flex: 2 1 220px;
+  min-width: 180px;
 }
 
 .selection-field-container:hover {
