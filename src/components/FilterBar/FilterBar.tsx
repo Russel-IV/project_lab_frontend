@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { ChevronDown, SlidersHorizontal } from 'lucide-react';
-import { FilterModal } from './FilterModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleFreeCancellation } from '@/store/filtersSlice';
+
+const FilterModal = lazy(() =>
+  import('./FilterModal').then((m) => ({ default: m.FilterModal })),
+);
 
 export function FilterBar() {
   const dispatch = useAppDispatch();
@@ -88,10 +91,12 @@ export function FilterBar() {
       </button>
 
       {isModalOpen && (
-        <FilterModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <FilterModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </Suspense>
       )}
     </div>
   );

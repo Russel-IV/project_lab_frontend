@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
 import { differenceInCalendarDays } from 'date-fns';
@@ -16,7 +16,6 @@ import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PoliciesSection } from '@/components/PoliciesSection';
 import { RoomsSection } from '@/components/RoomsSection';
-import { StayMap } from '../StayMap/StayMap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import {
   toggleRoomSelection,
@@ -25,6 +24,13 @@ import {
 } from '@/store/bookingSlice';
 
 const REVIEWS_PAGE_SIZE = 6;
+
+// Lazy-loaded: pulls in @vis.gl/react-google-maps, which otherwise ships
+// unused in the initial bundle for every visitor who never opens a stay's
+// detail panel.
+const StayMap = lazy(() =>
+  import('../StayMap/StayMap').then((m) => ({ default: m.StayMap })),
+);
 /**
  * RatingBarGraph
  *
@@ -377,11 +383,15 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
               Location
             </h3>
-            <StayMap
-              latitude={stay.location.latitude}
-              longitude={stay.location.longitude}
-              name={stay.name}
-            />
+            <Suspense
+              fallback={<Skeleton className="h-[300px] w-full rounded-2xl" />}
+            >
+              <StayMap
+                latitude={stay.location.latitude}
+                longitude={stay.location.longitude}
+                name={stay.name}
+              />
+            </Suspense>
           </div>
         )}
         {/* 6. Reviews & Ratings -- summary bar graph is visible as soon as
