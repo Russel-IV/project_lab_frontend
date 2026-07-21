@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import {
   useNavigate,
   useMatch,
   Outlet,
   type NavigateFunction,
 } from 'react-router-dom';
+import { RouteFallback } from '@/components/RouteFallback/RouteFallback';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
@@ -448,7 +449,9 @@ export default function AccountSettingsPage() {
             </nav>
 
             <div className="flex min-w-0 flex-1 flex-col gap-6">
-              <Outlet context={contextValue} />
+              <Suspense fallback={<RouteFallback />}>
+                <Outlet context={contextValue} />
+              </Suspense>
             </div>
           </div>
         )}

@@ -1,21 +1,30 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { Footer } from '@/components/Footer/Footer';
 import { Chatbot } from '@/components/Chatbot/Chatbot';
-import Home from '@/pages/Home';
-import StaysPage from '@/pages/StaysPage';
-import LoginPage from '@/pages/LoginPage';
-import SignupPage from '@/pages/SignupPage';
-import StayInfoPage from '@/pages/StayInfoPage';
-import Payment from '@/pages/Payment';
-import Profile from '@/pages/Profile';
-import { MyProfileTab } from '@/pages/Profile/MyProfileTab';
-import { BookingHistoryTab } from '@/pages/Profile/BookingHistoryTab';
-import { ReviewHistoryTab } from '@/pages/Profile/ReviewHistoryTab';
-import { PaymentSettingsTab } from '@/pages/Profile/PaymentSettingsTab';
-import { PrivacySettingsTab } from '@/pages/Profile/PrivacySettingsTab';
-import { DeleteAccountTab } from '@/pages/Profile/DeleteAccountTab';
+import { RouteFallback } from '@/components/RouteFallback/RouteFallback';
+
+const Home = lazy(() => import('@/pages/Home'));
+const StaysPage = lazy(() => import('@/pages/StaysPage'));
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const SignupPage = lazy(() => import('@/pages/SignupPage'));
+const StayInfoPage = lazy(() => import('@/pages/StayInfoPage'));
+const Payment = lazy(() => import('@/pages/Payment'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const MyProfileTab = lazy(() => import('@/pages/Profile/MyProfileTab'));
+const BookingHistoryTab = lazy(
+  () => import('@/pages/Profile/BookingHistoryTab'),
+);
+const ReviewHistoryTab = lazy(() => import('@/pages/Profile/ReviewHistoryTab'));
+const PaymentSettingsTab = lazy(
+  () => import('@/pages/Profile/PaymentSettingsTab'),
+);
+const PrivacySettingsTab = lazy(
+  () => import('@/pages/Profile/PrivacySettingsTab'),
+);
+const DeleteAccountTab = lazy(() => import('@/pages/Profile/DeleteAccountTab'));
 
 function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -43,23 +52,25 @@ function App() {
         <Navbar />
         <main className="flex-1 flex flex-col">
           <ErrorBoundary FallbackComponent={RouteErrorFallback}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/stays" element={<StaysPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/stay/:id" element={<StayInfoPage />} />
-              <Route path="/payment/:id" element={<Payment />} />
-              <Route path="/profile" element={<Profile />}>
-                <Route index element={<Navigate to="my-profile" replace />} />
-                <Route path="my-profile" element={<MyProfileTab />} />
-                <Route path="bookings" element={<BookingHistoryTab />} />
-                <Route path="reviews" element={<ReviewHistoryTab />} />
-                <Route path="payment" element={<PaymentSettingsTab />} />
-                <Route path="privacy" element={<PrivacySettingsTab />} />
-                <Route path="delete" element={<DeleteAccountTab />} />
-              </Route>
-            </Routes>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/stays" element={<StaysPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/stay/:id" element={<StayInfoPage />} />
+                <Route path="/payment/:id" element={<Payment />} />
+                <Route path="/profile" element={<Profile />}>
+                  <Route index element={<Navigate to="my-profile" replace />} />
+                  <Route path="my-profile" element={<MyProfileTab />} />
+                  <Route path="bookings" element={<BookingHistoryTab />} />
+                  <Route path="reviews" element={<ReviewHistoryTab />} />
+                  <Route path="payment" element={<PaymentSettingsTab />} />
+                  <Route path="privacy" element={<PrivacySettingsTab />} />
+                  <Route path="delete" element={<DeleteAccountTab />} />
+                </Route>
+              </Routes>
+            </Suspense>
           </ErrorBoundary>
         </main>
         <Footer />
