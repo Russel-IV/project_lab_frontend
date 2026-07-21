@@ -46,7 +46,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   );
 
   return (
-    <div className="selection-field-container">
+    <div className="selection-field-container place-field-container">
       <span className="selection-field-label">Where to?</span>
       <Combobox
         items={options}
@@ -92,7 +92,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
           </InputGroupAddon>
         </ComboboxInput>
         <ComboboxContent
-          className="z-50 bg-white border border-[#d6c7b9] rounded-lg shadow-xl p-1 text-[#121324]"
+          className="z-50 min-w-[320px] bg-white border border-[#d6c7b9] rounded-lg shadow-xl p-1 text-[#121324]"
           collisionAvoidance={{ side: 'none' }}
         >
           <ComboboxEmpty className="px-3 py-2.5 text-xs text-[#7a7168] italic">
@@ -103,8 +103,9 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
               <ComboboxItem
                 key={option.value}
                 value={option.value}
-                className="cursor-pointer px-3 py-2 text-sm text-[#121324] hover:bg-[#f7f4f2] rounded transition-colors duration-150"
+                className="flex items-center gap-2 cursor-pointer px-3 py-2 text-sm text-[#121324] hover:bg-[#f7f4f2] rounded transition-colors duration-150"
               >
+                <MapPin className="h-4 w-4 text-[#7a7168] shrink-0" />
                 {option.label}
               </ComboboxItem>
             )}
