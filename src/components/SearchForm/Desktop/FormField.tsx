@@ -20,7 +20,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         type="button"
         className="form-field-base selection-field-button"
         onClick={onClick}
-        aria-label={`Cycle options for ${label}`}
+        aria-label={`${label}: ${value}. Activate to cycle options.`}
       >
         {icon && <span className="form-field-icon-wrapper">{icon}</span>}
         <span className="selection-field-value">{value}</span>

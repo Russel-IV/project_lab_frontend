@@ -47,6 +47,11 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-frui-orange: #e8660d;
+  /* AA-contrast-safe shade of frui-orange (>=4.5:1 on white and with white
+     text on top of it) for small/normal-weight text and text-bearing
+     buttons; the brighter --color-frui-orange stays for icons, borders,
+     and other non-text uses. */
+  --color-frui-orange-text: #b34d0a;
   --color-frui-cream: #fff8f3;
   --color-frui-blue: #121529;
   --color-frui-white: #ffffff;

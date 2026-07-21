@@ -237,7 +237,9 @@ export function StayCardVariantRating() {
       {isHighlyRated && (
         <Star className="size-3 shrink-0 fill-frui-orange text-frui-orange" />
       )}
-      <span className={isHighlyRated ? 'text-frui-orange' : 'text-slate-900'}>
+      <span
+        className={isHighlyRated ? 'text-frui-orange-text' : 'text-slate-900'}
+      >
         {rating.toFixed(1)} {getRatingText(rating)}
       </span>
     </div>
