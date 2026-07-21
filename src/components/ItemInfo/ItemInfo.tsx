@@ -1,6 +1,14 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
+import {
+  MapPin,
+  Star,
+  X,
+  Home,
+  Building2,
+  Info,
+  CheckCircle2,
+} from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
 import { differenceInCalendarDays } from 'date-fns';
 import type {
@@ -268,17 +276,32 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           </div>
 
           <div className="flex flex-col items-end gap-2 shrink-0 text-right">
-            <div>
-              <div className="text-lg font-bold text-foreground">
-                {formattedPrice}
-                <span className="text-xs text-muted-foreground font-normal ml-1">
-                  total
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              {stay.isRefundable ? (
+                <span className="flex items-center gap-1 text-emerald-600">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                  Refundable
                 </span>
-              </div>
-              <div className="text-[10px] text-muted-foreground leading-none mt-0.5">
-                Includes all taxes and fees
-              </div>
+              ) : (
+                <span className="flex items-center gap-1 text-red-600">
+                  <Info className="h-3.5 w-3.5 shrink-0" />
+                  Non-refundable
+                </span>
+              )}
+              <span className="text-muted-foreground">·</span>
+              <span className="flex items-center gap-1 text-emerald-600">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                Dates available
+              </span>
             </div>
+
+            <div className="text-lg font-bold text-foreground">
+              {formattedPrice}
+              <span className="text-xs text-muted-foreground font-normal ml-1">
+                total
+              </span>
+            </div>
+
             <button
               type="button"
               disabled={booking.selectedRooms.length === 0}
@@ -287,11 +310,12 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             >
               Reserve
             </button>
-            {booking.selectedRooms.length === 0 && (
-              <p className="text-[10px] text-muted-foreground">
-                Select a room to continue
-              </p>
-            )}
+
+            <p className="text-[10px] text-muted-foreground">
+              {booking.selectedRooms.length === 0
+                ? 'Select a room to continue'
+                : 'Includes all taxes and fees'}
+            </p>
           </div>
         </div>
 
