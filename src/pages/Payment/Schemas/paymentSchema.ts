@@ -21,6 +21,8 @@ export const paymentSchema = z.object({
   billingAddress1: z.string().min(1, 'Please enter a billing address.'),
   billingAddress2: z.string().optional(),
   billingCity: z.string().min(1, 'Please enter a city.'),
+  billingState: z.string().min(1, 'Please enter a state/province.'),
+  billingPostalCode: z.string().min(1, 'Please enter a postal code.'),
 
   // Desktop specific
   payWhen: z.enum(['now', 'later']),

@@ -312,6 +312,8 @@ function PaymentCheckout({
                   line1: paymentState.billingAddress1,
                   line2: paymentState.billingAddress2 || undefined,
                   city: paymentState.billingCity,
+                  state: paymentState.billingState,
+                  postal_code: paymentState.billingPostalCode,
                 },
               },
             },
@@ -378,6 +380,8 @@ function PaymentCheckout({
       billingAddress1: paymentState.billingAddress1,
       billingAddress2: paymentState.billingAddress2,
       billingCity: paymentState.billingCity,
+      billingState: paymentState.billingState,
+      billingPostalCode: paymentState.billingPostalCode,
       payWhen: paymentState.payWhen,
     },
   });
@@ -398,6 +402,8 @@ function PaymentCheckout({
       billingAddress1: '',
       billingAddress2: '',
       billingCity: '',
+      billingState: '',
+      billingPostalCode: '',
       payWhen: 'now',
     });
   }, [dispatch, reset]);

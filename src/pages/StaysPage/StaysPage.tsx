@@ -35,7 +35,6 @@ export default function StaysPage() {
   );
 
   const [searchParams] = useSearchParams();
-  const effectivePlace = searchParams.get('place') ?? place;
   const regionIdParam = searchParams.get('regionId');
   const effectiveRegionId = regionIdParam
     ? Number(regionIdParam)
@@ -44,31 +43,29 @@ export default function StaysPage() {
   const effectiveCheckOut = searchParams.get('checkOut') ?? checkOut;
   const effectiveTravelers = searchParams.get('travelers') ?? travelers;
 
-  // StayFilterInput.regionId isn't in the generated type yet (codegen is
-  // blocked by an unrelated pre-existing issue - see useReviewSummaries.ts) -
-  // widened locally until that's fixed and codegen is re-run.
-  const filter: (StayFilterInput & { regionId?: number }) | undefined =
-    useMemo(() => {
-      const f: StayFilterInput & { regionId?: number } = {};
-      if (effectiveRegionId != null && !Number.isNaN(effectiveRegionId)) {
-        f.regionId = effectiveRegionId;
-      } else if (effectivePlace.trim()) {
-        f.city = effectivePlace.trim();
-      }
-      if (isValidDateRange(effectiveCheckIn, effectiveCheckOut)) {
-        f.checkIn = effectiveCheckIn;
-        f.checkOut = effectiveCheckOut;
-      }
-      const guests = getTotalGuests(effectiveTravelers);
-      if (guests > 0) f.guests = guests;
-      return Object.keys(f).length > 0 ? f : undefined;
-    }, [
-      effectiveRegionId,
-      effectivePlace,
-      effectiveCheckIn,
-      effectiveCheckOut,
-      effectiveTravelers,
-    ]);
+  // Location filtering is regionId-only (city/countryCode text matching was
+  // removed from the schema per ADR-0018, which favors a resolved
+  // destination id over free-text matching) - if the user hasn't selected a
+  // suggestion yet (no regionId resolved), no location filter is applied,
+  // same as when the field is empty.
+  const filter: StayFilterInput | undefined = useMemo(() => {
+    const f: StayFilterInput = {};
+    if (effectiveRegionId != null && !Number.isNaN(effectiveRegionId)) {
+      f.regionId = effectiveRegionId;
+    }
+    if (isValidDateRange(effectiveCheckIn, effectiveCheckOut)) {
+      f.checkIn = effectiveCheckIn;
+      f.checkOut = effectiveCheckOut;
+    }
+    const guests = getTotalGuests(effectiveTravelers);
+    if (guests > 0) f.guests = guests;
+    return Object.keys(f).length > 0 ? f : undefined;
+  }, [
+    effectiveRegionId,
+    effectiveCheckIn,
+    effectiveCheckOut,
+    effectiveTravelers,
+  ]);
 
   const [queryRef] = useBackgroundQuery<GetStaysQuery, GetStaysQueryVariables>(
     GET_STAYS,

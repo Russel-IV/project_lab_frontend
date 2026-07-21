@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, Star, X, Home, Building2 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
 import { differenceInCalendarDays } from 'date-fns';
@@ -108,6 +109,7 @@ const getRatingText = (val: number) => {
 
 export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const [reviewsSize, setReviewsSize] = useState(REVIEWS_PAGE_SIZE);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const searchState = useAppSelector((state) => state.search);
   const booking = useAppSelector((state) => state.booking);
@@ -279,10 +281,17 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             </div>
             <button
               type="button"
-              className="bg-frui-orange hover:bg-frui-orange/90 active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0"
+              disabled={booking.selectedRooms.length === 0}
+              onClick={() => navigate(`/payment/${stay.id}`)}
+              className="bg-frui-orange hover:bg-frui-orange/90 active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
             >
               Reserve
             </button>
+            {booking.selectedRooms.length === 0 && (
+              <p className="text-[10px] text-muted-foreground">
+                Select a room to continue
+              </p>
+            )}
           </div>
         </div>
 

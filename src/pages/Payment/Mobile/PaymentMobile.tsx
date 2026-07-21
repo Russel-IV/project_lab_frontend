@@ -80,6 +80,8 @@ export default function PaymentMobile({
         'billingAddress1',
         'billingAddress2',
         'billingCity',
+        'billingState',
+        'billingPostalCode',
       ]);
       if (isValid) {
         const values = watch();

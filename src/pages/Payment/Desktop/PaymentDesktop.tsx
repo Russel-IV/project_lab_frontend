@@ -101,7 +101,9 @@ export default function PaymentDesktop({
       } else if (
         errors.cardName ||
         errors.billingAddress1 ||
-        errors.billingCity
+        errors.billingCity ||
+        errors.billingState ||
+        errors.billingPostalCode
       ) {
         setActiveSection('paymentMethod');
       }
