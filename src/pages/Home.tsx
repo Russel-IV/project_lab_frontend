@@ -2,6 +2,27 @@ import { SearchForm } from '@/components/SearchForm';
 import { Sections, MobileSections } from '../components/Sections';
 import PresentationGallery from '../components/PresentationGallery/PresentationGallery';
 import { Seo } from '@/lib/seo';
+import { SITE_NAME, SITE_URL } from '@/config/seo';
+
+const homeJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_NAME,
+    url: SITE_URL,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_URL}/stays?place={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  },
+];
 
 export default function Home() {
   return (
@@ -10,11 +31,8 @@ export default function Home() {
         title="Discover Your Next Escape"
         description="Find exclusive deals on hotels, flights, car rentals, things to do, and cruises. Book your next trip with Frui."
         path="/"
+        jsonLd={homeJsonLd}
       />
-
-      {/* pt-10 gives clearance below the sticky navbar; -mb-6 trims the flex
-          column's gap-10 down to a normal gap before the tabs/search form
-          below (same negative-margin idiom used for Sections further down). */}
       <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pt-10 pb-2 -mb-6 text-left">
         <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-[#121324] leading-tight !mb-2">
           Discover your next escape
@@ -27,20 +45,10 @@ export default function Home() {
       <div className="w-full md:hidden">
         <MobileSections />
       </div>
-
-      {/* Categories shown only on desktop, directly above the search form.
-          Negative bottom margin cancels the flex column's gap-10 so the tabs
-          sit right above the search bar instead of leaving a large gap; the
-          search form still needs to stay a direct child of the full-height
-          page column below (see its own comment) so this can't be solved by
-          nesting them in a shared wrapper instead. */}
       <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 -mb-10">
         <Sections />
       </div>
 
-      {/* Unified Responsive Search Form: kept as a direct child of the
-          full-height page column so its sticky position tracks the whole
-          page scroll instead of only the short heading section above. */}
       <SearchForm sticky />
 
       <PresentationGallery />

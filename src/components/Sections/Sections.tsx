@@ -12,12 +12,6 @@ const tabs = [
   { id: 'cruises', label: 'CRUISES', icon: Ship, disabled: true },
 ];
 
-/**
- * Sections
- *
- * Exposes a tabbed navigation bar for selecting stay categories (Stays, Flights, etc.).
- * Manages its own local active selection state.
- */
 export const Sections: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('stays');
 
@@ -37,12 +31,6 @@ export const Sections: React.FC = () => {
   );
 };
 
-/**
- * MobileSections
- *
- * Exposes a mobile-specific tabbed navigation bar for stay categories.
- * Renders horizontally scrollable pill buttons using a composable pattern.
- */
 export const MobileSections: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('stays');
 

@@ -28,7 +28,6 @@ export default function GuestDetailsStep() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {/* First Name */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-frui-blue">
             First name <span className="text-red-500">*</span>
@@ -47,7 +46,6 @@ export default function GuestDetailsStep() {
           )}
         </div>
 
-        {/* Last Name */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-frui-blue">
             Last name <span className="text-red-500">*</span>
@@ -67,7 +65,6 @@ export default function GuestDetailsStep() {
         </div>
       </div>
 
-      {/* Email Address */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">
           Email address <span className="text-red-500">*</span>
@@ -88,7 +85,6 @@ export default function GuestDetailsStep() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {/* Country Code Dropdown */}
         <div className="flex flex-col gap-1.5 col-span-1">
           <label className="text-xs font-bold text-frui-blue">
             Code <span className="text-red-500">*</span>
@@ -105,7 +101,6 @@ export default function GuestDetailsStep() {
           </select>
         </div>
 
-        {/* Phone Number */}
         <div className="flex flex-col gap-1.5 col-span-2">
           <label className="text-xs font-bold text-frui-blue">
             Phone number <span className="text-red-500">*</span>

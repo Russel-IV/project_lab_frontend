@@ -50,7 +50,6 @@ export function StayCardVariant({
   reviewSummary,
   reviewSummaryLoading,
   priority,
-  //isActive,
 }: StayCardVariantProps) {
   const cardContent = (
     <>
@@ -82,20 +81,16 @@ export function StayCardVariant({
     <StayCardVariantContext.Provider
       value={{ stay, reviewSummary, reviewSummaryLoading, priority }}
     >
-      {/* Mobile view: Direct Link to StayInfoPage */}
       <Link to={`/stay/${stay.id}`} className={`${containerClasses} md:hidden`}>
         {cardContent}
       </Link>
 
-      {/* Desktop view: Interactive selection handler */}
       <div onClick={onClick} className={`${containerClasses} hidden md:block`}>
         {cardContent}
       </div>
     </StayCardVariantContext.Provider>
   );
 }
-
-// Subcomponents
 
 export function StayCardVariantImage() {
   const { stay, priority } = useStayCardVariantContext();
@@ -143,7 +138,7 @@ export function StayCardVariantFavoriteButton({
   return (
     <button
       onClick={(e) => {
-        e.stopPropagation(); // prevent card click
+        e.stopPropagation();
         onToggle(stay.id.toString());
       }}
       className="absolute top-4 right-4 bg-white size-10 rounded-full flex items-center justify-center shadow-md hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer border-0 z-10"
@@ -198,12 +193,8 @@ export function StayCardVariantRating() {
   const { stay, reviewSummary, reviewSummaryLoading } =
     useStayCardVariantContext();
 
-  // "Average user rating" means the crowd-sourced review average, not
-  // Stay.starRating (the host's official classification, e.g. a "4-star
-  // hotel" - a different, host-set concept per the backend schema). Use the
-  // real review summary (fetched in a single batched query for the whole
-  // page, see useReviewSummaries) and only fall back to starRating when a
-  // stay genuinely has no reviews yet.
+  // Falls back to Stay.starRating (a separate, host-set field) only when
+  // there are no reviews yet.
   const loading = !!reviewSummaryLoading;
   const reviewAverage =
     reviewSummary && reviewSummary.count > 0 && reviewSummary.average !== null
@@ -250,10 +241,7 @@ export function StayCardVariantPricing() {
   const { stay } = useStayCardVariantContext();
   const { checkIn, checkOut } = useAppSelector((state) => state.search);
 
-  // Stay.startingFromPrice is documented as "lowest nightly price across all
-  // rooms" - a per-night rate, not a total. Multiply by the searched date
-  // range so the badge genuinely reflects "total price for the selected
-  // dates" instead of mislabeling the nightly rate as a total.
+  // startingFromPrice is a per-night rate, not a total.
   const nights = Math.max(
     1,
     differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
@@ -262,7 +250,6 @@ export function StayCardVariantPricing() {
     typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
   const price = nightlyPrice * nights;
 
-  // Decide whether USD or CLP depending on numeric value
   const isUSD = price < 10000;
   const formattedPrice = isUSD
     ? `$${price}`
@@ -280,7 +267,6 @@ export function StayCardVariantPricing() {
   );
 }
 
-// Attach subcomponents
 StayCardVariant.Image = StayCardVariantImage;
 StayCardVariant.FavoriteButton = StayCardVariantFavoriteButton;
 StayCardVariant.BottomSection = StayCardVariantBottomSection;

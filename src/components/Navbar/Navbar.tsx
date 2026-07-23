@@ -12,9 +12,6 @@ export function Navbar() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // The cached `authUser` in localStorage can go stale (e.g. a picture
-  // uploaded in a previous session isn't reflected until next login), so
-  // refresh it from the backend once whenever a token is present.
   useEffect(() => {
     if (!token) return;
     getProfile(token)
@@ -35,7 +32,6 @@ export function Navbar() {
       className="sticky top-0 z-50 w-full border-b border-border/40 shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
-        {/* Left: Brand/Logo */}
         <Link
           to="/"
           className="flex shrink-0 items-center gap-2 select-none cursor-pointer"
@@ -47,7 +43,6 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Right: Actions */}
         <div className="flex items-center gap-3 ml-auto">
           {user ? (
             <>

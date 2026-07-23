@@ -74,24 +74,18 @@ export const BookingWidgetDesktop: React.FC = () => {
     };
   }, [isCalendarOpen]);
 
-  // Local state for guest counters inside Popover
   const [localRooms, setLocalRooms] = useState<RoomConfig[]>(() =>
     parseTravelersValue(travelers || '1 travelers, 1 rooms'),
   );
 
-  // Sync check-in and check-out dates into dateRange object for Calendar component
   const dateRange = useMemo(() => {
     return parseISOToDateRange(checkIn, checkOut);
   }, [checkIn, checkOut]);
 
-  // Compute number of nights between check-in and check-out
   const nights = useMemo(() => {
     return calculateNights(dateRange);
   }, [dateRange]);
 
-  // Pricing computations. Sums the per-night price of every room the
-  // customer picked in RoomsSection; falls back to the stay's cheapest room
-  // until one is chosen.
   const selectedRoomsNightly = useMemo(
     () => selectedRooms.reduce((sum, room) => sum + room.price, 0),
     [selectedRooms],
@@ -111,12 +105,10 @@ export const BookingWidgetDesktop: React.FC = () => {
     return formatPrice(totalPrice, true);
   }, [totalPrice]);
 
-  // Formatting travelers display text (e.g. "1 guest" or "2 guests")
   const travelersText = useMemo(() => {
     return formatTravelers(travelers);
   }, [travelers]);
 
-  // Formatting check-in and check-out date labels in the inputs grid
   const formattedCheckInLabel = useMemo(() => {
     if (!dateRange.from) return 'Add date';
     return format(dateRange.from, 'd/M/yyyy');
@@ -127,12 +119,10 @@ export const BookingWidgetDesktop: React.FC = () => {
     return format(dateRange.to, 'd/M/yyyy');
   }, [dateRange.to]);
 
-  // Free cancellation banner text helper
   const freeCancellationText = useMemo(() => {
     return getFreeCancellationText(!!stay?.isRefundable, checkIn);
   }, [stay?.isRefundable, checkIn]);
 
-  // Handle date range selection
   const handleDateSelect = (newRange: DateRange | undefined) => {
     const isCompleteRange =
       dateRange.from &&
@@ -162,7 +152,6 @@ export const BookingWidgetDesktop: React.FC = () => {
     }
   };
 
-  // Sync state when Guests popover toggles
   const handleGuestsOpenChange = (isOpen: boolean) => {
     setIsGuestsOpen(isOpen);
     if (isOpen) {
@@ -173,7 +162,6 @@ export const BookingWidgetDesktop: React.FC = () => {
     }
   };
 
-  // Increments / Decrements guests count for rooms
   const updateAdults = (roomId: number, delta: number) => {
     setLocalRooms((prev) =>
       prev.map((room) => {
@@ -208,7 +196,6 @@ export const BookingWidgetDesktop: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* 1. Shared Calendar Panel on the Left (Side-by-side, same height) */}
       {isCalendarOpen && (
         <div
           ref={calendarRef}
@@ -224,9 +211,7 @@ export const BookingWidgetDesktop: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Booking Widget Card */}
       <div className="bg-frui-white rounded-3xl p-6 border border-border w-full flex flex-col gap-5 min-h-[380px]">
-        {/* 1. Header Price Info */}
         <div className="flex flex-col gap-0.5 select-none">
           <div className="flex items-baseline text-foreground">
             <span className="text-2xl font-bold underline leading-none">
@@ -242,15 +227,12 @@ export const BookingWidgetDesktop: React.FC = () => {
           </div>
         </div>
 
-        {/* 2. Unified Inputs Grid */}
         <div className="border border-neutral-300 rounded-xl overflow-hidden bg-frui-white">
-          {/* Check-In / Check-Out Row */}
           <div
             id="booking-dates-trigger"
             onClick={() => setIsCalendarOpen(!isCalendarOpen)}
             className="grid grid-cols-2 divide-x divide-neutral-300 cursor-pointer border-b border-neutral-300 select-none hover:bg-neutral-50/50"
           >
-            {/* Check-In */}
             <div className="p-3 flex flex-col text-left">
               <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
                 Check-in
@@ -259,7 +241,6 @@ export const BookingWidgetDesktop: React.FC = () => {
                 {formattedCheckInLabel}
               </span>
             </div>
-            {/* Check-Out */}
             <div className="p-3 flex flex-col text-left">
               <span className="text-[9px] font-bold text-frui-blue tracking-wide uppercase">
                 Check-out
@@ -270,7 +251,6 @@ export const BookingWidgetDesktop: React.FC = () => {
             </div>
           </div>
 
-          {/* Guests Row */}
           <Popover open={isGuestsOpen} onOpenChange={handleGuestsOpenChange}>
             <PopoverTrigger
               render={
@@ -361,14 +341,12 @@ export const BookingWidgetDesktop: React.FC = () => {
           </Popover>
         </div>
 
-        {/* 3. Free Cancellation Banner */}
         {freeCancellationText && (
           <div className="bg-[#f5f5f5] rounded-xl px-4 py-2.5 text-xs font-semibold text-neutral-700 text-center select-none leading-normal">
             {freeCancellationText}
           </div>
         )}
 
-        {/* 4. Action Button */}
         <button
           type="button"
           disabled={selectedRooms.length === 0}
@@ -383,7 +361,6 @@ export const BookingWidgetDesktop: React.FC = () => {
           </p>
         )}
 
-        {/* 5. Total Price calculation */}
         {nights > 1 && (
           <div className="flex justify-between items-center text-sm font-semibold border-t border-border pt-4 mt-1 select-none">
             <span className="text-neutral-500">Total</span>

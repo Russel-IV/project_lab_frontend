@@ -172,13 +172,11 @@ export default function StayInfoPage() {
       )}
 
       <div className="mx-auto max-w-5xl flex flex-col gap-8">
-        {/* 2. Image Gallery */}
         <PhotoGallery
           images={data?.stay?.pictures?.map((p) => p.url)}
           maxPhotos={5}
         />
 
-        {/* Stay Title / Header */}
         <div>
           {data?.stay?.name ? (
             <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground">
@@ -189,10 +187,8 @@ export default function StayInfoPage() {
           )}
         </div>
 
-        {/* 3. Two-Column Layout (Data on Left, Sticky Sidebar on Right) */}
         {/* `items-start` prevents columns from stretching, enabling the stickiness */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          {/* Left Side: Additional Data (Spans 2/3 width) */}
           <div className="md:col-span-2 flex flex-col gap-6">
             <section className="border-b pb-6">
               {data?.stay?.about && (
@@ -299,13 +295,10 @@ export default function StayInfoPage() {
               </section>
             )}
           </div>
-          {/* Right Side: Sticky Booking Widget (Spans 1/3 width) */}
           <div className="sticky top-24 md:col-span-1 w-full">
             <BookingWidget stay={data?.stay} />
           </div>
         </div>
-        {/* 4. Commentary Section (Outside the Grid) */}
-        {/* The sticky sidebar above will stop scrolling before entering this section */}
         <section className="border-t pt-8 mt-4">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-frui-blue">

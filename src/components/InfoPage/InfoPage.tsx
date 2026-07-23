@@ -13,14 +13,6 @@ interface InfoPageProps {
   sections: InfoPageSection[];
 }
 
-/**
- * InfoPage
- *
- * Shared static-content layout for help/legal pages (pay-later explainer,
- * booking terms, terms of service, privacy policy). Keeps the same
- * cream-canvas-plus-white-card look as the rest of the site instead of each
- * page re-implementing it.
- */
 export function InfoPage({ title, updated, intro, sections }: InfoPageProps) {
   return (
     <div className="flex-1 w-full bg-frui-cream py-10 px-4 sm:px-6 lg:px-8">

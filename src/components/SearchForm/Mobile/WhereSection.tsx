@@ -22,12 +22,6 @@ interface DestinationOption {
   label: string;
 }
 
-/**
- * WhereSection
- *
- * Renders the "Where?" input and suggestion list.
- * Supports collapsed and expanded accordion modes.
- */
 export const WhereSection: React.FC = () => {
   const {
     localPlace,
@@ -53,7 +47,6 @@ export const WhereSection: React.FC = () => {
   const { destinations: searchResults } = useDestinations(inputValue);
   const { destinations: popularDestinations } = usePopularDestinations();
 
-  // Recent searches (JSON array of { label, regionId? } in localStorage).
   const recentSearches = useMemo(() => getRecentSearches(), []);
 
   const destinationOptions: DestinationOption[] = useMemo(

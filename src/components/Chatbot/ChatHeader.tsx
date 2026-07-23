@@ -6,14 +6,9 @@ interface ChatHeaderProps {
   onNewChat?: () => void;
 }
 
-/**
- * ChatHeader component that displays the chatbot brand/logo,
- * navigation menu, edit/new-chat button, and close controls.
- */
 export function ChatHeader({ onClose, onNewChat }: ChatHeaderProps) {
   return (
     <div className="flex justify-between items-center w-full px-4 py-3 border-b border-frui-blue/10 bg-frui-white rounded-t-2xl">
-      {/* Left Action Group: Menu and Brand Logo/Text */}
       <ActionGroup gap="sm">
         <button
           type="button"
@@ -23,7 +18,6 @@ export function ChatHeader({ onClose, onNewChat }: ChatHeaderProps) {
           <Menu className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-1">
-          {/* Brand/logo text Frui */}
           <span className="font-bold text-lg bg-gradient-to-r from-frui-orange to-[#ff9900] bg-clip-text text-transparent select-none">
             Frui
           </span>
@@ -33,7 +27,6 @@ export function ChatHeader({ onClose, onNewChat }: ChatHeaderProps) {
         </div>
       </ActionGroup>
 
-      {/* Right Action Group: Edit/New Chat and Close Button */}
       <ActionGroup gap="sm">
         <button
           type="button"

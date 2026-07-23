@@ -8,20 +8,6 @@ interface MobileSectionsItemProps {
   label: string;
   disabled?: boolean;
 }
-
-/**
- * MobileSectionsItem
- *
- * An individual category button representing a section tab on mobile.
- * Designed with pill-shaped rounded border and icon support.
- * Does not include any hover animation (as per project rules).
- *
- * @param props.active - Indicated if the tab is currently active.
- * @param props.onClick - Event handler triggered when the button is clicked.
- * @param props.icon - LucideIcon to display next to the label.
- * @param props.label - Text label for the category.
- * @param props.disabled - Disables and grays out the tab (not yet available).
- */
 export const MobileSectionsItem: React.FC<MobileSectionsItemProps> = ({
   active,
   onClick,

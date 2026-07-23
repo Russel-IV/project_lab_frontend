@@ -47,13 +47,11 @@ export default function PresentationGallery() {
                 alt={card.alt}
                 className="w-full h-full object-cover"
               />
-              {/* Subtle dark overlay for text readability */}
               <div className="absolute inset-0 bg-black/25" />
             </div>
           ))}
         </div>
 
-        {/* Absolute centered text overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6">
           <h2
             style={{ color: '#ffffff' }}

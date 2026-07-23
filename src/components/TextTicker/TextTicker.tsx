@@ -1,9 +1,7 @@
 import React from 'react';
 
 interface TextTickerProps {
-  /** An array of words/cities to display in the ticker */
   words: string[];
-  /** Animation duration in seconds. Lower = faster */
   speed?: number;
 }
 
@@ -30,7 +28,6 @@ export const TextTicker: React.FC<TextTickerProps> = ({
         ))}
       </div>
 
-      {/* Injected keyframe animation so this component works out-of-the-box */}
       <style>{`
         @keyframes marquee {
           0% {
@@ -44,8 +41,6 @@ export const TextTicker: React.FC<TextTickerProps> = ({
     </div>
   );
 };
-
-// --- Inline Styles for Maximum Compatibility ---
 
 const containerStyle: React.CSSProperties = {
   width: '100%',
@@ -68,7 +63,6 @@ const trackStyle: React.CSSProperties = {
 const itemStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  // Adjust font-size and padding here to comfortably fit 5+ words on screen
   fontSize: 'clamp(2rem, 5vw, 4.5rem)',
   fontFamily: '"Helvetica Neue", Arial, sans-serif',
   fontWeight: 900,
@@ -82,6 +76,6 @@ const textStyle: React.CSSProperties = {
 };
 
 const arrowStyle: React.CSSProperties = {
-  color: '#FFB800', // The bright yellow/orange from your video
+  color: '#FFB800',
   padding: '0 1rem',
 };

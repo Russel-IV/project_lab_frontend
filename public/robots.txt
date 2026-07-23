@@ -1,8 +1,7 @@
 User-agent: *
 Allow: /
-Disallow: /login
-Disallow: /signup
-Disallow: /payment/
 
-# Replace with your production domain before deploying.
+# /login, /signup, /payment/:id, and /profile already send "noindex, nofollow" via their <meta name="robots"> tag (see src/lib/seo.tsx and each page's <Seo noIndex /> usage). Deliberately NOT Disallow'd here: blocking crawling outright would stop Google from ever fetching the page to see that noindex tag, so an externally-linked URL could still surface in search results with no snippet. Letting crawlers in so they see the noindex tag is the correct way to keep these out of the index.
+
+# Rewritten at build time (scripts/generate-sitemap.mjs) with the real SITE_URL env var. The placeholder below is only what you'll see running `pnpm dev` locally or if that env var is left unset at deploy time.
 Sitemap: https://example.com/sitemap.xml

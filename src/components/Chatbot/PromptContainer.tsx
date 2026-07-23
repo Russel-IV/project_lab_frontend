@@ -6,20 +6,15 @@ interface PromptContainerProps {
   onSubmit: (text: string) => void;
 }
 
-/**
- * PromptContainer component containing the custom text input
- * and action toolbar for settings, submission, and model selection.
- */
 export function PromptContainer({ onSubmit }: PromptContainerProps) {
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize the textarea height based on content
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = 'auto';
-      // Limit max-height to 96px (approx 4 lines)
+      // 96px caps the textarea at ~4 lines before it scrolls.
       const scrollHeight = textarea.scrollHeight;
       textarea.style.height = `${Math.min(scrollHeight, 96)}px`;
     }
@@ -42,7 +37,6 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
 
   return (
     <div className="flex flex-col w-full bg-frui-white border border-frui-blue/10 rounded-2xl p-3 shadow-sm">
-      {/* PromptInput: Auto-resizing textarea */}
       <textarea
         ref={textareaRef}
         value={inputValue}
@@ -54,9 +48,7 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
         aria-label="Chatbot prompt input"
       />
 
-      {/* PromptToolbar: Flexbox row */}
       <div className="flex justify-between items-center w-full border-t border-frui-blue/5 pt-2">
-        {/* Left Action Group: settings and upload buttons */}
         <ActionGroup gap="md">
           <button
             type="button"
@@ -67,7 +59,6 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
           </button>
         </ActionGroup>
 
-        {/* Right Action Group: model selector and submit buttons */}
         <ActionGroup gap="md">
           <button
             type="button"

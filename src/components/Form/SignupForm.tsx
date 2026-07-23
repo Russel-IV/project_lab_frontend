@@ -33,12 +33,10 @@ export const SignupForm: React.FC = () => {
 
   return (
     <div className="login-card-container">
-      {/* Left Column: Image Section */}
       <div className="login-image-section">
         <img src={mountainAndes} alt="Andes Mountain" className="login-image" />
       </div>
 
-      {/* Right Column: Form Section */}
       <div className="login-form-section">
         <h2 className="login-title">Sign Up</h2>
 

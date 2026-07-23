@@ -15,7 +15,6 @@ export default function ChooseWhenToPaySection({
 
   return (
     <div className="px-6 pb-6 border-t border-neutral-100 pt-5 flex flex-col gap-4">
-      {/* Pay now */}
       <label className="border border-neutral-300 rounded-xl p-4 flex items-start gap-3 cursor-pointer select-none has-checked:border-frui-orange has-checked:bg-frui-cream/20">
         <input
           type="radio"
@@ -33,7 +32,6 @@ export default function ChooseWhenToPaySection({
         </div>
       </label>
 
-      {/* Pay later */}
       <label className="border border-neutral-300 rounded-xl p-4 flex items-start gap-3 cursor-pointer select-none has-checked:border-frui-orange has-checked:bg-frui-cream/20">
         <input
           type="radio"

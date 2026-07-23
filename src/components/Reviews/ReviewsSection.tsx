@@ -29,14 +29,6 @@ export interface ReviewsSectionProps {
   stayId: number;
 }
 
-/**
- * Owns the "leave a review" flow (C1-C8 of the review-submission story) —
- * eligibility check, form, and the user's own existing review. Mounted
- * alongside each page's own (differently laid out) review list/summary,
- * which keeps refreshing itself via Apollo's refetchQueries below rather
- * than through a prop callback, so this stays decoupled from how each
- * caller renders its list.
- */
 export function ReviewsSection({ stayId }: ReviewsSectionProps) {
   const user = useAppSelector((state) => state.auth.user);
   const [formOpen, setFormOpen] = useState(false);

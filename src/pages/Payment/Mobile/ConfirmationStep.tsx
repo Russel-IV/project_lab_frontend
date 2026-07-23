@@ -42,7 +42,6 @@ export default function ConfirmationStep({
         </p>
       </div>
 
-      {/* Stay Recap card */}
       <div className="flex flex-col gap-3 rounded-2xl border border-border overflow-hidden bg-[#fafafa]">
         {stay?.pictures && stay.pictures.length > 0 && (
           <img
@@ -70,7 +69,6 @@ export default function ConfirmationStep({
         </div>
       </div>
 
-      {/* Stay Dates & Duration breakdown */}
       <div className="flex flex-col gap-3 p-4 bg-[#fcf8f5] border border-frui-orange/15 rounded-2xl">
         <div className="flex items-center gap-3 text-xs text-neutral-700">
           <Calendar className="size-4 text-frui-blue shrink-0" />
@@ -95,7 +93,6 @@ export default function ConfirmationStep({
         </div>
       </div>
 
-      {/* Promotion / statement credit ad */}
       <div className="border border-[#c6dbf7] bg-[#ebf3fc] rounded-2xl overflow-hidden shadow-xs">
         <div className="bg-[#d2e4fa] px-4 py-2 text-xs font-bold text-[#1a5fb4] flex items-center justify-between">
           <span>Get $100 back from this trip</span>
@@ -137,13 +134,11 @@ export default function ConfirmationStep({
         </div>
       </div>
 
-      {/* Good Taste Banner */}
       <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl p-3.5 flex gap-2.5 items-start leading-normal font-medium shadow-xs">
         <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-0.5" />
         <span>You have good taste! Book now before someone else grabs it!</span>
       </div>
 
-      {/* Final Price Breakdown details */}
       <div className="flex flex-col gap-3 border-t border-border pt-4 mt-2">
         <h3 className="font-bold text-sm text-frui-blue">Price details</h3>
         <div className="flex flex-col gap-2 text-xs text-neutral-600">

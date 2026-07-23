@@ -31,6 +31,7 @@ const TermsOfServicePage = lazy(
   () => import('@/pages/Legal/TermsOfServicePage'),
 );
 const PrivacyPolicyPage = lazy(() => import('@/pages/Legal/PrivacyPolicyPage'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 function RouteErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -82,6 +83,7 @@ function App() {
                   element={<TermsOfServicePage />}
                 />
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

@@ -63,7 +63,6 @@ export default function PaymentDesktop({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Accordion active sections
   const [activeSection, setActiveSection] = useState<
     'payTiming' | 'guestInfo' | 'paymentMethod'
   >('payTiming');
@@ -76,7 +75,6 @@ export default function PaymentDesktop({
 
   const currentValues = watch();
 
-  // Format date cancellation limit
   const formattedCancelDate = useMemo(() => {
     try {
       const date = new Date(resolvedCheckIn);
@@ -87,7 +85,6 @@ export default function PaymentDesktop({
     }
   }, [resolvedCheckIn]);
 
-  // Submit booking handler
   const handleSubmitBooking = async () => {
     const isValid = await trigger();
     if (isValid) {
@@ -96,7 +93,6 @@ export default function PaymentDesktop({
 
       await submitBooking();
     } else {
-      // Auto expand sections containing error states
       if (errors.firstName || errors.lastName || errors.email || errors.phone) {
         setActiveSection('guestInfo');
       } else if (
@@ -182,7 +178,6 @@ export default function PaymentDesktop({
 
   return (
     <div className="w-full max-w-6xl mx-auto py-6 px-4">
-      {/* Back Button Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={() => navigate(`/stay/${stay?.id}`)}
@@ -196,10 +191,8 @@ export default function PaymentDesktop({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        {/* LEFT COLUMN: STAY DETAILS */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="bg-frui-white border border-border rounded-3xl p-6 shadow-xs flex flex-col gap-6">
-            {/* Stay Recap card */}
             <div className="flex gap-4 items-start">
               {stay?.pictures && stay.pictures.length > 0 && (
                 <img
@@ -230,7 +223,6 @@ export default function PaymentDesktop({
               </div>
             </div>
 
-            {/* Cancellation Details */}
             <div className="border-t border-border pt-4 flex flex-col gap-1 text-xs">
               <span className="font-bold text-frui-blue">
                 Free cancellation
@@ -241,7 +233,6 @@ export default function PaymentDesktop({
               </p>
             </div>
 
-            {/* Editable summary fields */}
             <div className="border-t border-border pt-4 flex flex-col gap-4">
               <div className="flex justify-between items-center text-xs">
                 <div>
@@ -279,7 +270,6 @@ export default function PaymentDesktop({
               </div>
             </div>
 
-            {/* Price Details */}
             <div className="border-t border-border pt-4 flex flex-col gap-3">
               <h3 className="font-bold text-sm text-frui-blue">
                 Price details
@@ -310,9 +300,7 @@ export default function PaymentDesktop({
           </div>
         </div>
 
-        {/* RIGHT COLUMN: ACCORDION FORM */}
         <div className="lg:col-span-7 flex flex-col gap-4">
-          {/* 1. CHOOSE WHEN TO PAY ACCORDION */}
           <div className="bg-frui-white border border-border rounded-2xl overflow-hidden shadow-xs">
             <button
               type="button"
@@ -339,7 +327,6 @@ export default function PaymentDesktop({
             )}
           </div>
 
-          {/* 2. WHO'S CHECKING IN? ACCORDION */}
           <div className="bg-frui-white border border-border rounded-2xl overflow-hidden shadow-xs">
             <button
               type="button"
@@ -372,7 +359,6 @@ export default function PaymentDesktop({
             {activeSection === 'guestInfo' && <GuestDetailsSection />}
           </div>
 
-          {/* 3. PAYMENT METHOD ACCORDION */}
           <div className="bg-frui-white border border-border rounded-2xl overflow-hidden shadow-xs">
             <button
               type="button"
@@ -400,7 +386,6 @@ export default function PaymentDesktop({
             )}
           </div>
 
-          {/* Submit block */}
           <div className="border-t border-neutral-200 mt-2 pt-6 flex flex-col gap-4">
             <p className="text-xs text-center text-neutral-500 leading-relaxed">
               The host has 24 hours to confirm your reservation. You won&apos;t

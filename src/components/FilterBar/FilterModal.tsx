@@ -18,7 +18,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
   const dispatch = useAppDispatch();
   const activeFilters = useAppSelector((state) => state.filters);
 
-  // Local draft states for managing modal inputs before committing initialized from the store
   const [draftPriceMin, setDraftPriceMin] = useState<number | null>(
     activeFilters.priceMin,
   );
@@ -41,7 +40,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
     activeFilters.roomAmenityIds,
   );
 
-  // Retrieve stay items dynamically from Apollo Client cache (populated by StaysPage)
+  // Reads from cache only — StaysPage owns the actual network query.
   const { data } = useQuery<GetStaysQuery>(GET_STAYS, {
     fetchPolicy: 'cache-first',
   });
@@ -51,12 +50,10 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
     .map((s) => s.startingFromPrice as number | null)
     .filter((p: unknown): p is number => typeof p === 'number');
 
-  // Compute pricing bounds and details
   const globalMin = prices.length > 0 ? Math.min(...prices) : 0;
   const globalMax = prices.length > 0 ? Math.max(...prices) : 1000;
   const isUSD = globalMin < 10000;
 
-  // Determine dynamic histogram bin ranges
   const numBins = 40;
   const binWidth = (globalMax - globalMin) / numBins;
 
@@ -73,7 +70,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
   const maxCount = Math.max(...bins, 1);
 
-  // Prevent scrolling on body when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -146,16 +142,13 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
 
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
 
-      {/* Modal Dialog */}
       <div
         className="relative z-10 w-full max-w-lg transform overflow-hidden rounded-3xl border border-frui-blue/10 bg-frui-cream p-6 shadow-2xl transition-all duration-300 animate-in fade-in zoom-in-95 flex flex-col"
         role="dialog"
         aria-modal="true"
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-frui-blue/10 pb-4 mb-4">
           <h2 className="text-lg font-bold text-frui-blue">Filters</h2>
           <button
@@ -168,15 +161,11 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
           </button>
         </div>
 
-        {/* Content - Flex Column for Filter Sections */}
         <div className="flex flex-col gap-6 py-4 overflow-y-auto max-h-[60vh]">
-          {/* Section 1: Price range */}
           <div className="flex flex-col gap-4">
             <h3 className="text-sm font-bold text-frui-blue">Price range</h3>
 
-            {/* Histogram and Slider Container */}
             <div className="flex flex-col gap-2 px-3 text-left">
-              {/* Histogram */}
               <div className="flex items-end gap-[2px] h-16 w-full select-none">
                 {bins.map((count, i) => {
                   const binMin = globalMin + i * binWidth;
@@ -212,7 +201,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
               />
             </div>
 
-            {/* Inputs Row */}
             <div className="flex items-center gap-4 justify-between mt-2">
               <div className="flex-1 flex flex-col gap-1 text-left">
                 <span className="text-xs text-frui-blue/60 font-medium pl-1">
@@ -261,7 +249,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 2: Property type */}
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-frui-blue">Property type</h3>
             <div className="flex gap-2">
@@ -289,7 +276,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 3: Quality tier (star rating, multi-select) */}
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-frui-blue">Quality tier</h3>
             <div className="flex flex-wrap gap-2">
@@ -316,7 +302,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 4: Capacity (bedrooms, multi-select) */}
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-frui-blue">Bedrooms</h3>
             <div className="flex flex-wrap gap-2">
@@ -345,7 +330,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 5: Property Amenities (general services) */}
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-frui-blue">
               Property Amenities
@@ -376,7 +360,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
             </div>
           </div>
 
-          {/* Section 6: Room Amenities (in-unit features) */}
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-bold text-frui-blue">Room Amenities</h3>
             <div className="flex flex-wrap gap-2">
@@ -406,7 +389,6 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-between border-t border-frui-blue/10 pt-4 mt-4">
           <button
             type="button"

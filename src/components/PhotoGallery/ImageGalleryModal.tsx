@@ -26,7 +26,6 @@ export function ImageGalleryModal({
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   }, [images.length]);
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       const originalStyle = window.getComputedStyle(document.body).overflow;
@@ -37,7 +36,6 @@ export function ImageGalleryModal({
     }
   }, [isOpen]);
 
-  // Handle keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
 
@@ -57,7 +55,6 @@ export function ImageGalleryModal({
     };
   }, [isOpen, handlePrev, handleNext, onClose]);
 
-  // Scroll active thumbnail into view
   useEffect(() => {
     if (isOpen && thumbnailRefs.current[currentIndex]) {
       thumbnailRefs.current[currentIndex]?.scrollIntoView({
@@ -74,10 +71,8 @@ export function ImageGalleryModal({
     setCurrentIndex(index);
   };
 
-  // Close modal when clicking backdrop
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    // Close only if click wasn't on an image or inside a button
     if (target.tagName !== 'IMG' && !target.closest('button')) {
       onClose();
     }
@@ -88,7 +83,6 @@ export function ImageGalleryModal({
       onClick={handleBackdropClick}
       className="fixed inset-0 z-50 flex flex-col justify-between bg-frui-blue/95 text-frui-white select-none"
     >
-      {/* Top Header */}
       <div
         onClick={(e) => e.stopPropagation()}
         className="relative flex items-center justify-between px-6 py-4 h-16 w-full bg-gradient-to-b from-black/50 to-transparent"
@@ -96,12 +90,10 @@ export function ImageGalleryModal({
         {/* Left side empty placeholder to balance right side spacing */}
         <div className="w-16" />
 
-        {/* Centered Counter */}
         <div className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold tracking-wide text-frui-white/90">
           {currentIndex + 1} / {images.length}
         </div>
 
-        {/* Right side Close Button */}
         <button
           onClick={onClose}
           className="flex items-center gap-2 text-frui-white hover:text-frui-orange cursor-pointer focus:outline-none z-10"
@@ -112,9 +104,7 @@ export function ImageGalleryModal({
         </button>
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex items-center justify-between px-4 sm:px-8 relative max-h-[calc(100vh-10rem)]">
-        {/* Previous Button */}
         <button
           onClick={handlePrev}
           className="p-3 rounded-full bg-black/40 text-frui-white border border-frui-white/20 hover:border-frui-orange cursor-pointer focus:outline-none z-10 shrink-0"
@@ -123,7 +113,6 @@ export function ImageGalleryModal({
           <ChevronLeft className="w-6 h-6" />
         </button>
 
-        {/* Main Image Container */}
         <div className="flex-1 h-full flex items-center justify-center p-2 sm:p-4">
           <img
             src={images[currentIndex]}
@@ -132,7 +121,6 @@ export function ImageGalleryModal({
           />
         </div>
 
-        {/* Next Button */}
         <button
           onClick={handleNext}
           className="p-3 rounded-full bg-black/40 text-frui-white border border-frui-white/20 hover:border-frui-orange cursor-pointer focus:outline-none z-10 shrink-0"
@@ -142,7 +130,6 @@ export function ImageGalleryModal({
         </button>
       </div>
 
-      {/* Bottom Thumbnails Strip */}
       <div
         onClick={(e) => e.stopPropagation()}
         className="bg-gradient-to-t from-black/60 to-transparent pt-4 pb-6"

@@ -6,10 +6,6 @@ export interface ActionGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-/**
- * Reusable ActionGroup component to layout buttons or icons in a row.
- * Optionally injects a shared buttonClassName to child components.
- */
 export function ActionGroup({
   gap = 'sm',
   buttonClassName,

@@ -1,18 +1,11 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
-  /** The current active page (1-indexed) */
   currentPage: number;
-  /** The total number of pages */
   totalPages: number;
-  /** Callback triggered when the page selection changes */
   onPageChange: (page: number) => void;
 }
 
-/**
- * Reusable, accessible Pagination component conforming to the design mockup.
- * Displays page numbers, arrows, and ellipses dynamically based on the current page location.
- */
 export function Pagination({
   currentPage,
   totalPages,
@@ -20,7 +13,6 @@ export function Pagination({
 }: PaginationProps) {
   if (totalPages <= 1) return null;
 
-  // Helper to generate the list of page buttons matching mockup states
   const getPageRange = () => {
     const range: (number | string)[] = [];
 
@@ -70,7 +62,6 @@ export function Pagination({
       aria-label="Pagination Navigation"
       className="flex items-center justify-center gap-4 py-8 select-none"
     >
-      {/* Previous Page Button */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -80,7 +71,6 @@ export function Pagination({
         <ChevronLeft className="w-5 h-5" />
       </button>
 
-      {/* Page Numbers and Ellipses */}
       <div className="flex items-center gap-2">
         {pages.map((page, index) => {
           if (page === '...') {
@@ -115,7 +105,6 @@ export function Pagination({
         })}
       </div>
 
-      {/* Next Page Button */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

@@ -40,10 +40,8 @@ export default function Payment() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  // Booking details from store
   const booking = useAppSelector((state) => state.booking);
 
-  // Fallbacks for stay checking dates
   const tomorrowStr = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -59,7 +57,6 @@ export default function Payment() {
   const resolvedCheckOut = booking.checkOut || dayAfterTomorrowStr;
   const resolvedTravelers = booking.travelers || '2 travelers, 1 room';
 
-  // Stay info fetching
   const stayId = id ? parseInt(id, 10) : NaN;
   const { data, loading, error } = useQuery<
     GetStayDetailsQuery,
@@ -71,7 +68,6 @@ export default function Payment() {
 
   const stay = data?.stay ?? null;
 
-  // Night and price calculations
   const dateRange = useMemo(
     () => parseISOToDateRange(resolvedCheckIn, resolvedCheckOut),
     [resolvedCheckIn, resolvedCheckOut],
@@ -149,17 +145,8 @@ export default function Payment() {
       stripe={stripePromise}
       options={{
         mode: 'payment',
-        // totalPayable is a decimal dollar amount (e.g. 137.5 => $137.50);
-        // Stripe's `amount` wants an integer in the currency's smallest
-        // unit (cents for USD). This is only the Element's initial display
-        // estimate — the real charge amount is computed server-side.
         amount: Math.round(totalPayable * 100),
         currency: 'usd',
-        // Restrict to card only, matching the backend contract's scope
-        // (payment_method_types: ['card']) — without this, Elements falls
-        // back to the Stripe account's automatic payment methods (Klarna,
-        // Cash App Pay, etc.), which require confirmParams.return_url for
-        // their redirect-based flows we don't support yet.
         paymentMethodTypes: ['card'],
       }}
     >
@@ -198,9 +185,6 @@ interface PaymentCheckoutProps {
   totalPayable: number;
 }
 
-// Split out from Payment() because useStripe()/useElements() only work
-// inside the <Elements> tree, which itself needs totalPayable computed
-// above it — so this owns the form/submit half of the checkout page.
 function PaymentCheckout({
   id,
   stay,
@@ -229,10 +213,6 @@ function PaymentCheckout({
   const [bookingRef, setBookingRef] = useState('');
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  // Persists across retries within this checkout attempt so a retried
-  // submitBooking() call reuses the same payment intent instead of
-  // charging twice.
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   const [createBookingMutation] = useMutation<
@@ -244,11 +224,6 @@ function PaymentCheckout({
     CreatePaymentIntentMutationVariables
   >(CREATE_PAYMENT_INTENT);
 
-  // Submits the actual booking to the backend: validates the Payment
-  // Element, creates a PaymentIntent for the current selection, confirms
-  // the charge with Stripe, then creates the booking referencing the
-  // confirmed intent. Returns whether it succeeded so the Desktop/Mobile
-  // submit flows can decide whether to advance to the confirmation view.
   const submitBooking = async (): Promise<boolean> => {
     setBookingError(null);
 
@@ -366,7 +341,6 @@ function PaymentCheckout({
     }
   };
 
-  // React Hook Form initialization
   const methods = useForm<PaymentFormValues>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
@@ -388,7 +362,6 @@ function PaymentCheckout({
 
   const { reset } = methods;
 
-  // Reset form on mount
   useEffect(() => {
     dispatch(resetPaymentForm());
     reset({

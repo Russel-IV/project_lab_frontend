@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Replace https://example.com with your production domain before deploying.
-
-  Only static, always-indexable routes are listed here. Individual stay
-  pages (/stay/:id) are left out because this is a client-rendered SPA with
-  no build-time access to the stays dataset — generating per-stay sitemap
-  entries would need a small script (e.g. run at deploy time against the
-  GraphQL API) to emit <url> entries for each stay id. Search engines will
-  still discover and index those pages by following the on-page links (from
-  the stays list and its ItemList structured data), just not via this file.
--->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://example.com/</loc>

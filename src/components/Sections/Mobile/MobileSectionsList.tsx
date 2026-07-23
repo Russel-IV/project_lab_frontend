@@ -4,14 +4,6 @@ interface MobileSectionsListProps {
   children: React.ReactNode;
 }
 
-/**
- * MobileSectionsList
- *
- * A horizontal scrollable flexbox container for rendering category tabs on mobile devices.
- * Uses custom scrollbar hiding utility class.
- *
- * @param props.children - Child tab buttons to render inside the flex container.
- */
 export const MobileSectionsList: React.FC<MobileSectionsListProps> = ({
   children,
 }) => {

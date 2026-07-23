@@ -16,12 +16,10 @@ export const SearchFormDatesField: React.FC = () => {
   const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();
   const [isOpen, setIsOpen] = React.useState(false);
 
-  // Parse checkIn and checkOut ISO strings back into a DateRange object
   const selectedRange = React.useMemo<DateRange>(() => {
     return parseISOToDateRange(checkInValue, checkOutValue);
   }, [checkInValue, checkOutValue]);
 
-  // Format the range for user display in the FormField
   const displayValue = React.useMemo(() => {
     const isSameDay =
       selectedRange.from &&
@@ -34,13 +32,6 @@ export const SearchFormDatesField: React.FC = () => {
     return formatDatesRange(selectedRange);
   }, [selectedRange]);
 
-  /**
-   * Custom date selection handler:
-   * 1. The first click marks the check-in date.
-   * 2. If the second click is before the current check-in, it becomes the new check-in.
-   *    Otherwise, it is the new check-out.
-   * 3. Once both dates are marked, the next click will mark the check-in and clear check-out.
-   */
   const handleSelect = (_range: DateRange | undefined, selectedDay: Date) => {
     if (!selectedDay) return;
 
@@ -52,23 +43,16 @@ export const SearchFormDatesField: React.FC = () => {
     if (hasOnlyCheckIn) {
       const checkInDate = new Date(checkInValue + 'T00:00:00');
       if (clickedDay < checkInDate) {
-        // Clicked date is before current check-in: update check-in, clear check-out
         onDatesChange(format(clickedDay, 'yyyy-MM-dd'), '');
       } else {
-        // Clicked date is on or after check-in: update check-out (complete range)
         onDatesChange(checkInValue, format(clickedDay, 'yyyy-MM-dd'));
       }
     } else {
-      // First click, or both dates were already set: set check-in, clear check-out
       onDatesChange(format(clickedDay, 'yyyy-MM-dd'), '');
     }
   };
 
-  /**
-   * Hook into popover open/close:
-   * Whenever the user only has the check-in date, when they click outside the popover,
-   * the check-out will automatically default to the check-in date plus one day.
-   */
+  // Closing with only a check-in set defaults check-out to check-in + 1 day.
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
 

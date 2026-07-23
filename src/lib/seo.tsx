@@ -27,29 +27,20 @@ export function JsonLd({ data }: JsonLdProps) {
 }
 
 interface SeoProps {
-  /** Page-specific title; the site name is appended automatically. */
   title: string;
   description?: string;
-  /** Route path used to build the canonical/OG URL, e.g. "/stays". */
   path: string;
-  /** Absolute or root-relative image URL for social previews. */
   image?: string;
   type?: 'website' | 'article' | 'product';
-  /** Set for pages that shouldn't be indexed (auth, checkout, etc). */
   noIndex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-/**
- * Per-page metadata: title, description, canonical link, Open Graph/Twitter
- * tags, and optional JSON-LD. Relies on React 19's built-in hoisting of
- * <title>/<meta>/<link> rendered anywhere in the tree into <head>.
- */
 export function Seo({
   title,
   description = DEFAULT_DESCRIPTION,
   path,
-  image = '/favicon.svg',
+  image = '/favicon.png',
   type = 'website',
   noIndex = false,
   jsonLd,

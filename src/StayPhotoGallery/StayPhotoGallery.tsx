@@ -13,12 +13,6 @@ interface GalleryImageProps {
   className?: string;
 }
 
-/**
- * GalleryImage
- *
- * Renders a single gallery photo, falling back to the branded placeholder
- * pattern if the image fails to load (e.g. a broken or dead URL).
- */
 function GalleryImage({ src, alt, className = '' }: GalleryImageProps) {
   const [failed, setFailed] = useState(false);
 
@@ -48,7 +42,6 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
 
   return (
     <div className="w-auto relative select-none -mx-4 sm:-mx-6 md:mx-0">
-      {/* Mobile Floating Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="md:hidden absolute top-4 left-4 p-2 rounded-full bg-frui-white border border-neutral-200 shadow-md active:scale-95 transition-transform z-20 cursor-pointer flex items-center justify-center"
@@ -65,7 +58,6 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
           />
         ) : gallery.desktopLayoutMode === 'three' ? (
           <>
-            {/* Mobile view (single image) */}
             <div className="block md:hidden w-full h-full">
               <GalleryImage
                 src={gallery.visibleImages[0]}
@@ -73,7 +65,6 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
                 className="w-full h-full object-cover select-none"
               />
             </div>
-            {/* Desktop view (3-image grid) */}
             <div className="hidden md:grid grid-cols-3 gap-2 w-full h-full">
               <div className="col-span-2 relative overflow-hidden bg-frui-placeholder">
                 <GalleryImage
@@ -102,7 +93,6 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
           </>
         ) : (
           <>
-            {/* Mobile view (single image) */}
             <div className="block md:hidden w-full h-full">
               <GalleryImage
                 src={gallery.visibleImages[0]}
@@ -110,7 +100,6 @@ export default function StayPhotoGallery({ images }: StayPhotoGalleryProps) {
                 className="w-full h-full object-cover select-none"
               />
             </div>
-            {/* Desktop view (5-image grid) */}
             <div className="hidden md:grid grid-cols-4 gap-2 w-full h-full">
               <div className="col-span-2 row-span-2 relative overflow-hidden bg-frui-placeholder">
                 <GalleryImage

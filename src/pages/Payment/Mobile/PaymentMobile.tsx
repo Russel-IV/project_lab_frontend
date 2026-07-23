@@ -178,7 +178,6 @@ export default function PaymentMobile({
 
   return (
     <div className="w-full max-w-xl flex flex-col gap-6">
-      {/* Wizard Steps indicator */}
       <div className="bg-frui-white border border-border rounded-2xl p-4 flex items-center justify-between select-none">
         {steps.map((s, idx) => (
           <Fragment key={s.id}>
@@ -215,9 +214,8 @@ export default function PaymentMobile({
         ))}
       </div>
 
-      {/* Stay Recap card -- kept out of ConfirmationStep's own richer recap
-          (step 3), shown on steps 1-2 for parity with Desktop's persistent
-          sidebar card. */}
+      {/* Kept out of ConfirmationStep's own recap; shown on steps 1-2 for
+          parity with Desktop's persistent sidebar card. */}
       {currentStep < 3 && (
         <div className="bg-frui-white border border-border rounded-2xl p-4 flex gap-3 items-start shadow-xs">
           {stay?.pictures && stay.pictures.length > 0 && (
@@ -250,7 +248,6 @@ export default function PaymentMobile({
         </div>
       )}
 
-      {/* Step Navigation Back Button */}
       {currentStep > 1 && (
         <button
           onClick={handleBack}
@@ -260,12 +257,10 @@ export default function PaymentMobile({
         </button>
       )}
 
-      {/* Wizard Card Containers */}
       <div className="bg-frui-white border border-border rounded-3xl p-6 shadow-xs flex flex-col gap-6">
         {currentStep === 1 && <GuestDetailsStep />}
-        {/* Stays mounted (just hidden) once reached, rather than
-            unmounting on step 3 - Stripe's PaymentElement must still be
-            mounted when confirmPayment() runs at final submit. */}
+        {/* Stays mounted (just hidden) past step 2 — Stripe's PaymentElement
+            must still be mounted when confirmPayment() runs at submit. */}
         {currentStep >= 2 && (
           <div className={currentStep === 2 ? undefined : 'hidden'}>
             <PaymentElementForm variant="mobile" />
@@ -287,7 +282,6 @@ export default function PaymentMobile({
           />
         )}
 
-        {/* Action buttons */}
         <div className="border-t border-neutral-100 pt-4 flex flex-col gap-3">
           {currentStep === 3 && bookingError && (
             <p className="text-xs text-center text-destructive leading-relaxed">

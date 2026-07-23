@@ -39,19 +39,14 @@ export const BookingWidgetMobile: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Parse check-in and check-out dates
   const dateRange = useMemo(() => {
     return parseISOToDateRange(checkIn, checkOut);
   }, [checkIn, checkOut]);
 
-  // Compute number of nights
   const nights = useMemo(() => {
     return calculateNights(dateRange);
   }, [dateRange]);
 
-  // Compute and format prices. Sums the per-night price of every room the
-  // customer picked in RoomsSection; falls back to the stay's cheapest room
-  // until one is chosen.
   const selectedRoomsNightly = useMemo(
     () => selectedRooms.reduce((sum, room) => sum + room.price, 0),
     [selectedRooms],
@@ -71,12 +66,10 @@ export const BookingWidgetMobile: React.FC = () => {
     return formatPrice(totalPrice);
   }, [totalPrice]);
 
-  // Format travelers text
   const travelersText = useMemo(() => {
     return formatTravelers(travelers);
   }, [travelers]);
 
-  // Format dates text
   const datesText = useMemo(() => {
     if (!dateRange.from) return 'Select dates';
     return formatDatesRange(dateRange);
@@ -103,7 +96,6 @@ export const BookingWidgetMobile: React.FC = () => {
 
   return (
     <div className="bg-frui-white rounded-3xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-neutral-100 w-full">
-      {/* 1. Status Indicators */}
       <div className="space-y-1">
         {isRefundable ? (
           <div className="flex items-center gap-1 text-emerald-600 text-xs font-semibold uppercase tracking-wider">
@@ -123,7 +115,6 @@ export const BookingWidgetMobile: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Interactive Trigger Capsule */}
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
@@ -142,7 +133,6 @@ export const BookingWidgetMobile: React.FC = () => {
         </div>
       </button>
 
-      {/* 3. Pricing Details */}
       <div className="flex flex-col items-end mt-5 mb-5">
         <span className="text-xs text-[#7a7168] font-medium">
           {formattedNightly} nightly
@@ -152,7 +142,6 @@ export const BookingWidgetMobile: React.FC = () => {
         </span>
       </div>
 
-      {/* 4. Action Button */}
       <button
         type="button"
         onClick={() => navigate(`/payment/${stay.id}`)}
@@ -161,12 +150,10 @@ export const BookingWidgetMobile: React.FC = () => {
         Reserve
       </button>
 
-      {/* 5. Warning Footer */}
       <span className="text-[11px] text-[#7a7168] text-center mt-3.5 block font-medium">
         You will not be charged yet
       </span>
 
-      {/* Composable Search Modal */}
       {isModalOpen && (
         <SearchFormMobile
           isOpen={isModalOpen}

@@ -126,15 +126,12 @@ export default function StaysPage() {
         <MobileSections />
       </div>
 
-      {/* Categories shown only on desktop, directly above the search form.
-          Negative margins cancel the tabs' own top margin and the search
-          form's own top margin so the gaps are exactly 16px above the tabs
-          and 8px between the tabs and the search form. */}
+      {/* Negative margins cancel the tabs' and search form's own top
+          margins for exact 16px/8px gaps. */}
       <div className="hidden md:block w-full max-w-6xl mx-auto -mt-10 -mb-6">
         <Sections />
       </div>
 
-      {/* Stays grid: full width by default, search bar centered within it */}
       <main className="w-full">
         <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">
           <div className="flex flex-col gap-4 pb-2">
@@ -142,7 +139,6 @@ export default function StaysPage() {
             <FilterBar />
           </div>
 
-          {/* Stays List with fine-grained Suspense boundary */}
           <ErrorBoundary FallbackComponent={StaysErrorFallback}>
             <Suspense fallback={<StayCardsGridSkeleton />}>
               <StaysListContent

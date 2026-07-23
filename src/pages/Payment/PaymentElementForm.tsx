@@ -57,7 +57,6 @@ export default function PaymentElementForm({
 
       <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
 
-      {/* Name on Card */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">
           Name on Card *
@@ -75,7 +74,6 @@ export default function PaymentElementForm({
         )}
       </div>
 
-      {/* Country */}
       <div className="flex flex-col gap-1.5 border-t border-neutral-200 pt-4">
         <label className="text-xs font-bold text-frui-blue">
           Country/Territory *
@@ -92,7 +90,6 @@ export default function PaymentElementForm({
         </select>
       </div>
 
-      {/* Billing Address 1 */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">
           Billing address 1 *
@@ -111,7 +108,6 @@ export default function PaymentElementForm({
         )}
       </div>
 
-      {/* Billing Address 2 */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">
           Billing address 2
@@ -123,7 +119,6 @@ export default function PaymentElementForm({
         />
       </div>
 
-      {/* City */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">City *</label>
         <Input
@@ -139,7 +134,6 @@ export default function PaymentElementForm({
         )}
       </div>
 
-      {/* State/Province + Postal code */}
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-frui-blue">

@@ -11,17 +11,11 @@ interface Message {
   text: string;
 }
 
-/**
- * Chatbot component that acts as the main floating chat assistant widget.
- * Manages the visibility toggle, context display state, message history,
- * and scrolls to the bottom when new messages arrive.
- */
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll the chat messages container to bottom when messages update
   useEffect(() => {
     if (isOpen && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -29,10 +23,8 @@ export function Chatbot() {
   }, [messages, isOpen]);
 
   const handleSelectAction = (text: string) => {
-    // Add user message
     setMessages((prev) => [...prev, { sender: 'user', text }]);
 
-    // Simulate assistant reply
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -64,7 +56,6 @@ export function Chatbot() {
 
   return (
     <>
-      {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           type="button"
@@ -76,28 +67,23 @@ export function Chatbot() {
         </button>
       )}
 
-      {/* Floating Chat Window Layout */}
       {isOpen && (
         <div
           role="dialog"
           aria-label="Chat assistant"
           className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-32px)] h-[440px] max-h-[440px] flex flex-col bg-frui-white border border-frui-blue/10 rounded-2xl shadow-xl overflow-hidden"
         >
-          {/* Header */}
           <ChatHeader
             onClose={() => setIsOpen(false)}
             onNewChat={handleNewChat}
           />
 
-          {/* Body Container */}
           <ChatBody>
-            {/* Scrollable area for messages and suggestions */}
             <div
               ref={scrollRef}
               className="flex-1 overflow-y-auto overscroll-contain flex flex-col gap-4 scrollbar-none"
             >
               {messages.length > 0 ? (
-                /* Scrollable Message List */
                 <div className="flex flex-col gap-3">
                   {messages.map((msg, index) => (
                     <div
@@ -113,16 +99,13 @@ export function Chatbot() {
                   ))}
                 </div>
               ) : (
-                /* Suggested Pre-Prompts */
                 <SuggestedActions onSelectAction={handleSelectAction} />
               )}
             </div>
 
-            {/* User Input & Toolbar */}
             <PromptContainer onSubmit={handlePromptSubmit} />
           </ChatBody>
 
-          {/* Footer Safety Disclaimer */}
           <ChatFooter />
         </div>
       )}

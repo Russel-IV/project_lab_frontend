@@ -11,7 +11,6 @@ export default function GuestDetailsSection() {
   return (
     <div className="px-6 pb-6 border-t border-neutral-100 pt-5 flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4">
-        {/* First Name */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-frui-blue">
             First name *
@@ -30,7 +29,6 @@ export default function GuestDetailsSection() {
           )}
         </div>
 
-        {/* Last Name */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-frui-blue">
             Last name *
@@ -50,7 +48,6 @@ export default function GuestDetailsSection() {
         </div>
       </div>
 
-      {/* Email Address */}
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">
           Email address *
@@ -71,7 +68,6 @@ export default function GuestDetailsSection() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {/* Code */}
         <div className="flex flex-col gap-1.5 col-span-1">
           <label className="text-xs font-bold text-frui-blue">Code *</label>
           <select
@@ -86,7 +82,6 @@ export default function GuestDetailsSection() {
           </select>
         </div>
 
-        {/* Phone */}
         <div className="flex flex-col gap-1.5 col-span-2">
           <label className="text-xs font-bold text-frui-blue">
             Phone number *

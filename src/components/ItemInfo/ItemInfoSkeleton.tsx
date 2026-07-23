@@ -15,19 +15,13 @@ export function ItemInfoSkeleton({ className = '' }: { className?: string }) {
         <X className="w-5 h-5 text-frui-blue/40" />
       </button>
 
-      {/* Scrollable details skeleton */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-        {/* 1. Image Gallery Grid Skeleton */}
         <div className="grid grid-cols-3 grid-rows-2 gap-2 aspect-[16/10] w-full rounded-2xl overflow-hidden shadow-xs shrink-0">
-          {/* Main Image */}
           <Skeleton className="col-span-2 row-span-2 rounded-none bg-muted/40" />
-          {/* Top Sub-image */}
           <Skeleton className="col-span-1 row-span-1 rounded-none bg-muted/40" />
-          {/* Bottom Sub-image */}
           <Skeleton className="col-span-1 row-span-1 rounded-none bg-muted/40" />
         </div>
 
-        {/* 2. Title & Metadata Header Skeleton, with price/reserve to the right */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-3 min-w-0">
             <Skeleton className="h-7 w-48 bg-muted/60" />
@@ -52,7 +46,6 @@ export function ItemInfoSkeleton({ className = '' }: { className?: string }) {
           </div>
         </div>
 
-        {/* 3. About Section Skeleton */}
         <div className="space-y-2">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             About this space
@@ -64,7 +57,6 @@ export function ItemInfoSkeleton({ className = '' }: { className?: string }) {
           </div>
         </div>
 
-        {/* 4. Location Details Skeleton */}
         <div className="space-y-2">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             Location Details
@@ -76,7 +68,6 @@ export function ItemInfoSkeleton({ className = '' }: { className?: string }) {
           </div>
         </div>
 
-        {/* 5. Amenities Section Skeleton */}
         <div className="space-y-3">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             What this place offers
@@ -91,7 +82,6 @@ export function ItemInfoSkeleton({ className = '' }: { className?: string }) {
           </div>
         </div>
 
-        {/* 6. Reviews & Ratings Skeleton */}
         <div className="space-y-4">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             Reviews & Ratings

@@ -31,8 +31,6 @@ export function FilterBar() {
     propertyAmenityIds.length > 0 ||
     roomAmenityIds.length > 0;
   const isPropertyTypeActive = propertyType !== null;
-
-  // Active count for filters button badge
   const activeFiltersCount = [
     priceMin !== null || priceMax !== null,
     propertyType !== null,
@@ -52,7 +50,6 @@ export function FilterBar() {
 
   return (
     <div className="flex w-full items-center gap-2 border-b border-border py-3 px-2">
-      {/* Dropdown Filter: Price */}
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
@@ -67,7 +64,6 @@ export function FilterBar() {
         )}
       </button>
 
-      {/* Dropdown Filter: Property Type */}
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
@@ -81,7 +77,6 @@ export function FilterBar() {
         <ChevronDown className="size-4" />
       </button>
 
-      {/* Toggle Filter: Free Cancellation */}
       <button
         type="button"
         onClick={() => dispatch(toggleFreeCancellation())}

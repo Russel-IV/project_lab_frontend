@@ -40,14 +40,8 @@ const REVIEWS_PAGE_SIZE = 6;
 const StayMap = lazy(() =>
   import('../StayMap/StayMap').then((m) => ({ default: m.StayMap })),
 );
-/**
- * RatingBarGraph
- *
- * Horizontal breakdown of a stay's reviews by star value (5 down to 1).
- * Bar length is scaled relative to the largest bucket, not the review
- * total, so the shape of the distribution stays readable even when one
- * rating dominates.
- */
+// Bar length is scaled relative to the largest bucket, not the review total,
+// so the distribution stays readable even when one rating dominates.
 function RatingBarGraph({
   summary,
 }: {
@@ -123,11 +117,9 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const booking = useAppSelector((state) => state.booking);
   const { checkIn, checkOut } = booking;
 
-  // ItemInfo is opened from the stays list, where only `state.search` (not
-  // `state.booking`) reflects what the customer actually searched for.
-  // Mirrors the same sync BookingWidgetDesktop/Mobile do on the stay detail
-  // page, so RoomsSection's availability query below runs against the real
-  // dates instead of stale/default booking state.
+  // Only state.search reflects what was actually searched here; sync it into
+  // state.booking so RoomsSection's availability query below doesn't run
+  // against stale/default dates.
   useEffect(() => {
     dispatch(
       setBookingDates({
@@ -165,12 +157,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     },
   );
 
-  // Format pricing. Sums the per-night price of every room selected in
-  // RoomsSection below (kept in sync with BookingWidgetDesktop/Mobile's
-  // pricing); falls back to the stay's cheapest room until one is chosen.
-  // Combined per-night rate is multiplied by the searched date range to
-  // match the "total" label below (same logic as the stay list cards in
-  // StayCardVariant).
   const nights = Math.max(
     1,
     differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
@@ -190,10 +176,8 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
 
   const summary = summaryData?.reviewSummary;
 
-  // "Average user rating" means the crowd-sourced review average, not
-  // Stay.starRating (the host's official classification - a separate
-  // concept per the backend schema). Only fall back to starRating when the
-  // stay genuinely has no reviews yet.
+  // Falls back to Stay.starRating (a separate, host-set field) only when
+  // there are no reviews yet.
   const reviewAverage =
     summary && summary.count > 0 && summary.average !== null
       ? summary.average
@@ -206,13 +190,10 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const propertyTypeLabel = stay.propertyType === 'HOME' ? 'Home' : 'Hotel';
   const PropertyTypeIcon = stay.propertyType === 'HOME' ? Home : Building2;
 
-  // Map amenities
   const amenities = (stay.amenities || [])
     .map((a) => AMENITIES_LOOKUP[a.id])
     .filter(Boolean);
 
-  // Fall back to the previous page's reviews while a "Show more" refetch is
-  // in flight, so the grid doesn't blank out mid-load.
   const loadedReviews =
     reviewsData?.reviewsByStay ?? previousReviewsData?.reviewsByStay ?? [];
 
@@ -223,7 +204,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
     <div
       className={`relative w-full h-full rounded-2xl border border-border bg-card shadow-xl flex flex-col overflow-hidden ${className}`}
     >
-      {/* Close button floats above the scrollable content */}
       <button
         type="button"
         onClick={onClose}
@@ -233,18 +213,13 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
         <X className="w-5 h-5 text-frui-blue" />
       </button>
 
-      {/* Scrollable details view */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-        {/* 1. Image Gallery using unified PhotoGallery component */}
         <PhotoGallery
           images={stay.pictures?.map((p) => p.url)}
           maxPhotos={3}
           useFallbacks={true}
         />
 
-        {/* 2. Title & Metadata Header, with pricing + reserve to the right
-            on wider views; stacked full-width on narrow/mobile widths so the
-            title isn't squeezed into a cramped column. */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-3 min-w-0">
             <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground leading-snug">
@@ -319,7 +294,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           </div>
         </div>
 
-        {/* 3. About section */}
         {stay.about && (
           <div className="space-y-2">
             <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
@@ -331,8 +305,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           </div>
         )}
 
-        {/* 4. Location Details -- shown by default (full address), not
-            gated behind an extra click. */}
         <div className="space-y-2">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             Location Details
@@ -358,7 +330,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           )}
         </div>
 
-        {/* Policies section */}
         <div className="space-y-2">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             Policies
@@ -366,7 +337,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           <PoliciesSection stay={stay} checkIn={checkIn} />
         </div>
 
-        {/* Room Types section */}
         {stay.rooms.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
@@ -391,7 +361,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           </div>
         )}
 
-        {/* 5. Amenities section */}
         {amenities.length > 0 && (
           <div className="space-y-3">
             <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
@@ -410,7 +379,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             </div>
           </div>
         )}
-        {/* Section for show map*/}
         {stay.location && (
           <div className="space-y-4">
             <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
@@ -427,9 +395,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             </Suspense>
           </div>
         )}
-        {/* 6. Reviews & Ratings -- summary bar graph is visible as soon as
-            the panel opens (not gated behind a click); the review list
-            paginates 6 at a time via "Show more". */}
         <div className="space-y-4">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-1.5">
             Reviews & Ratings

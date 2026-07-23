@@ -32,12 +32,10 @@ export const LoginForm: React.FC = () => {
 
   return (
     <div className="login-card-container">
-      {/* Left Column: Image Section */}
       <div className="login-image-section">
         <img src={mountainAndes} alt="Andes Mountain" className="login-image" />
       </div>
 
-      {/* Right Column: Form Section */}
       <div className="login-form-section">
         <h2 className="login-title">Login</h2>
 
@@ -70,11 +68,6 @@ export const LoginForm: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="login-input"
             />
-            <div className="forgot-password-container">
-              <a href="#forgot" className="forgot-password-link">
-                forgot password?
-              </a>
-            </div>
           </div>
 
           {error && <p className="login-error">{error}</p>}

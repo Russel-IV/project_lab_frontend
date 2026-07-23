@@ -29,10 +29,6 @@ const ACTIONS: SuggestedAction[] = [
   },
 ];
 
-/**
- * SuggestedActions component displaying pre-prompt suggestions
- * in a flexbox column layout.
- */
 export function SuggestedActions({ onSelectAction }: SuggestedActionsProps) {
   return (
     <div className="flex flex-col gap-2 w-full">

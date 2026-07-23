@@ -68,7 +68,6 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
   const modalContent = (
     <SearchFormMobileContext.Provider value={contextValue}>
       <div className="fixed inset-0 z-[100] flex flex-col bg-[#F2F2F2] overflow-y-auto select-none p-4">
-        {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
@@ -77,14 +76,12 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Main accordion list */}
         <div className="flex flex-col gap-4 flex-1 pb-24">
           {!hideWhereSection && <WhereSection />}
           <DatesSection />
           <TravelersSection />
         </div>
 
-        {/* Footer bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-frui-white border-t border-[#d6c7b9] px-6 py-4 flex justify-between items-center z-10">
           <button
             type="button"
