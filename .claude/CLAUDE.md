@@ -47,3 +47,11 @@ When adding a new responsive feature, follow the existing convention for that ar
 ### Testing
 
 Vitest + React Testing Library, jsdom environment, global test APIs enabled (`vite.config.ts` `test` block). Setup file `src/test/setup.ts` only wires up `@testing-library/jest-dom` matchers — no other global mocks/fixtures exist yet.
+
+## Code comments
+
+Default to no comments. Well-named variables, functions, and components should make the code self-explanatory; do not add a comment that just restates what the next line does (`// Local state for X` above a `useState`, `// Header` above a header `<div>`, `// 1. Price filter` above a filter block, a JSDoc block above a component that just repeats its name and prop types).
+
+Only write a comment when it captures something the code cannot: a workaround for a specific library/API bug or quirk, a non-obvious business rule or invariant, a hidden cross-file constraint, or a reason a simpler-looking alternative was rejected. Keep it to one or two lines. Never write multi-paragraph docstrings or numbered step-by-step comment blocks.
+
+If you're touching a file with existing bloated/redundant comments, remove them as part of the change rather than leaving them.
