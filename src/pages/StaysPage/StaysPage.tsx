@@ -16,7 +16,7 @@ import { Seo } from '@/lib/seo';
 import { Sections, MobileSections } from '@/components/Sections';
 import { useFavorites } from '@/hooks/useFavorites';
 
-import { StaysListContent } from './StaysListContent';
+import { PAGE_SIZE, StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
 
 const SCROLL_TOP_THRESHOLD = 400;
@@ -203,11 +203,13 @@ export default function StaysPage() {
   );
 }
 
-// Grid fallback skeleton for Stay Cards
+// Matches PAGE_SIZE so the fallback's row count (and thus height) lines up
+// with the real virtualized grid — a mismatch here was a major CLS source,
+// since swapping to a taller/shorter real grid shoves the footer around.
 export function StayCardsGridSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-      {Array.from({ length: 6 }).map((_, idx) => (
+      {Array.from({ length: PAGE_SIZE }).map((_, idx) => (
         <StayCardSkeleton key={idx} />
       ))}
     </div>

@@ -30,7 +30,7 @@ export function StaysEmptyState({ message }: { message: string }) {
 
 type GraphQLStay = GetStaysQuery['stays']['items'][number];
 
-const PAGE_SIZE = 12;
+export const PAGE_SIZE = 12;
 // Real pixel distance from the true scroll bottom (not the overscan buffer)
 // that triggers the next fetch — roughly one row's height ahead.
 const LOAD_MORE_DISTANCE_PX = 600;
