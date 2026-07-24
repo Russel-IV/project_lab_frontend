@@ -173,7 +173,7 @@ export default function StayInfoPage() {
 
       <div className="mx-auto max-w-5xl flex flex-col gap-8">
         <PhotoGallery
-          images={data?.stay?.pictures?.map((p) => p.url)}
+          images={data?.stay?.pictures ?? undefined}
           maxPhotos={5}
         />
 

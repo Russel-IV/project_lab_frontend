@@ -45,7 +45,11 @@ export default function ConfirmationStep({
       <div className="flex flex-col gap-3 rounded-2xl border border-border overflow-hidden bg-[#fafafa]">
         {stay?.pictures && stay.pictures.length > 0 && (
           <img
-            src={stay.pictures[0].url}
+            src={
+              stay.pictures[0].url512 ??
+              stay.pictures[0].thumbnailUrl ??
+              stay.pictures[0].url
+            }
             alt={stay.name}
             className="w-full h-32 object-cover"
           />

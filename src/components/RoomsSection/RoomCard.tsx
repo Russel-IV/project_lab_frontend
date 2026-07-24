@@ -20,8 +20,9 @@ export function RoomCard({
   unavailable,
   onToggle,
 }: RoomCardProps) {
-  const primaryPictureUrl =
-    room.pictures.find((p) => p.isPrimary)?.url ?? room.pictures[0]?.url;
+  const primaryPicture =
+    room.pictures.find((p) => p.isPrimary) ?? room.pictures[0];
+  const primaryPictureUrl = primaryPicture?.thumbnailUrl ?? primaryPicture?.url;
   const totalPrice = room.price * nights;
 
   return (
@@ -31,6 +32,8 @@ export function RoomCard({
           <img
             src={primaryPictureUrl}
             alt={room.name}
+            loading="lazy"
+            decoding="async"
             className="size-full object-cover"
           />
         ) : (

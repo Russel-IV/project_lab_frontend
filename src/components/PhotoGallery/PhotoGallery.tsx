@@ -2,16 +2,23 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import { usePhotoGallery } from './usePhotoGallery';
-import { ImageGalleryModal } from './ImageGalleryModal';
+import { ImageGalleryModal, type GalleryPicture } from './ImageGalleryModal';
+import { buildSrcSet } from '@/lib/images';
 
-const FALLBACK_IMAGES = [
-  'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
+const FALLBACK_IMAGES: GalleryPicture[] = [
+  {
+    url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
+  },
 ];
 
 export interface PhotoGalleryProps {
-  images?: string[];
+  images?: GalleryPicture[];
   maxPhotos?: 3 | 5;
   useFallbacks?: boolean;
   responsive?: boolean;
@@ -37,6 +44,8 @@ export function PhotoGallery({
   }
 
   const gallery = usePhotoGallery({ images: displayImages, maxPhotos });
+
+  const heroSizes = '(min-width: 768px) 1024px, 100vw';
 
   if (gallery.images.length === 0) {
     const skeletonClasses = responsive
@@ -67,7 +76,8 @@ export function PhotoGallery({
         className="col-span-2 row-span-2 relative overflow-hidden bg-frui-placeholder cursor-pointer"
       >
         <img
-          src={gallery.visibleImages[0]}
+          {...buildSrcSet(gallery.visibleImages[0])}
+          sizes={heroSizes}
           alt="Main view"
           className="absolute inset-0 w-full h-full object-cover select-none"
         />
@@ -79,11 +89,13 @@ export function PhotoGallery({
           className="col-span-1 row-span-1 relative overflow-hidden bg-frui-placeholder cursor-pointer"
         >
           <img
-            src={img}
+            {...buildSrcSet(img)}
+            sizes="(min-width: 768px) 33vw, 50vw"
             alt={`Detail view ${index + 1}`}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover select-none"
           />
-          {/* index 1 here is the 3rd photo overall (slice starts at 1) */}
           {index === 1 && gallery.images.length > 3 && (
             <div className="absolute bottom-3 right-3 bg-frui-blue/70 text-frui-white px-2.5 py-1 rounded-full flex items-center gap-1 text-[10px] sm:text-xs font-semibold shadow-md pointer-events-none">
               <ImageIcon className="w-3.5 h-3.5" />
@@ -102,7 +114,8 @@ export function PhotoGallery({
         className="col-span-2 row-span-2 relative overflow-hidden bg-frui-placeholder cursor-pointer"
       >
         <img
-          src={gallery.visibleImages[0]}
+          {...buildSrcSet(gallery.visibleImages[0])}
+          sizes={heroSizes}
           alt="Main view"
           className="absolute inset-0 w-full h-full object-cover select-none"
         />
@@ -114,11 +127,13 @@ export function PhotoGallery({
           className="col-span-1 row-span-1 relative overflow-hidden bg-frui-placeholder cursor-pointer"
         >
           <img
-            src={img}
+            {...buildSrcSet(img)}
+            sizes="(min-width: 768px) 25vw, 50vw"
             alt={`Detail view ${index + 1}`}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 w-full h-full object-cover select-none"
           />
-          {/* index 3 here is the 5th photo overall (slice starts at 1) */}
           {index === 3 && gallery.images.length > 5 && (
             <div className="absolute bottom-3 right-3 bg-frui-blue/70 text-frui-white px-2.5 py-1 rounded-full flex items-center gap-1 text-[10px] sm:text-xs font-semibold shadow-md pointer-events-none">
               <ImageIcon className="w-3.5 h-3.5" />
@@ -148,7 +163,8 @@ export function PhotoGallery({
             className="relative w-full h-full overflow-hidden bg-frui-placeholder cursor-pointer"
           >
             <img
-              src={gallery.visibleImages[0]}
+              {...buildSrcSet(gallery.visibleImages[0])}
+              sizes={heroSizes}
               alt="Main view"
               className="absolute inset-0 w-full h-full object-cover select-none"
             />
@@ -161,7 +177,8 @@ export function PhotoGallery({
                 className="block md:hidden relative w-full h-full overflow-hidden bg-frui-placeholder cursor-pointer"
               >
                 <img
-                  src={gallery.visibleImages[0]}
+                  {...buildSrcSet(gallery.visibleImages[0])}
+                  sizes="100vw"
                   alt="Stay view mobile"
                   className="absolute inset-0 w-full h-full object-cover select-none"
                 />
@@ -182,7 +199,8 @@ export function PhotoGallery({
               className="block md:hidden relative w-full h-full overflow-hidden bg-frui-placeholder cursor-pointer"
             >
               <img
-                src={gallery.visibleImages[0]}
+                {...buildSrcSet(gallery.visibleImages[0])}
+                sizes="100vw"
                 alt="Stay view mobile"
                 className="absolute inset-0 w-full h-full object-cover select-none"
               />

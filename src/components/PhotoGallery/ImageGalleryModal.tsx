@@ -2,10 +2,17 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
+export interface GalleryPicture {
+  url: string;
+  thumbnailUrl?: string | null;
+  url1024?: string | null;
+  url512?: string | null;
+}
+
 interface ImageGalleryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  images: string[];
+  images: GalleryPicture[];
   initialIndex?: number;
 }
 
@@ -115,7 +122,11 @@ export function ImageGalleryModal({
 
         <div className="flex-1 h-full flex items-center justify-center p-2 sm:p-4">
           <img
-            src={images[currentIndex]}
+            src={
+              images[currentIndex].url1024 ??
+              images[currentIndex].url512 ??
+              images[currentIndex].url
+            }
             alt={`Expanded view ${currentIndex + 1}`}
             className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
           />
@@ -151,8 +162,10 @@ export function ImageGalleryModal({
                 aria-label={`View photo ${idx + 1}`}
               >
                 <img
-                  src={img}
+                  src={img.thumbnailUrl ?? img.url}
                   alt={`Thumbnail ${idx + 1}`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </button>

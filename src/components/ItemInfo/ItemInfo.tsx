@@ -215,7 +215,7 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
         <PhotoGallery
-          images={stay.pictures?.map((p) => p.url)}
+          images={stay.pictures ?? undefined}
           maxPhotos={3}
           useFallbacks={true}
         />

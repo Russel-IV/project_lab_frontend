@@ -2,15 +2,15 @@ import { useState, useMemo } from 'react';
 
 export type GalleryLayoutMode = 'one' | 'three' | 'five';
 
-export interface UsePhotoGalleryProps {
-  images?: string[];
+export interface UsePhotoGalleryProps<T> {
+  images?: T[];
   maxPhotos?: 3 | 5;
 }
 
-export function usePhotoGallery({
+export function usePhotoGallery<T>({
   images,
   maxPhotos = 5,
-}: UsePhotoGalleryProps = {}) {
+}: UsePhotoGalleryProps<T> = {}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const safeImages = useMemo(() => {

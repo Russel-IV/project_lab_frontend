@@ -196,7 +196,7 @@ export default function PaymentDesktop({
             <div className="flex gap-4 items-start">
               {stay?.pictures && stay.pictures.length > 0 && (
                 <img
-                  src={stay.pictures[0].url}
+                  src={stay.pictures[0].thumbnailUrl ?? stay.pictures[0].url}
                   alt={stay.name}
                   className="size-24 rounded-2xl object-cover shrink-0 border border-neutral-100"
                 />

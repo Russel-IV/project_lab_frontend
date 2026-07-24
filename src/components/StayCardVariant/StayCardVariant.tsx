@@ -5,8 +5,9 @@ import { differenceInCalendarDays } from 'date-fns';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 import type { ReviewSummaryData } from '@/hooks/useReviewSummaries';
 import { useAppSelector } from '@/store/hooks';
+import { buildSrcSet } from '@/lib/images';
 
-export type GraphQLStay = GetStaysQuery['stays'][number];
+export type GraphQLStay = GetStaysQuery['stays']['items'][number];
 
 interface StayCardVariantContextType {
   stay: GraphQLStay;
@@ -96,15 +97,16 @@ export function StayCardVariantImage() {
   const { stay, priority } = useStayCardVariantContext();
   const [imageFailed, setImageFailed] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const imageUrl = (
-    stay.pictures?.find((p) => p.isPrimary) ?? stay.pictures?.[0]
-  )?.url;
+  const primaryPicture =
+    stay.pictures?.find((p) => p.isPrimary) ?? stay.pictures?.[0];
 
-  if (!imageUrl || imageFailed) {
+  if (!primaryPicture || imageFailed) {
     return (
       <div className="absolute inset-0 w-full h-full bg-frui-placeholder animate-pulse" />
     );
   }
+
+  const { src, srcSet } = buildSrcSet(primaryPicture);
 
   return (
     <>
@@ -112,7 +114,9 @@ export function StayCardVariantImage() {
         <div className="absolute inset-0 w-full h-full bg-frui-placeholder animate-pulse" />
       )}
       <img
-        src={imageUrl}
+        src={src}
+        srcSet={srcSet}
+        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         alt={stay.name}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"

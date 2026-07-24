@@ -220,7 +220,7 @@ export default function PaymentMobile({
         <div className="bg-frui-white border border-border rounded-2xl p-4 flex gap-3 items-start shadow-xs">
           {stay?.pictures && stay.pictures.length > 0 && (
             <img
-              src={stay.pictures[0].url}
+              src={stay.pictures[0].thumbnailUrl ?? stay.pictures[0].url}
               alt={stay.name}
               className="size-16 rounded-xl object-cover shrink-0 border border-neutral-100"
             />

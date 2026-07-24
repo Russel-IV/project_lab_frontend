@@ -40,12 +40,15 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
     activeFilters.roomAmenityIds,
   );
 
-  // Reads from cache only — StaysPage owns the actual network query.
+  // Reads from cache only — StaysPage owns the actual network query. Uses a
+  // large size to get a representative price distribution regardless of
+  // StaysPage's (much smaller) infinite-scroll page size.
   const { data } = useQuery<GetStaysQuery>(GET_STAYS, {
+    variables: { page: 0, size: 100 },
     fetchPolicy: 'cache-first',
   });
 
-  const stays = data?.stays || [];
+  const stays = data?.stays.items || [];
   const prices = stays
     .map((s) => s.startingFromPrice as number | null)
     .filter((p: unknown): p is number => typeof p === 'number');

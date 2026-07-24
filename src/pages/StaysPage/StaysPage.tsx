@@ -9,13 +9,7 @@ import {
   getTotalGuests,
   isValidDateRange,
 } from '@/components/SearchForm/searchFormUtils';
-import { useBackgroundQuery } from '@apollo/client/react';
-import type {
-  GetStaysQuery,
-  GetStaysQueryVariables,
-  StayFilterInput,
-} from '@/types/__generated__/graphql';
-import { GET_STAYS } from '@/graphql/stays';
+import type { StayFilterInput } from '@/types/__generated__/graphql';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
 import { Seo } from '@/lib/seo';
@@ -43,11 +37,24 @@ export default function StaysPage() {
   const effectiveCheckOut = searchParams.get('checkOut') ?? checkOut;
   const effectiveTravelers = searchParams.get('travelers') ?? travelers;
 
+  const {
+    priceMin,
+    priceMax,
+    propertyType,
+    freeCancellation,
+    starRatings,
+    bedrooms,
+    propertyAmenityIds,
+    roomAmenityIds,
+  } = useAppSelector((state) => state.filters);
+
   // Location filtering is regionId-only (city/countryCode text matching was
   // removed from the schema per ADR-0018, which favors a resolved
   // destination id over free-text matching) - if the user hasn't selected a
   // suggestion yet (no regionId resolved), no location filter is applied,
-  // same as when the field is empty.
+  // same as when the field is empty. All filtering (search fields and
+  // FilterBar fields alike) is applied server-side, so infinite-scroll pages
+  // stay correct past the first page.
   const filter: StayFilterInput | undefined = useMemo(() => {
     const f: StayFilterInput = {};
     if (effectiveRegionId != null && !Number.isNaN(effectiveRegionId)) {
@@ -59,18 +66,31 @@ export default function StaysPage() {
     }
     const guests = getTotalGuests(effectiveTravelers);
     if (guests > 0) f.guests = guests;
+    if (priceMin !== null) f.minPricePerNight = priceMin;
+    if (priceMax !== null) f.maxPricePerNight = priceMax;
+    if (propertyType)
+      f.propertyType = propertyType as StayFilterInput['propertyType'];
+    if (freeCancellation) f.isRefundable = true;
+    if (starRatings.length > 0) f.starRatings = starRatings;
+    if (bedrooms.length > 0) f.bedrooms = bedrooms;
+    if (propertyAmenityIds.length > 0)
+      f.propertyAmenityIds = propertyAmenityIds;
+    if (roomAmenityIds.length > 0) f.roomAmenityIds = roomAmenityIds;
     return Object.keys(f).length > 0 ? f : undefined;
   }, [
     effectiveRegionId,
     effectiveCheckIn,
     effectiveCheckOut,
     effectiveTravelers,
+    priceMin,
+    priceMax,
+    propertyType,
+    freeCancellation,
+    starRatings,
+    bedrooms,
+    propertyAmenityIds,
+    roomAmenityIds,
   ]);
-
-  const [queryRef] = useBackgroundQuery<GetStaysQuery, GetStaysQueryVariables>(
-    GET_STAYS,
-    { variables: { filter } },
-  );
 
   const { favorites, toggleFavorite } = useFavorites();
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
@@ -142,7 +162,7 @@ export default function StaysPage() {
           <ErrorBoundary FallbackComponent={StaysErrorFallback}>
             <Suspense fallback={<StayCardsGridSkeleton />}>
               <StaysListContent
-                queryRef={queryRef}
+                filter={filter}
                 favorites={favorites}
                 toggleFavorite={toggleFavorite}
                 selectedStayId={selectedStayId}

@@ -7,14 +7,6 @@ interface ItemInfoMessageProps {
   className?: string;
 }
 
-/**
- * ItemInfoMessage
- *
- * Friendly fallback shown in the detail panel when the stay fails to load
- * (API/network error) or can't be found (e.g. a stale/invalid id). Mirrors
- * ItemInfo's panel chrome so swapping between states doesn't jump around,
- * and always offers a way back to the search results.
- */
 export function ItemInfoMessage({
   title,
   message,
