@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
-import { Calendar } from '@/components/ui/calendar';
+import React, { lazy, Suspense, useMemo } from 'react';
 import { useSearchFormMobile } from './SearchFormMobileContext';
 import { parseISOToDateRange } from '../searchFormUtils';
 import { type DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
+
+const Calendar = lazy(() =>
+  import('@/components/ui/calendar').then((m) => ({ default: m.Calendar })),
+);
 
 /**
  * DatesSection
@@ -55,32 +58,40 @@ export const DatesSection: React.FC = () => {
         When are you traveling?
       </h2>
       <div className="overflow-y-auto max-h-[380px] w-full flex justify-center pr-1 border-t border-b border-neutral-100 py-3 scrollbar-thin">
-        <Calendar
-          mode="range"
-          selected={selectedRange}
-          onSelect={handleSelectDates}
-          numberOfMonths={4}
-          disableNavigation
-          disabled={{ before: today }}
-          showOutsideDays={false}
-          className="w-full flex justify-center border-0 p-0 bg-transparent [--cell-size:44px] [&_button]:text-sm [&_button]:font-semibold"
-          classNames={{
-            nav: 'hidden',
-            weekday:
-              'text-sm font-bold text-[#7a7168] flex-none w-(--cell-size) h-(--cell-size) flex items-center justify-center',
-            caption_label: 'text-base font-bold text-frui-blue capitalize',
-          }}
-          formatters={{
-            formatWeekdayName: (day) => {
-              const dayIndex = day.getDay();
-              const englishWeekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-              return englishWeekdays[dayIndex];
-            },
-            formatCaption: (date) => {
-              return format(date, 'MMMM yyyy');
-            },
-          }}
-        />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center w-full h-[380px] text-sm text-muted-foreground">
+              Loading calendar…
+            </div>
+          }
+        >
+          <Calendar
+            mode="range"
+            selected={selectedRange}
+            onSelect={handleSelectDates}
+            numberOfMonths={4}
+            disableNavigation
+            disabled={{ before: today }}
+            showOutsideDays={false}
+            className="w-full flex justify-center border-0 p-0 bg-transparent [--cell-size:44px] [&_button]:text-sm [&_button]:font-semibold"
+            classNames={{
+              nav: 'hidden',
+              weekday:
+                'text-sm font-bold text-[#7a7168] flex-none w-(--cell-size) h-(--cell-size) flex items-center justify-center',
+              caption_label: 'text-base font-bold text-frui-blue capitalize',
+            }}
+            formatters={{
+              formatWeekdayName: (day) => {
+                const dayIndex = day.getDay();
+                const englishWeekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+                return englishWeekdays[dayIndex];
+              },
+              formatCaption: (date) => {
+                return format(date, 'MMMM yyyy');
+              },
+            }}
+          />
+        </Suspense>
       </div>
     </div>
   );

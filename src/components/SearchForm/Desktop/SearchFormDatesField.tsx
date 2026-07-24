@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSearchForm } from './SearchFormContext';
@@ -8,9 +8,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { RangeCalendar } from '@/components/calendar';
 import { type DateRange } from 'react-day-picker';
 import { parseISOToDateRange, formatDatesRange } from '../searchFormUtils';
+
+const RangeCalendar = lazy(() =>
+  import('@/components/calendar').then((m) => ({
+    default: m.RangeCalendar,
+  })),
+);
 
 export const SearchFormDatesField: React.FC = () => {
   const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();
@@ -85,12 +90,20 @@ export const SearchFormDatesField: React.FC = () => {
         }
       />
       <PopoverContent className="w-auto p-0 bg-white border border-[#d6c7b9] rounded-lg shadow-xl text-[#121324] z-50">
-        <RangeCalendar
-          selected={selectedRange}
-          onSelect={handleSelect}
-          numberOfMonths={2}
-          disabled={{ before: today }}
-        />
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center w-[580px] h-[320px] text-sm text-muted-foreground">
+              Loading calendar…
+            </div>
+          }
+        >
+          <RangeCalendar
+            selected={selectedRange}
+            onSelect={handleSelect}
+            numberOfMonths={2}
+            disabled={{ before: today }}
+          />
+        </Suspense>
       </PopoverContent>
     </Popover>
   );

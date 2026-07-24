@@ -13,7 +13,7 @@ const buttonVariants = cva(
         // renders, since an unlabeled action button should default to
         // looking like the primary action of its context.
         default:
-          'bg-frui-orange text-frui-white border-frui-orange shadow-sm hover:shadow-md hover:brightness-95 [a]:hover:brightness-95 focus-visible:border-frui-orange focus-visible:ring-frui-orange/40',
+          'bg-frui-orange-text text-frui-white border-frui-orange-text shadow-sm hover:shadow-md hover:brightness-95 [a]:hover:brightness-95 focus-visible:border-frui-orange-text focus-visible:ring-frui-orange/40',
         // Secondary: everything that isn't the primary/positive action of
         // its context (Cancel, Change picture, Set as primary, Log Out...).
         secondary:
