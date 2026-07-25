@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { buildSrcSet } from '@/lib/images';
 
 export interface GalleryPicture {
   url: string;
@@ -122,11 +123,8 @@ export function ImageGalleryModal({
 
         <div className="flex-1 h-full flex items-center justify-center p-2 sm:p-4">
           <img
-            src={
-              images[currentIndex].url1024 ??
-              images[currentIndex].url512 ??
-              images[currentIndex].url
-            }
+            {...buildSrcSet(images[currentIndex])}
+            sizes="(min-width: 640px) 80vw, 100vw"
             alt={`Expanded view ${currentIndex + 1}`}
             className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
           />
