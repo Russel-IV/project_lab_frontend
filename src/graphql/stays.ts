@@ -41,6 +41,7 @@ export const GET_STAYS = gql`
           url
           thumbnailUrl
           url1024
+          url768
           url512
           caption
           isPrimary
@@ -116,6 +117,7 @@ export const GET_STAY_DETAILS = gql`
           url
           thumbnailUrl
           url1024
+          url768
           url512
           caption
           isPrimary
@@ -128,6 +130,7 @@ export const GET_STAY_DETAILS = gql`
         url
         thumbnailUrl
         url1024
+        url768
         url512
         caption
         isPrimary

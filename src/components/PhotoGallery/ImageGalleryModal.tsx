@@ -7,6 +7,7 @@ export interface GalleryPicture {
   url: string;
   thumbnailUrl?: string | null;
   url1024?: string | null;
+  url768?: string | null;
   url512?: string | null;
 }
 
