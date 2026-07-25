@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  calculateTotalPrice,
   formatMaskedCard,
   formatPolicyTime,
+  formatPrice,
   getCancellationPolicyText,
   splitToBullets,
 } from './format';
@@ -60,5 +62,24 @@ describe('splitToBullets', () => {
 describe('formatMaskedCard', () => {
   it('masks a card down to its last four digits', () => {
     expect(formatMaskedCard('1234')).toBe('•••• •••• •••• 1234');
+  });
+});
+
+describe('calculateTotalPrice', () => {
+  it('multiplies the nightly rate by the number of nights', () => {
+    expect(calculateTotalPrice(100, '2026-08-01', '2026-08-04')).toBe(300);
+  });
+
+  it('clamps to a minimum of 1 night when checkIn === checkOut', () => {
+    expect(calculateTotalPrice(100, '2026-08-01', '2026-08-01')).toBe(100);
+  });
+
+  it('formats below/above the USD-CLP threshold correctly', () => {
+    expect(
+      formatPrice(calculateTotalPrice(100, '2026-08-01', '2026-08-04')),
+    ).toBe('$300');
+    expect(
+      formatPrice(calculateTotalPrice(5000, '2026-08-01', '2026-08-04')),
+    ).toBe(`CLP ${(15000).toLocaleString('de-DE')}`);
   });
 });

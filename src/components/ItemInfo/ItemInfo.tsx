@@ -10,7 +10,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useQuery } from '@apollo/client/react';
-import { differenceInCalendarDays } from 'date-fns';
 import type {
   GetStayDetailsQuery,
   GetReviewsByStayQuery,
@@ -20,6 +19,7 @@ import type {
 } from '@/types/__generated__/graphql';
 import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { ReviewsSection } from '@/components/Reviews/ReviewsSection';
+import { calculateTotalPrice, formatPrice } from '@/utils/format';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -160,13 +160,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   // Format pricing. Sums the per-night price of every room selected in
   // RoomsSection below (kept in sync with BookingWidgetDesktop/Mobile's
   // pricing); falls back to the stay's cheapest room until one is chosen.
-  // Combined per-night rate is multiplied by the searched date range to
-  // match the "total" label below (same logic as the stay list cards in
-  // StayCardVariant).
-  const nights = Math.max(
-    1,
-    differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
-  );
   const selectedRoomsNightly = booking.selectedRooms.reduce(
     (sum, room) => sum + room.price,
     0,
@@ -174,11 +167,9 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
   const nightlyPrice =
     selectedRoomsNightly ||
     (typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0);
-  const price = nightlyPrice * nights;
-  const isUSD = price < 10000;
-  const formattedPrice = isUSD
-    ? `$${price}`
-    : `CLP ${price.toLocaleString('de-DE')}`;
+  const formattedPrice = formatPrice(
+    calculateTotalPrice(nightlyPrice, checkIn, checkOut),
+  );
 
   const summary = summaryData?.reviewSummary;
 

@@ -2,7 +2,9 @@ import { lazy, Suspense, useMemo } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { GET_STAYS } from '@/graphql/stays';
 import { useStaysFilter } from '@/hooks/useStaysFilter';
+import { useAppSelector } from '@/store/hooks';
 import { Skeleton } from '@/components/ui/skeleton';
+import { calculateTotalPrice, formatPrice } from '@/utils/format';
 import type {
   GetStaysQuery,
   GetStaysQueryVariables,
@@ -18,6 +20,7 @@ interface StaysMapModalProps {
 
 export function StaysMapModal({ onClose }: StaysMapModalProps) {
   const filter = useStaysFilter();
+  const { checkIn, checkOut } = useAppSelector((state) => state.search);
 
   // size: 100 pulls every currently-filtered stay in one shot for the pins —
   // deliberately separate from the list's paginated GET_STAYS call, which
@@ -34,12 +37,23 @@ export function StaysMapModal({ onClose }: StaysMapModalProps) {
         (s): s is typeof s & { location: NonNullable<typeof s.location> } =>
           s.location !== null,
       )
-      .map((s) => ({
-        name: s.name,
-        latitude: s.location.latitude,
-        longitude: s.location.longitude,
-      }));
-  }, [data]);
+      .map((s) => {
+        const primaryPicture =
+          s.pictures?.find((p) => p.isPrimary) ?? s.pictures?.[0];
+        const nightlyPrice =
+          typeof s.startingFromPrice === 'number' ? s.startingFromPrice : 0;
+        return {
+          id: s.publicId,
+          name: s.name,
+          latitude: s.location.latitude,
+          longitude: s.location.longitude,
+          thumbnailUrl: primaryPicture?.thumbnailUrl ?? null,
+          priceLabel: formatPrice(
+            calculateTotalPrice(nightlyPrice, checkIn, checkOut),
+          ),
+        };
+      });
+  }, [data, checkIn, checkOut]);
 
   // No single stay to center on at the list level, so center on the
   // average position of every pin instead.

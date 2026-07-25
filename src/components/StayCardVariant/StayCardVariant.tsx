@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Heart, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { differenceInCalendarDays } from 'date-fns';
 import { type GetStaysQuery } from '@/types/__generated__/graphql';
 import type { ReviewSummaryData } from '@/hooks/useReviewSummaries';
 import { useAppSelector } from '@/store/hooks';
 import { buildSrcSet } from '@/lib/images';
+import { calculateTotalPrice, formatPrice } from '@/utils/format';
 
 export type GraphQLStay = GetStaysQuery['stays']['items'][number];
 
@@ -249,18 +249,11 @@ export function StayCardVariantPricing() {
   const { checkIn, checkOut } = useAppSelector((state) => state.search);
 
   // startingFromPrice is a per-night rate, not a total.
-  const nights = Math.max(
-    1,
-    differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
-  );
   const nightlyPrice =
     typeof stay.startingFromPrice === 'number' ? stay.startingFromPrice : 0;
-  const price = nightlyPrice * nights;
-
-  const isUSD = price < 10000;
-  const formattedPrice = isUSD
-    ? `$${price}`
-    : `CLP ${price.toLocaleString('de-DE')}`;
+  const formattedPrice = formatPrice(
+    calculateTotalPrice(nightlyPrice, checkIn, checkOut),
+  );
 
   return (
     <div className="flex flex-col items-end text-white select-none">

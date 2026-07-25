@@ -1,4 +1,4 @@
-import { parse, format } from 'date-fns';
+import { parse, format, differenceInCalendarDays } from 'date-fns';
 
 /**
  * Formats a nightly or total price according to currency rules.
@@ -13,6 +13,27 @@ export function formatPrice(price: number, useDesktopStyle = false): string {
     return useDesktopStyle ? `$ ${price} USD` : `$${price}`;
   }
   return `CLP ${price.toLocaleString('de-DE')}`;
+}
+
+/**
+ * Multiplies a per-night rate by the number of searched nights. Nights are
+ * clamped to a minimum of 1, matching booking-widget/list-card behavior when
+ * dates are unset or equal.
+ *
+ * @param nightlyPrice - Per-night rate.
+ * @param checkIn - ISO 'yyyy-MM-dd' check-in date string.
+ * @param checkOut - ISO 'yyyy-MM-dd' check-out date string.
+ */
+export function calculateTotalPrice(
+  nightlyPrice: number,
+  checkIn: string,
+  checkOut: string,
+): number {
+  const nights = Math.max(
+    1,
+    differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
+  );
+  return nightlyPrice * nights;
 }
 
 /**
