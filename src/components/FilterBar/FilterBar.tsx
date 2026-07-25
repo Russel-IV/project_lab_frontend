@@ -1,10 +1,16 @@
 import { lazy, Suspense, useState } from 'react';
-import { ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown, Map, SlidersHorizontal } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleFreeCancellation } from '@/store/filtersSlice';
 
 const FilterModal = lazy(() =>
   import('./FilterModal').then((m) => ({ default: m.FilterModal })),
+);
+
+const StaysMapModal = lazy(() =>
+  import('@/components/StaysMapModal').then((m) => ({
+    default: m.StaysMapModal,
+  })),
 );
 
 export function FilterBar() {
@@ -21,6 +27,7 @@ export function FilterBar() {
   } = useAppSelector((state) => state.filters);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   const isFiltersActive =
     priceMin !== null ||
@@ -85,12 +92,27 @@ export function FilterBar() {
         <span>Free cancellation</span>
       </button>
 
+      <button
+        type="button"
+        onClick={() => setIsMapOpen(true)}
+        className={getButtonClass(false)}
+      >
+        <Map className="size-3.5" />
+        <span>Map</span>
+      </button>
+
       {isModalOpen && (
         <Suspense fallback={null}>
           <FilterModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
           />
+        </Suspense>
+      )}
+
+      {isMapOpen && (
+        <Suspense fallback={null}>
+          <StaysMapModal onClose={() => setIsMapOpen(false)} />
         </Suspense>
       )}
     </div>

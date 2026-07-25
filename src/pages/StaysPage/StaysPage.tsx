@@ -1,17 +1,16 @@
-import { useEffect, useState, useMemo, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ArrowUp } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSearchQuery } from '@/store/searchSlice';
 import { SearchForm } from '@/components/SearchForm';
 import { FilterBar } from '@/components/FilterBar';
-import type { StayFilterInput } from '@/types/__generated__/graphql';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
 import { Seo } from '@/lib/seo';
 import { Sections, MobileSections } from '@/components/Sections';
 import { useFavorites } from '@/hooks/useFavorites';
-import { useSearchContextFilter } from '@/hooks/useSearchContextFilter';
+import { useStaysFilter } from '@/hooks/useStaysFilter';
 
 import { PAGE_SIZE, StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
@@ -23,18 +22,6 @@ export default function StaysPage() {
 
   const { place } = useAppSelector((state) => state.search);
   const [searchParams] = useSearchParams();
-  const searchContextFilter = useSearchContextFilter();
-
-  const {
-    priceMin,
-    priceMax,
-    propertyType,
-    freeCancellation,
-    starRatings,
-    bedrooms,
-    propertyAmenityIds,
-    roomAmenityIds,
-  } = useAppSelector((state) => state.filters);
 
   // Location filtering is regionId-only (city/countryCode text matching was
   // removed from the schema per ADR-0018, which favors a resolved
@@ -43,30 +30,7 @@ export default function StaysPage() {
   // same as when the field is empty. All filtering (search fields and
   // FilterBar fields alike) is applied server-side, so infinite-scroll pages
   // stay correct past the first page.
-  const filter: StayFilterInput | undefined = useMemo(() => {
-    const f: StayFilterInput = { ...searchContextFilter };
-    if (priceMin !== null) f.minPricePerNight = priceMin;
-    if (priceMax !== null) f.maxPricePerNight = priceMax;
-    if (propertyType)
-      f.propertyType = propertyType as StayFilterInput['propertyType'];
-    if (freeCancellation) f.isRefundable = true;
-    if (starRatings.length > 0) f.starRatings = starRatings;
-    if (bedrooms.length > 0) f.bedrooms = bedrooms;
-    if (propertyAmenityIds.length > 0)
-      f.propertyAmenityIds = propertyAmenityIds;
-    if (roomAmenityIds.length > 0) f.roomAmenityIds = roomAmenityIds;
-    return Object.keys(f).length > 0 ? f : undefined;
-  }, [
-    searchContextFilter,
-    priceMin,
-    priceMax,
-    propertyType,
-    freeCancellation,
-    starRatings,
-    bedrooms,
-    propertyAmenityIds,
-    roomAmenityIds,
-  ]);
+  const filter = useStaysFilter();
 
   const { favorites, toggleFavorite } = useFavorites();
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
