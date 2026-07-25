@@ -4,10 +4,11 @@ import {
   useEffect,
   useRef,
   useLayoutEffect,
-  startTransition,
+  useTransition,
 } from 'react';
 import { useSuspenseQuery } from '@apollo/client/react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { Loader2 } from 'lucide-react';
 import type {
   GetStaysQuery,
   GetStaysQueryVariables,
@@ -146,10 +147,7 @@ export function StaysListContent({
   const virtualRows = rowVirtualizer.getVirtualItems();
 
   const isFetchingMoreRef = useRef(false);
-  // scrollOffset (not the overscan-rendered range) is the correct signal for
-  // "is the user actually near the bottom" — overscan alone can span the
-  // entire list when there are only a few rows, which would otherwise fire
-  // fetchMore for every page back-to-back regardless of scroll position.
+  const [isFetchingMore, startTransition] = useTransition();
   const scrollOffset = rowVirtualizer.scrollOffset ?? 0;
 
   useEffect(() => {
@@ -163,10 +161,15 @@ export function StaysListContent({
         isFetchingMoreRef.current = false;
       });
     });
-  }, [scrollOffset, hasNextPage, stays.length, fetchMore, rowVirtualizer]);
+  }, [
+    scrollOffset,
+    hasNextPage,
+    stays.length,
+    fetchMore,
+    rowVirtualizer,
+    startTransition,
+  ]);
 
-  // Bounded to whatever rows are actually mounted, so this batch query stays
-  // small no matter how many pages the user has scrolled through.
   const visibleStayIds = virtualRows.flatMap(
     (vr) => rows[vr.index]?.map((s) => s.id) ?? [],
   );
@@ -180,8 +183,6 @@ export function StaysListContent({
     return null;
   }, [stays, selectedStayId]);
 
-  // If the selected stay drops out of the result set (e.g. a filter change),
-  // close the detail drawer instead of silently swapping to a different stay.
   useEffect(() => {
     if (selectedStayId !== null && activeStayId === null) {
       setSelectedStayId(null);
@@ -280,6 +281,19 @@ export function StaysListContent({
               })}
             </div>
           </div>
+          {isFetchingMore && (
+            <div className="flex items-center justify-center py-6">
+              <Loader2
+                className="size-6 animate-spin text-frui-orange"
+                aria-label="Loading more stays"
+              />
+            </div>
+          )}
+          {!hasNextPage && !isFetchingMore && (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              Looks like you&apos;ve reached the end!
+            </p>
+          )}
         </>
       )}
     </>
