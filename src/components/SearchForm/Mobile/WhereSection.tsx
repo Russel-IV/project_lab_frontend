@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Sparkles } from 'lucide-react';
 import { useSearchFormMobile } from './SearchFormMobileContext';
 import { InputGroupAddon } from '@/components/ui/input-group';
 import {
@@ -15,7 +15,8 @@ import {
   usePopularDestinations,
 } from '@/hooks/useDestinations';
 import { formatDestinationLabel } from '@/utils/countryName';
-import { getRecentSearches } from '../searchFormUtils';
+import { getRecentSearches, SURPRISE_ME_VALUE } from '../searchFormUtils';
+import { SURPRISE_ME_LABEL } from '@/store/searchSlice';
 
 interface DestinationOption {
   value: number | string;
@@ -26,10 +27,12 @@ export const WhereSection: React.FC = () => {
   const {
     localPlace,
     localPlaceRegionId,
+    localIsSurpriseMe,
     setLocalPlace,
     activeSection,
     setActiveSection,
     handleSelectPlace,
+    handleSelectSurpriseMe,
   } = useSearchFormMobile();
 
   // Decoupled from `localPlace` (the committed selection) so that typing
@@ -86,11 +89,14 @@ export const WhereSection: React.FC = () => {
   );
 
   const showRecents = !inputValue && recentOptions.length > 0;
-  const items: DestinationOption[] = showRecents
-    ? recentOptions
-    : inputValue.trim()
-      ? destinationOptions
-      : popularOptions;
+  const items: DestinationOption[] = [
+    { value: SURPRISE_ME_VALUE, label: SURPRISE_ME_LABEL },
+    ...(showRecents
+      ? recentOptions
+      : inputValue.trim()
+        ? destinationOptions
+        : popularOptions),
+  ];
   const groupLabel = showRecents
     ? 'Recent searches'
     : inputValue
@@ -119,9 +125,18 @@ export const WhereSection: React.FC = () => {
       <h2 className="text-2xl font-bold text-frui-blue">Where?</h2>
       <Combobox<number | string>
         items={items}
-        value={localPlaceRegionId ?? (localPlace || null)}
+        value={
+          localIsSurpriseMe
+            ? SURPRISE_ME_VALUE
+            : (localPlaceRegionId ?? (localPlace || null))
+        }
         onValueChange={(val) => {
           if (val == null) return;
+          if (val === SURPRISE_ME_VALUE) {
+            handleSelectSurpriseMe();
+            setInputValue(SURPRISE_ME_LABEL);
+            return;
+          }
           const picked = items.find((option) => option.value === val);
           if (!picked) return;
           // Recent entries without a regionId carry their label as `value`
@@ -184,7 +199,11 @@ export const WhereSection: React.FC = () => {
                 value={option.value}
                 className="flex items-center gap-3 text-left w-full cursor-pointer py-2 px-1 rounded-lg hover:bg-[#f7f4f2]"
               >
-                <MapPin className="h-5 w-5 text-[#7a7168] shrink-0" />
+                {option.value === SURPRISE_ME_VALUE ? (
+                  <Sparkles className="h-5 w-5 text-[#e8660d] shrink-0" />
+                ) : (
+                  <MapPin className="h-5 w-5 text-[#7a7168] shrink-0" />
+                )}
                 <span className="text-sm font-bold text-frui-blue">
                   {option.label}
                 </span>

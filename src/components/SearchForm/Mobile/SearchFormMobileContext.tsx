@@ -5,6 +5,7 @@ import { type RoomConfig } from '../searchFormUtils';
 export interface SearchFormMobileContextProps {
   localPlace: string;
   localPlaceRegionId: number | null;
+  localIsSurpriseMe: boolean;
   setLocalPlace: (val: string) => void;
   localCheckIn: string;
   localCheckOut: string;
@@ -13,6 +14,7 @@ export interface SearchFormMobileContextProps {
   setActiveSection: (val: 'where' | 'dates' | 'travelers') => void;
   rooms: RoomConfig[];
   handleSelectPlace: (label: string, regionId?: number) => void;
+  handleSelectSurpriseMe: () => void;
   handleSelectDates: (
     newRange: DateRange | undefined,
     selectedDay: Date,

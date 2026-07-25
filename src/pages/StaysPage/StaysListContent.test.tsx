@@ -83,6 +83,7 @@ function renderWithProviders(
       search: {
         place: '',
         placeRegionId: null,
+        isSurpriseMe: false,
         checkIn: '2026-08-01',
         checkOut: '2026-08-05',
         travelers: '2',

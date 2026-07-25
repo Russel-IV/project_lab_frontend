@@ -94,7 +94,12 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
           <button
             type="button"
             onClick={formState.handleSearchSubmit}
-            className="flex items-center gap-2 bg-frui-orange text-frui-white text-sm font-bold px-6 py-3.5 rounded-2xl shadow-sm cursor-pointer border-0"
+            disabled={
+              !hideWhereSection &&
+              formState.localPlaceRegionId == null &&
+              !formState.localIsSurpriseMe
+            }
+            className="flex items-center gap-2 bg-frui-orange text-frui-white text-sm font-bold px-6 py-3.5 rounded-2xl shadow-sm cursor-pointer border-0 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {!submitButtonText && (
               <Search className="h-4 w-4 text-frui-white" />
@@ -117,13 +122,16 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
  * Renders the desktop form input fields inside a grid layout.
  */
 export const SearchFormFields: React.FC = () => {
-  const { onSubmit } = useSearchForm();
+  const { onSubmit, placeRegionId, isSurpriseMe } = useSearchForm();
   return (
     <div className="form-grid">
       <SearchFormPlaceField />
       <SearchFormDatesField />
       <SearchFormTravelersField />
-      <FormSubmit onClick={onSubmit} />
+      <FormSubmit
+        onClick={onSubmit}
+        disabled={placeRegionId == null && !isSurpriseMe}
+      />
     </div>
   );
 };

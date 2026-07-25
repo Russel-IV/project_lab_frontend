@@ -60,6 +60,7 @@ function renderWhereSection(
   > = {},
 ) {
   const handleSelectPlace = vi.fn();
+  const handleSelectSurpriseMe = vi.fn();
   const setLocalPlace = vi.fn();
   const setActiveSection = vi.fn();
   render(
@@ -68,6 +69,7 @@ function renderWhereSection(
         value={{
           localPlace: '',
           localPlaceRegionId: null,
+          localIsSurpriseMe: false,
           setLocalPlace,
           localCheckIn: '',
           localCheckOut: '',
@@ -76,6 +78,7 @@ function renderWhereSection(
           setActiveSection,
           rooms: [],
           handleSelectPlace,
+          handleSelectSurpriseMe,
           handleSelectDates: vi.fn(),
           updateAdults: vi.fn(),
           addRoom: vi.fn(),
@@ -89,7 +92,12 @@ function renderWhereSection(
       </SearchFormMobileContext.Provider>
     </MockedProvider>,
   );
-  return { handleSelectPlace, setLocalPlace, setActiveSection };
+  return {
+    handleSelectPlace,
+    handleSelectSurpriseMe,
+    setLocalPlace,
+    setActiveSection,
+  };
 }
 
 beforeEach(() => {

@@ -12,7 +12,11 @@ import { Sections, MobileSections } from '@/components/Sections';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useStaysFilter } from '@/hooks/useStaysFilter';
 
-import { PAGE_SIZE, StaysListContent } from './StaysListContent';
+import {
+  PAGE_SIZE,
+  StaysEmptyState,
+  StaysListContent,
+} from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
 
 const SCROLL_TOP_THRESHOLD = 400;
@@ -20,7 +24,7 @@ const SCROLL_TOP_THRESHOLD = 400;
 export default function StaysPage() {
   const dispatch = useAppDispatch();
 
-  const { place } = useAppSelector((state) => state.search);
+  const { place, isSurpriseMe } = useAppSelector((state) => state.search);
   const [searchParams] = useSearchParams();
 
   // Location filtering is regionId-only (city/countryCode text matching was
@@ -31,6 +35,14 @@ export default function StaysPage() {
   // FilterBar fields alike) is applied server-side, so infinite-scroll pages
   // stay correct past the first page.
   const filter = useStaysFilter();
+
+  // Mirrors useSearchContextFilter's URL-vs-redux merge: the URL is the
+  // source of truth on page load, redux otherwise.
+  const surpriseParam = searchParams.get('surprise');
+  const effectiveIsSurpriseMe =
+    surpriseParam != null ? surpriseParam === 'true' : isSurpriseMe;
+
+  const canShowResults = filter?.regionId != null || effectiveIsSurpriseMe;
 
   const { favorites, toggleFavorite } = useFavorites();
   const [selectedStayId, setSelectedStayId] = useState<number | null>(null);
@@ -51,6 +63,7 @@ export default function StaysPage() {
   useEffect(() => {
     const placeParam = searchParams.get('place');
     const regionIdUrlParam = searchParams.get('regionId');
+    const surpriseUrlParam = searchParams.get('surprise');
     const checkInParam = searchParams.get('checkIn');
     const checkOutParam = searchParams.get('checkOut');
     const travelersParam = searchParams.get('travelers');
@@ -59,6 +72,7 @@ export default function StaysPage() {
       setSearchQuery({
         place: placeParam ?? undefined,
         placeRegionId: regionIdUrlParam ? Number(regionIdUrlParam) : null,
+        isSurpriseMe: surpriseUrlParam === 'true',
         checkIn: checkInParam ?? undefined,
         checkOut: checkOutParam ?? undefined,
         travelers: travelersParam ?? undefined,
@@ -73,11 +87,19 @@ export default function StaysPage() {
   return (
     <div className="flex-1 bg-frui-cream py-10 px-4 sm:px-6 lg:px-8">
       <Seo
-        title={trimmedPlace ? `Stays in ${trimmedPlace}` : 'Search Stays'}
+        title={
+          effectiveIsSurpriseMe
+            ? 'Surprise Stays'
+            : trimmedPlace
+              ? `Stays in ${trimmedPlace}`
+              : 'Search Stays'
+        }
         description={
-          trimmedPlace
-            ? `Browse and book stays in ${trimmedPlace}. Compare prices, amenities, and reviews on Frui.`
-            : 'Browse and book stays worldwide. Compare prices, amenities, and reviews on Frui.'
+          effectiveIsSurpriseMe
+            ? 'Browse a surprise pick of stays worldwide. Compare prices, amenities, and reviews on Frui.'
+            : trimmedPlace
+              ? `Browse and book stays in ${trimmedPlace}. Compare prices, amenities, and reviews on Frui.`
+              : 'Browse and book stays worldwide. Compare prices, amenities, and reviews on Frui.'
         }
         path="/stays"
       />
@@ -96,20 +118,24 @@ export default function StaysPage() {
         <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">
           <div className="flex flex-col gap-4 pb-2">
             <SearchForm />
-            <FilterBar onSelectStay={setSelectedStayId} />
+            {canShowResults && <FilterBar onSelectStay={setSelectedStayId} />}
           </div>
 
-          <ErrorBoundary FallbackComponent={StaysErrorFallback}>
-            <Suspense fallback={<StayCardsGridSkeleton />}>
-              <StaysListContent
-                filter={filter}
-                favorites={favorites}
-                toggleFavorite={toggleFavorite}
-                selectedStayId={selectedStayId}
-                setSelectedStayId={setSelectedStayId}
-              />
-            </Suspense>
-          </ErrorBoundary>
+          {canShowResults ? (
+            <ErrorBoundary FallbackComponent={StaysErrorFallback}>
+              <Suspense fallback={<StayCardsGridSkeleton />}>
+                <StaysListContent
+                  filter={filter}
+                  favorites={favorites}
+                  toggleFavorite={toggleFavorite}
+                  selectedStayId={selectedStayId}
+                  setSelectedStayId={setSelectedStayId}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          ) : (
+            <StaysEmptyState message="Select a destination first" />
+          )}
         </section>
       </main>
 

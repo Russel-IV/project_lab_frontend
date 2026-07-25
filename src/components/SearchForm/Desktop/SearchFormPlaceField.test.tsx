@@ -81,11 +81,13 @@ function renderField(
         value={{
           placeValue: overrides.placeValue ?? '',
           placeRegionId: overrides.placeRegionId ?? null,
+          isSurpriseMe: false,
           checkInValue: '',
           checkOutValue: '',
           travelersValue: '',
           onPlaceChange,
           onPlaceSelect,
+          onSurpriseMeSelect: vi.fn(),
           onDatesChange: vi.fn(),
           onTravelersChange: vi.fn(),
           onSubmit: vi.fn(),

@@ -46,7 +46,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   );
 
   return (
-    <div className="selection-field-container place-field-container">
+    <div className="selection-field-container">
       <span className="selection-field-label">Where to?</span>
       <Combobox
         items={options}
@@ -56,19 +56,10 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
           const picked = options.find((option) => option.value === regionId);
           if (!picked) return;
           onPlaceSelect(picked.value, picked.label);
-          // Set the input text ourselves rather than relying on base-ui's
-          // own post-selection label resolution, which can fall back to
-          // stringifying the raw regionId if `options` doesn't contain a
-          // match at the exact moment it runs internally.
           setInputValue(picked.label);
         }}
         inputValue={inputValue}
         onInputValueChange={(val, eventDetails) => {
-          // base-ui fires this with reason "item-press" and, oddly, again
-          // with "none" right after a selection, both times trying to
-          // resync the controlled input text - sometimes with an
-          // unresolved raw value instead of the label. We already set the
-          // correct text ourselves in onValueChange above, so ignore both.
           if (
             eventDetails.reason === 'item-press' ||
             eventDetails.reason === 'none'
@@ -82,7 +73,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
         <ComboboxInput
           id="desktop-search-place"
           showClear={showClear && placeValue !== ''}
-          placeholder={'Where are we going?'}
+          placeholder={'Where to?'}
           className="form-field-base combobox-field"
         >
           <InputGroupAddon align="inline-start">

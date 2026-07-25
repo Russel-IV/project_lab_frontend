@@ -1,6 +1,10 @@
 import { parse, format, isValid } from 'date-fns';
 import { type DateRange } from 'react-day-picker';
 
+// Sentinel combobox item value for the "Surprise me!" option, distinct from
+// any real numeric regionId.
+export const SURPRISE_ME_VALUE = 'surprise-me';
+
 /**
  * Parses checkIn and checkOut ISO strings back into a DateRange object.
  *

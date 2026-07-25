@@ -2,10 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
-  setPlace,
   setPlaceSelection,
+  setSurpriseMe,
   setDates,
   setTravelers,
+  SURPRISE_ME_LABEL,
 } from '@/store/searchSlice';
 import { type DateRange } from 'react-day-picker';
 import { format, parse, startOfDay } from 'date-fns';
@@ -47,6 +48,9 @@ export const useSearchFormMobileState = ({
   const [localPlaceRegionId, setLocalPlaceRegionId] = useState<number | null>(
     reduxSearch.placeRegionId,
   );
+  const [localIsSurpriseMe, setLocalIsSurpriseMe] = useState(
+    reduxSearch.isSurpriseMe,
+  );
   const [localCheckIn, setLocalCheckIn] = useState(reduxSearch.checkIn);
   const [localCheckOut, setLocalCheckOut] = useState(reduxSearch.checkOut);
   const [localTravelers, setLocalTravelers] = useState(reduxSearch.travelers);
@@ -72,11 +76,20 @@ export const useSearchFormMobileState = ({
   const setLocalPlace = (val: string) => {
     setLocalPlaceRaw(val);
     setLocalPlaceRegionId(null);
+    setLocalIsSurpriseMe(false);
   };
 
   const handleSelectPlace = (label: string, regionId?: number) => {
     setLocalPlaceRaw(label);
     setLocalPlaceRegionId(regionId ?? null);
+    setLocalIsSurpriseMe(false);
+    setActiveSection('dates');
+  };
+
+  const handleSelectSurpriseMe = () => {
+    setLocalPlaceRaw(SURPRISE_ME_LABEL);
+    setLocalPlaceRegionId(null);
+    setLocalIsSurpriseMe(true);
     setActiveSection('dates');
   };
 
@@ -172,27 +185,32 @@ export const useSearchFormMobileState = ({
       return;
     }
 
-    if (localPlaceRegionId != null) {
+    if (localIsSurpriseMe) {
+      dispatch(setSurpriseMe());
+    } else if (localPlaceRegionId != null) {
       dispatch(
         setPlaceSelection({ regionId: localPlaceRegionId, label: localPlace }),
       );
+      if (localPlace.trim() !== '') {
+        saveRecentSearch({
+          label: localPlace.trim(),
+          regionId: localPlaceRegionId,
+        });
+      }
     } else {
-      dispatch(setPlace(localPlace));
+      return;
     }
+
     dispatch(setDates({ checkIn: localCheckIn, checkOut: localCheckOut }));
     dispatch(setTravelers(localTravelers));
-
-    if (localPlace.trim() !== '') {
-      saveRecentSearch({
-        label: localPlace.trim(),
-        regionId: localPlaceRegionId ?? undefined,
-      });
-    }
 
     const params = new URLSearchParams();
     params.append('place', localPlace);
     if (localPlaceRegionId != null) {
       params.append('regionId', String(localPlaceRegionId));
+    }
+    if (localIsSurpriseMe) {
+      params.append('surprise', 'true');
     }
     params.append('checkIn', localCheckIn);
     params.append('checkOut', localCheckOut);
@@ -205,6 +223,7 @@ export const useSearchFormMobileState = ({
   return {
     localPlace,
     localPlaceRegionId,
+    localIsSurpriseMe,
     setLocalPlace,
     localCheckIn,
     localCheckOut,
@@ -214,6 +233,7 @@ export const useSearchFormMobileState = ({
     rooms,
     displayDatesValue,
     handleSelectPlace,
+    handleSelectSurpriseMe,
     handleSelectDates,
     updateAdults,
     addRoom,

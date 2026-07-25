@@ -53,14 +53,6 @@
   cursor: pointer;
 }
 
-/* "Where to?" needs more room than Dates/Travelers - its placeholder
-   ("Where are we going?") and destination labels ("City, Country") both run
-   longer than the other fields' content. */
-.place-field-container {
-  flex: 2 1 220px;
-  min-width: 180px;
-}
-
 .selection-field-container:hover {
   background-color: rgba(18, 21, 41, 0.06);
 }
@@ -164,6 +156,17 @@
 
 .search-button:active {
   transform: scale(0.96);
+}
+
+.search-button:disabled {
+  background-color: #d6c7b9;
+  cursor: not-allowed;
+}
+
+.search-button:disabled:hover,
+.search-button:disabled:active {
+  background-color: #d6c7b9;
+  transform: none;
 }
 
 /* Combobox adjustments extending base */

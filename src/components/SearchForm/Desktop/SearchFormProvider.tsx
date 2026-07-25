@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   setPlace,
   setPlaceSelection,
+  setSurpriseMe,
   setDates,
   setTravelers,
 } from '@/store/searchSlice';
@@ -28,6 +29,7 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
   const {
     place: placeValue,
     placeRegionId,
+    isSurpriseMe,
     checkIn: checkInValue,
     checkOut: checkOutValue,
     travelers: travelersValue,
@@ -35,11 +37,15 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleSearch = () => {
     if (!isValidDateRange(checkInValue, checkOutValue)) return;
+    if (placeRegionId == null && !isSurpriseMe) return;
 
     const params = new URLSearchParams();
     params.append('place', placeValue);
     if (placeRegionId != null) {
       params.append('regionId', String(placeRegionId));
+    }
+    if (isSurpriseMe) {
+      params.append('surprise', 'true');
     }
     params.append('checkIn', checkInValue);
     params.append('checkOut', checkOutValue);
@@ -50,12 +56,14 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
   const contextValue: SearchFormContextProps = {
     placeValue,
     placeRegionId,
+    isSurpriseMe,
     checkInValue,
     checkOutValue,
     travelersValue,
     onPlaceChange: (val) => dispatch(setPlace(val)),
     onPlaceSelect: (regionId, label) =>
       dispatch(setPlaceSelection({ regionId, label })),
+    onSurpriseMeSelect: () => dispatch(setSurpriseMe()),
     onDatesChange: (checkIn, checkOut) =>
       dispatch(setDates({ checkIn, checkOut })),
     onTravelersChange: (val) => dispatch(setTravelers(val)),
