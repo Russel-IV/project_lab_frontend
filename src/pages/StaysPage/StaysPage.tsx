@@ -96,7 +96,7 @@ export default function StaysPage() {
         <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">
           <div className="flex flex-col gap-4 pb-2">
             <SearchForm />
-            <FilterBar />
+            <FilterBar onSelectStay={setSelectedStayId} />
           </div>
 
           <ErrorBoundary FallbackComponent={StaysErrorFallback}>

@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface MarkerInfo {
   id?: string;
+  stayId?: number;
   latitude: number;
   longitude: number;
   name: string;
@@ -24,6 +25,7 @@ interface StayMapProps {
   className?: string;
   gestureHandling?: 'cooperative' | 'greedy' | 'none' | 'auto';
   disableDefaultUI?: boolean;
+  onMarkerClick?: (stayId: number) => void;
 }
 
 export function StayMap({
@@ -34,6 +36,7 @@ export function StayMap({
   className = 'h-[300px] w-full rounded-2xl border border-border',
   gestureHandling = 'none',
   disableDefaultUI = true,
+  onMarkerClick,
 }: StayMapProps) {
   const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const position = { lat: latitude, lng: longitude };
@@ -55,25 +58,18 @@ export function StayMap({
           onClick={() => setHoveredMarkerId(null)}
         >
           {activeMarkers.map((marker, idx) => {
-            const isHoverable = !!(
-              marker.id &&
-              marker.thumbnailUrl &&
-              marker.priceLabel
-            );
+            // Preview card is desktop-only: touch devices have no hover, and
+            // once a tap can jump straight to the stay's detail panel, a
+            // tap-to-preview intermediate step is just extra friction.
+            const isHoverable =
+              !isMobile &&
+              !!(marker.id && marker.thumbnailUrl && marker.priceLabel);
             const isHovered = isHoverable && hoveredMarkerId === marker.id;
-            const hoverHandlers = !isHoverable
-              ? {}
-              : isMobile
-                ? {
-                    onClick: () =>
-                      setHoveredMarkerId((prev) =>
-                        prev === marker.id ? null : (marker.id ?? null),
-                      ),
-                  }
-                : {
-                    onMouseEnter: () => setHoveredMarkerId(marker.id ?? null),
-                    onMouseLeave: () => setHoveredMarkerId(null),
-                  };
+            const isClickable = marker.stayId !== undefined && !!onMarkerClick;
+
+            const handleMarkerClick = isClickable
+              ? () => onMarkerClick!(marker.stayId!)
+              : undefined;
 
             return (
               <AdvancedMarker
@@ -81,9 +77,25 @@ export function StayMap({
                 position={{ lat: marker.latitude, lng: marker.longitude }}
                 title={marker.name}
                 zIndex={isHovered ? 1000 : undefined}
-                {...hoverHandlers}
+                onMouseEnter={
+                  isHoverable
+                    ? () => setHoveredMarkerId(marker.id ?? null)
+                    : undefined
+                }
+                onMouseLeave={
+                  isHoverable ? () => setHoveredMarkerId(null) : undefined
+                }
+                // Also passed here purely so the library flips gmpClickable
+                // (and marker.content's pointer-events) on — its own
+                // gmp-click dispatch needs a Maps JS beta channel we don't
+                // load, so the div's onClick below (a normal React click,
+                // bubbling through the portal) is what actually fires.
+                onClick={handleMarkerClick}
               >
-                <div className="relative">
+                <div
+                  className={`relative ${isClickable ? 'cursor-pointer' : ''}`}
+                  onClick={handleMarkerClick}
+                >
                   <MapPin
                     className="size-10 drop-shadow-md"
                     color="#121529"

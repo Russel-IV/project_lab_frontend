@@ -13,7 +13,11 @@ const StaysMapModal = lazy(() =>
   })),
 );
 
-export function FilterBar() {
+interface FilterBarProps {
+  onSelectStay: (stayId: number) => void;
+}
+
+export function FilterBar({ onSelectStay }: FilterBarProps) {
   const dispatch = useAppDispatch();
   const {
     priceMin,
@@ -112,7 +116,10 @@ export function FilterBar() {
 
       {isMapOpen && (
         <Suspense fallback={null}>
-          <StaysMapModal onClose={() => setIsMapOpen(false)} />
+          <StaysMapModal
+            onClose={() => setIsMapOpen(false)}
+            onSelectStay={onSelectStay}
+          />
         </Suspense>
       )}
     </div>

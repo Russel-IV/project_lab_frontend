@@ -16,9 +16,10 @@ const StayMap = lazy(() =>
 
 interface StaysMapModalProps {
   onClose: () => void;
+  onSelectStay: (stayId: number) => void;
 }
 
-export function StaysMapModal({ onClose }: StaysMapModalProps) {
+export function StaysMapModal({ onClose, onSelectStay }: StaysMapModalProps) {
   const filter = useStaysFilter();
   const { checkIn, checkOut } = useAppSelector((state) => state.search);
 
@@ -44,6 +45,7 @@ export function StaysMapModal({ onClose }: StaysMapModalProps) {
           typeof s.startingFromPrice === 'number' ? s.startingFromPrice : 0;
         return {
           id: s.publicId,
+          stayId: s.id,
           name: s.name,
           latitude: s.location.latitude,
           longitude: s.location.longitude,
@@ -104,6 +106,10 @@ export function StaysMapModal({ onClose }: StaysMapModalProps) {
                 className="w-full h-full"
                 gestureHandling="greedy"
                 disableDefaultUI={false}
+                onMarkerClick={(stayId) => {
+                  onSelectStay(stayId);
+                  onClose();
+                }}
               />
             </Suspense>
           ) : (
