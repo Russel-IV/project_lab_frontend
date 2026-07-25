@@ -18,6 +18,7 @@ export function useStaysFilter(): StayFilterInput | undefined {
     bedrooms,
     propertyAmenityIds,
     roomAmenityIds,
+    favoritesOnly,
   } = useAppSelector((state) => state.filters);
 
   return useMemo(() => {
@@ -32,6 +33,7 @@ export function useStaysFilter(): StayFilterInput | undefined {
     if (propertyAmenityIds.length > 0)
       f.propertyAmenityIds = propertyAmenityIds;
     if (roomAmenityIds.length > 0) f.roomAmenityIds = roomAmenityIds;
+    if (favoritesOnly) f.favoritesOnly = true;
     return Object.keys(f).length > 0 ? f : undefined;
   }, [
     searchContextFilter,
@@ -43,5 +45,6 @@ export function useStaysFilter(): StayFilterInput | undefined {
     bedrooms,
     propertyAmenityIds,
     roomAmenityIds,
+    favoritesOnly,
   ]);
 }

@@ -13,6 +13,7 @@ export interface FiltersState {
   propertyAmenityIds: number[];
   /** In-unit features (A/C, kitchen, balcony, etc). */
   roomAmenityIds: number[];
+  favoritesOnly: boolean;
 }
 
 const initialState: FiltersState = {
@@ -24,6 +25,7 @@ const initialState: FiltersState = {
   bedrooms: [],
   propertyAmenityIds: [],
   roomAmenityIds: [],
+  favoritesOnly: false,
 };
 
 const filtersSlice = createSlice({
@@ -39,6 +41,9 @@ const filtersSlice = createSlice({
     toggleFreeCancellation(state) {
       state.freeCancellation = !state.freeCancellation;
     },
+    toggleFavoritesOnly(state) {
+      state.favoritesOnly = !state.favoritesOnly;
+    },
     clearFilters() {
       return initialState;
     },
@@ -49,6 +54,7 @@ export const {
   setFilters,
   setPropertyType,
   toggleFreeCancellation,
+  toggleFavoritesOnly,
   clearFilters,
 } = filtersSlice.actions;
 

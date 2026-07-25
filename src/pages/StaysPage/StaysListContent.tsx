@@ -93,6 +93,7 @@ export function StaysListContent({
     bedrooms,
     propertyAmenityIds,
     roomAmenityIds,
+    favoritesOnly,
   } = useAppSelector((state) => state.filters);
 
   const hasActiveFilters =
@@ -103,7 +104,8 @@ export function StaysListContent({
     starRatings.length > 0 ||
     bedrooms.length > 0 ||
     propertyAmenityIds.length > 0 ||
-    roomAmenityIds.length > 0;
+    roomAmenityIds.length > 0 ||
+    favoritesOnly;
 
   const stays: GraphQLStay[] = data.stays.items;
   const hasNextPage = data.stays.hasNextPage;
@@ -219,9 +221,11 @@ export function StaysListContent({
       {noStays ? (
         <StaysEmptyState
           message={
-            hasActiveFilters
-              ? 'No stays match your filters. Try removing some filters to see more results.'
-              : 'There are no stays that fit your needs available currently. Try searching again with different requirements.'
+            favoritesOnly
+              ? "You haven't favorited any stays yet. Tap the heart icon on a stay to add it to your favorites."
+              : hasActiveFilters
+                ? 'No stays match your filters. Try removing some filters to see more results.'
+                : 'There are no stays that fit your needs available currently. Try searching again with different requirements.'
           }
         />
       ) : (

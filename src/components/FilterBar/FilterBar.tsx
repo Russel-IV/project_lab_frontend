@@ -1,7 +1,10 @@
 import { lazy, Suspense, useState } from 'react';
 import { ChevronDown, Map, SlidersHorizontal } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { toggleFreeCancellation } from '@/store/filtersSlice';
+import {
+  toggleFreeCancellation,
+  toggleFavoritesOnly,
+} from '@/store/filtersSlice';
 
 const FilterModal = lazy(() =>
   import('./FilterModal').then((m) => ({ default: m.FilterModal })),
@@ -28,7 +31,9 @@ export function FilterBar({ onSelectStay }: FilterBarProps) {
     bedrooms,
     propertyAmenityIds,
     roomAmenityIds,
+    favoritesOnly,
   } = useAppSelector((state) => state.filters);
+  const user = useAppSelector((state) => state.auth.user);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
@@ -95,6 +100,16 @@ export function FilterBar({ onSelectStay }: FilterBarProps) {
       >
         <span>Free cancellation</span>
       </button>
+
+      {user && (
+        <button
+          type="button"
+          onClick={() => dispatch(toggleFavoritesOnly())}
+          className={getButtonClass(favoritesOnly)}
+        >
+          <span>Favorites only</span>
+        </button>
+      )}
 
       <button
         type="button"

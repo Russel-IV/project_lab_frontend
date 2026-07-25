@@ -97,6 +97,7 @@ function renderWithProviders(
         bedrooms: [],
         propertyAmenityIds: [],
         roomAmenityIds: [],
+        favoritesOnly: false,
         ...filtersState,
       },
     },

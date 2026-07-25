@@ -58,6 +58,8 @@ export type StayFilterInput = {
   checkIn?: unknown;
   /** Availability check end date. Must be provided together with checkIn. */
   checkOut?: unknown;
+  /** Limit results to stays the authenticated caller has favorited. Combined with every other filter field via AND, same as isRefundable. Requires authentication to have any effect — an unauthenticated caller gets zero results rather than a GraphQL error. */
+  favoritesOnly?: boolean | null | undefined;
   /** Minimum number of guests that at least one available room must accommodate. */
   guests?: number | null | undefined;
   /** Limit results to properties eligible for a full refund on cancellation. */
