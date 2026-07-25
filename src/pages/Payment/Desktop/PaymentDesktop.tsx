@@ -180,7 +180,7 @@ export default function PaymentDesktop({
     <div className="w-full max-w-6xl mx-auto py-6 px-4">
       <div className="flex items-center gap-4 mb-8">
         <button
-          onClick={() => navigate(`/stay/${stay?.id}`)}
+          onClick={() => navigate(`/stay/${stay?.publicId}`)}
           className="size-10 rounded-full border border-neutral-300 flex items-center justify-center text-neutral-600 bg-frui-white hover:bg-neutral-50 transition-colors cursor-pointer"
         >
           <ChevronLeft className="size-5" />
@@ -245,7 +245,7 @@ export default function PaymentDesktop({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate(`/stay/${stay?.id}`)}
+                  onClick={() => navigate(`/stay/${stay?.publicId}`)}
                   className="text-xs"
                 >
                   Change
@@ -262,7 +262,7 @@ export default function PaymentDesktop({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate(`/stay/${stay?.id}`)}
+                  onClick={() => navigate(`/stay/${stay?.publicId}`)}
                   className="text-xs"
                 >
                   Change

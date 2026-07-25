@@ -70,8 +70,8 @@ function App() {
                 <Route path="/stays" element={<StaysPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
-                <Route path="/stay/:id" element={<StayInfoPage />} />
-                <Route path="/payment/:id" element={<Payment />} />
+                <Route path="/stay/:publicId" element={<StayInfoPage />} />
+                <Route path="/payment/:publicId" element={<Payment />} />
                 <Route path="/profile" element={<Profile />}>
                   <Route index element={<Navigate to="my-profile" replace />} />
                   <Route path="my-profile" element={<MyProfileTab />} />

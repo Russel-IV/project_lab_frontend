@@ -283,6 +283,7 @@ export type MyReviewsQuery = {
     stay: {
       __typename: 'Stay';
       id: number;
+      publicId: string;
       name: string;
       address: {
         __typename: 'Address';
@@ -344,6 +345,7 @@ export type GetStaysQuery = {
     items: Array<{
       __typename: 'Stay';
       id: number;
+      publicId: string;
       name: string;
       about: string | null;
       propertyType: PropertyType;
@@ -415,6 +417,7 @@ export type GetStayDetailsQuery = {
   stay: {
     __typename: 'Stay';
     id: number;
+    publicId: string;
     name: string;
     about: string | null;
     propertyType: PropertyType;
@@ -488,6 +491,14 @@ export type GetStayDetailsQuery = {
       longitude: number;
     } | null;
   } | null;
+};
+
+export type GetStayDetailsByPublicIdQueryVariables = Exact<{
+  publicId: string;
+}>;
+
+export type GetStayDetailsByPublicIdQuery = {
+  stay: GetStayDetailsQuery['stay'];
 };
 
 export type GetStayPriceStatsQueryVariables = Exact<{

@@ -82,7 +82,10 @@ export function StayCardVariant({
     <StayCardVariantContext.Provider
       value={{ stay, reviewSummary, reviewSummaryLoading, priority }}
     >
-      <Link to={`/stay/${stay.id}`} className={`${containerClasses} md:hidden`}>
+      <Link
+        to={`/stay/${stay.publicId}`}
+        className={`${containerClasses} md:hidden`}
+      >
         {cardContent}
       </Link>
 

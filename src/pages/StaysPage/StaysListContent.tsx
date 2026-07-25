@@ -199,7 +199,7 @@ export function StaysListContent({
       itemListElement: stays.map((stay, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: `${SITE_URL}/stay/${stay.id}`,
+        url: `${SITE_URL}/stay/${stay.publicId}`,
         name: stay.name,
       })),
     }),

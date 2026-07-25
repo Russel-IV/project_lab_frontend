@@ -64,6 +64,7 @@ export const MY_REVIEWS = gql`
       stayId
       stay {
         id
+        publicId
         name
         address {
           city

@@ -280,7 +280,7 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
             <button
               type="button"
               disabled={booking.selectedRooms.length === 0}
-              onClick={() => navigate(`/payment/${stay.id}`)}
+              onClick={() => navigate(`/payment/${stay.publicId}`)}
               className="bg-frui-orange hover:bg-frui-orange/90 active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
             >
               Reserve

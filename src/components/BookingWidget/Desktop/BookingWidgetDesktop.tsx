@@ -350,7 +350,7 @@ export const BookingWidgetDesktop: React.FC = () => {
         <button
           type="button"
           disabled={selectedRooms.length === 0}
-          onClick={() => stay && navigate(`/payment/${stay.id}`)}
+          onClick={() => stay && navigate(`/payment/${stay.publicId}`)}
           className="w-full bg-frui-orange hover:bg-frui-orange/95 active:scale-[0.98] text-frui-white font-bold py-3.5 rounded-xl text-sm shadow-xs border-0 cursor-pointer text-center transition-all select-none disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
         >
           Reserve

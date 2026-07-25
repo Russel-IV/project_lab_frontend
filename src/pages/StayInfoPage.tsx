@@ -5,12 +5,12 @@ import { RoomsSection } from '@/components/RoomsSection';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client/react';
 import { useEffect, useState, useRef } from 'react';
-import { GET_STAY_DETAILS } from '@/graphql/stays';
+import { GET_STAY_DETAILS_BY_PUBLIC_ID } from '@/graphql/stays';
 import { GET_REVIEWS_BY_STAY, GET_REVIEW_SUMMARY } from '@/graphql/reviews';
 import { ReviewsSection } from '@/components/Reviews/ReviewsSection';
 import type {
-  GetStayDetailsQuery,
-  GetStayDetailsQueryVariables,
+  GetStayDetailsByPublicIdQuery,
+  GetStayDetailsByPublicIdQueryVariables,
   GetReviewsByStayQuery,
   GetReviewsByStayQueryVariables,
   GetReviewSummaryQuery,
@@ -24,7 +24,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { toggleRoomSelection } from '@/store/bookingSlice';
 
 export default function StayInfoPage() {
-  const { id } = useParams<{ id: string }>();
+  const { publicId } = useParams<{ publicId: string }>();
   const dispatch = useAppDispatch();
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -44,19 +44,19 @@ export default function StayInfoPage() {
     }
   };
 
-  const stayId = id ? parseInt(id, 10) : NaN;
-
   const {
     data,
     loading: stayLoading,
     error: stayError,
-  } = useQuery<GetStayDetailsQuery, GetStayDetailsQueryVariables>(
-    GET_STAY_DETAILS,
-    {
-      variables: { id: stayId },
-      skip: Number.isNaN(stayId),
-    },
-  );
+  } = useQuery<
+    GetStayDetailsByPublicIdQuery,
+    GetStayDetailsByPublicIdQueryVariables
+  >(GET_STAY_DETAILS_BY_PUBLIC_ID, {
+    variables: { publicId: publicId ?? '' },
+    skip: !publicId,
+  });
+
+  const stayId = data?.stay?.id;
 
   const {
     data: reviewsData,
@@ -65,8 +65,8 @@ export default function StayInfoPage() {
   } = useQuery<GetReviewsByStayQuery, GetReviewsByStayQueryVariables>(
     GET_REVIEWS_BY_STAY,
     {
-      variables: { stayId, page: 0, size: 10 },
-      skip: Number.isNaN(stayId),
+      variables: { stayId: stayId ?? 0, page: 0, size: 10 },
+      skip: stayId === undefined,
     },
   );
 
@@ -76,8 +76,8 @@ export default function StayInfoPage() {
     GetReviewSummaryQuery,
     GetReviewSummaryQueryVariables
   >(GET_REVIEW_SUMMARY, {
-    variables: { stayId },
-    skip: Number.isNaN(stayId),
+    variables: { stayId: stayId ?? 0 },
+    skip: stayId === undefined,
   });
 
   const reviewCount = reviewSummaryData?.reviewSummary?.count ?? 0;
@@ -91,7 +91,11 @@ export default function StayInfoPage() {
   if (stayError) {
     return (
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 p-8 text-center">
-        <Seo title="Something Went Wrong" path={`/stay/${id ?? ''}`} noIndex />
+        <Seo
+          title="Something Went Wrong"
+          path={`/stay/${publicId ?? ''}`}
+          noIndex
+        />
         <h1 className="text-lg font-semibold text-foreground">
           Something went wrong
         </h1>
@@ -105,7 +109,7 @@ export default function StayInfoPage() {
   if (!stayLoading && !data?.stay) {
     return (
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-3 p-8 text-center">
-        <Seo title="Stay Not Found" path={`/stay/${id ?? ''}`} noIndex />
+        <Seo title="Stay Not Found" path={`/stay/${publicId ?? ''}`} noIndex />
         <h1 className="text-lg font-semibold text-foreground">
           Stay not found
         </h1>
@@ -126,7 +130,7 @@ export default function StayInfoPage() {
         '@type': 'LodgingBusiness',
         name: stay.name,
         description: stay.about ?? undefined,
-        url: `${SITE_URL}/stay/${stay.id}`,
+        url: `${SITE_URL}/stay/${stay.publicId}`,
         image: stay.pictures.map((p) => p.url),
         address: {
           '@type': 'PostalAddress',
@@ -162,7 +166,7 @@ export default function StayInfoPage() {
               ? stay.about.slice(0, 155)
               : `${stay.name} in ${stay.address.city} — book on Frui.`
           }
-          path={`/stay/${stay.id}`}
+          path={`/stay/${stay.publicId}`}
           image={
             stay.pictures.find((p) => p.isPrimary)?.url ?? stay.pictures[0]?.url
           }

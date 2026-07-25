@@ -108,7 +108,7 @@ export function ReviewHistoryTab() {
                         <Button
                           variant="secondary"
                           size="sm"
-                          render={<Link to={`/stay/${review.stay.id}`} />}
+                          render={<Link to={`/stay/${review.stay.publicId}`} />}
                           nativeButton={false}
                         >
                           Go to review page

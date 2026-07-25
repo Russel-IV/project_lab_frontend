@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { GET_STAY_DETAILS } from '@/graphql/stays';
+import { GET_STAY_DETAILS_BY_PUBLIC_ID } from '@/graphql/stays';
 import { CREATE_BOOKING } from '@/graphql/bookings';
 import { CREATE_PAYMENT_INTENT } from '@/graphql/paymentIntents';
 import type {
   GetStayDetailsQuery,
-  GetStayDetailsQueryVariables,
+  GetStayDetailsByPublicIdQuery,
+  GetStayDetailsByPublicIdQueryVariables,
   CreateBookingMutation,
   CreateBookingMutationVariables,
   CreatePaymentIntentMutation,
@@ -36,7 +37,7 @@ import { paymentSchema, type PaymentFormValues } from './Schemas/paymentSchema';
 import { Seo } from '@/lib/seo';
 
 export default function Payment() {
-  const { id } = useParams<{ id: string }>();
+  const { publicId } = useParams<{ publicId: string }>();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -57,13 +58,12 @@ export default function Payment() {
   const resolvedCheckOut = booking.checkOut || dayAfterTomorrowStr;
   const resolvedTravelers = booking.travelers || '2 travelers, 1 room';
 
-  const stayId = id ? parseInt(id, 10) : NaN;
   const { data, loading, error } = useQuery<
-    GetStayDetailsQuery,
-    GetStayDetailsQueryVariables
-  >(GET_STAY_DETAILS, {
-    variables: { id: stayId },
-    skip: Number.isNaN(stayId),
+    GetStayDetailsByPublicIdQuery,
+    GetStayDetailsByPublicIdQueryVariables
+  >(GET_STAY_DETAILS_BY_PUBLIC_ID, {
+    variables: { publicId: publicId ?? '' },
+    skip: !publicId,
   });
 
   const stay = data?.stay ?? null;
@@ -88,7 +88,7 @@ export default function Payment() {
   if (loading) {
     return (
       <div className="flex-1 w-full bg-frui-cream flex flex-col items-center justify-center p-8 text-center min-h-[500px]">
-        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
+        <Seo title="Payment" path={`/payment/${publicId ?? ''}`} noIndex />
         <div className="animate-pulse flex flex-col items-center gap-4">
           <div className="h-6 w-48 bg-neutral-200 rounded" />
           <div className="h-4 w-64 bg-neutral-200 rounded" />
@@ -98,10 +98,10 @@ export default function Payment() {
     );
   }
 
-  if (error || (id && !stay)) {
+  if (error || (publicId && !stay)) {
     return (
       <div className="flex-1 w-full bg-frui-cream flex flex-col items-center justify-center gap-4 p-8 text-center min-h-[500px]">
-        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
+        <Seo title="Payment" path={`/payment/${publicId ?? ''}`} noIndex />
         <h1 className="text-xl font-bold text-frui-blue">Stay not found</h1>
         <p className="text-sm text-neutral-500 max-w-md">
           {error?.message || "We couldn't find the stay you are looking for."}
@@ -119,7 +119,7 @@ export default function Payment() {
   if (!STRIPE_CHECKOUT_ENABLED) {
     return (
       <div className="flex-1 w-full bg-frui-cream flex flex-col items-center justify-center gap-4 p-8 text-center min-h-[500px]">
-        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
+        <Seo title="Payment" path={`/payment/${publicId ?? ''}`} noIndex />
         <h1 className="text-xl font-bold text-frui-blue">
           Checkout unavailable
         </h1>
@@ -131,7 +131,7 @@ export default function Payment() {
           to enable checkout.
         </p>
         <Button
-          onClick={() => navigate(`/stay/${stay?.id ?? ''}`)}
+          onClick={() => navigate(`/stay/${stay?.publicId ?? ''}`)}
           className="font-bold h-10 px-6 rounded-xl"
         >
           Back to Stay
@@ -151,7 +151,7 @@ export default function Payment() {
       }}
     >
       <PaymentCheckout
-        id={id}
+        publicId={publicId}
         stay={stay}
         isMobile={isMobile}
         dateRange={dateRange}
@@ -170,7 +170,7 @@ export default function Payment() {
 }
 
 interface PaymentCheckoutProps {
-  id: string | undefined;
+  publicId: string | undefined;
   stay: GetStayDetailsQuery['stay'];
   isMobile: boolean;
   dateRange: DateRange;
@@ -186,7 +186,7 @@ interface PaymentCheckoutProps {
 }
 
 function PaymentCheckout({
-  id,
+  publicId,
   stay,
   isMobile,
   dateRange,
@@ -384,7 +384,7 @@ function PaymentCheckout({
   return (
     <FormProvider {...methods}>
       <div className="flex-1 w-full bg-frui-cream">
-        <Seo title="Payment" path={`/payment/${id ?? ''}`} noIndex />
+        <Seo title="Payment" path={`/payment/${publicId ?? ''}`} noIndex />
         {isMobile ? (
           <div className="py-6 px-4 flex flex-col items-center">
             <PaymentMobile
