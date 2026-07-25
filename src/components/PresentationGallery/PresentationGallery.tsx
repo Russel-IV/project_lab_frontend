@@ -1,33 +1,43 @@
 import galleryMountain from '../../assets/images/gallery-mountain.webp';
+import galleryMountain240 from '../../assets/images/gallery-mountain-240.webp';
 import galleryStreet from '../../assets/images/gallery-street.webp';
+import galleryStreet240 from '../../assets/images/gallery-street-240.webp';
 import galleryKyoto from '../../assets/images/gallery-kyoto.webp';
+import galleryKyoto240 from '../../assets/images/gallery-kyoto-240.webp';
 import gallerySantorini from '../../assets/images/gallery-santorini.webp';
+import gallerySantorini240 from '../../assets/images/gallery-santorini-240.webp';
 import galleryAurora from '../../assets/images/gallery-aurora.webp';
+import galleryAurora240 from '../../assets/images/gallery-aurora-240.webp';
 
 export default function PresentationGallery() {
   const cards = [
     {
       img: galleryMountain,
+      img240: galleryMountain240,
       alt: 'Alpine mountain path',
       height: 'h-[360px] md:h-[400px]',
     },
     {
       img: galleryStreet,
+      img240: galleryStreet240,
       alt: 'Exotic street bazaar',
       height: 'h-[440px] md:h-[480px]',
     },
     {
       img: galleryKyoto,
+      img240: galleryKyoto240,
       alt: 'Kyoto autumn garden',
       height: 'h-[320px] md:h-[360px]',
     },
     {
       img: gallerySantorini,
+      img240: gallerySantorini240,
       alt: 'Santorini coastal view',
       height: 'h-[440px] md:h-[480px]',
     },
     {
       img: galleryAurora,
+      img240: galleryAurora240,
       alt: 'Aurora Borealis snowy cabin',
       height: 'h-[360px] md:h-[400px]',
     },
@@ -44,6 +54,8 @@ export default function PresentationGallery() {
             >
               <img
                 src={card.img}
+                srcSet={`${card.img240} 240w, ${card.img} 640w`}
+                sizes="(min-width: 1024px) 200px, (min-width: 640px) 150px, 80px"
                 alt={card.alt}
                 className="w-full h-full object-cover"
               />

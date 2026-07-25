@@ -3,6 +3,7 @@ import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
 import { MapPin, Star, Calendar, Users, CheckCircle2 } from 'lucide-react';
 import { formatDatesRange } from '@/components/SearchForm/searchFormUtils';
 import { formatPrice, formatTravelers } from '@/utils/format';
+import { buildSrcSet } from '@/lib/images';
 
 interface ConfirmationStepProps {
   stay: GetStayDetailsQuery['stay'];
@@ -45,11 +46,8 @@ export default function ConfirmationStep({
       <div className="flex flex-col gap-3 rounded-2xl border border-border overflow-hidden bg-[#fafafa]">
         {stay?.pictures && stay.pictures.length > 0 && (
           <img
-            src={
-              stay.pictures[0].url512 ??
-              stay.pictures[0].thumbnailUrl ??
-              stay.pictures[0].url
-            }
+            {...buildSrcSet(stay.pictures[0])}
+            sizes="100vw"
             alt={stay.name}
             className="w-full h-32 object-cover"
           />
