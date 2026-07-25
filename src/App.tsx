@@ -57,9 +57,14 @@ function App() {
     <BrowserRouter>
       <div className="flex min-h-screen flex-col bg-background">
         <Navbar />
-        <main className="flex-1 flex flex-col">
-          <ErrorBoundary FallbackComponent={RouteErrorFallback}>
-            <Suspense fallback={<RouteFallback />}>
+        <Suspense fallback={<RouteFallback />}>
+          {/* Footer lives inside this Suspense (not just the Routes) so it
+              mounts together with the resolved route instead of rendering
+              immediately alongside the fallback and jumping down once the
+              route's lazy chunk finishes loading — that jump was the app's
+              biggest CLS hit. */}
+          <main className="flex-1 flex flex-col">
+            <ErrorBoundary FallbackComponent={RouteErrorFallback}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/stays" element={<StaysPage />} />
@@ -85,10 +90,10 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </Suspense>
-          </ErrorBoundary>
-        </main>
-        <Footer />
+            </ErrorBoundary>
+          </main>
+          <Footer />
+        </Suspense>
         <Chatbot />
       </div>
     </BrowserRouter>
