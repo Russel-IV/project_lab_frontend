@@ -124,6 +124,10 @@ const STAY_DETAILS_FIELDS = gql`
         isPrimary
         displayOrder
       }
+      amenities {
+        id
+        name
+      }
     }
     pictures {
       id

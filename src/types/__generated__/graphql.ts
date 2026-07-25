@@ -409,6 +409,82 @@ export type GetStaysQuery = {
   };
 };
 
+export type StayDetailsFieldsFragment = {
+  __typename: 'Stay';
+  id: number;
+  publicId: string;
+  name: string;
+  about: string | null;
+  propertyType: PropertyType;
+  isRefundable: boolean;
+  starRating: number | null;
+  daysFromBookingCancellationDeadline: number | null;
+  policiesText: string | null;
+  importantInformation: string | null;
+  startingFromPrice: number | null;
+  address: {
+    __typename: 'Address';
+    id: number;
+    streetAddress: string;
+    extendedAddress: string | null;
+    city: string;
+    stateProvince: string | null;
+    postalCode: string | null;
+    countryCode: string;
+  };
+  rooms: Array<{
+    __typename: 'Room';
+    id: number;
+    stayId: number;
+    name: string;
+    price: number;
+    sleeps: number;
+    bedroomAmount: number;
+    bathrooms: number;
+    size: number | null;
+    pictures: Array<{
+      __typename: 'RoomPicture';
+      id: number;
+      roomId: number;
+      url: string;
+      thumbnailUrl: string;
+      url1024: string | null;
+      url768: string | null;
+      url512: string | null;
+      caption: string | null;
+      isPrimary: boolean;
+      displayOrder: number;
+    }>;
+    amenities: Array<{ __typename: 'Amenity'; id: number; name: string }>;
+  }>;
+  pictures: Array<{
+    __typename: 'StayPicture';
+    id: number;
+    stayId: number;
+    url: string;
+    thumbnailUrl: string;
+    url1024: string | null;
+    url768: string | null;
+    url512: string | null;
+    caption: string | null;
+    isPrimary: boolean;
+    displayOrder: number;
+  }>;
+  host: { __typename: 'Host'; id: number };
+  propertyBrand: { __typename: 'PropertyBrand'; id: number } | null;
+  amenities: Array<{ __typename: 'Amenity'; id: number; name: string }>;
+  views: Array<{ __typename: 'View'; id: number }>;
+  accessibilities: Array<{ __typename: 'Accessibility'; id: number }>;
+  mealPlans: Array<{ __typename: 'MealPlan'; id: number }>;
+  paymentTypes: Array<{ __typename: 'PaymentType'; id: number }>;
+  travelerExperiences: Array<{ __typename: 'TravelerExperience'; id: number }>;
+  location: {
+    __typename: 'Location';
+    latitude: number;
+    longitude: number;
+  } | null;
+};
+
 export type GetStayDetailsQueryVariables = Exact<{
   id: number;
 }>;
@@ -460,6 +536,7 @@ export type GetStayDetailsQuery = {
         isPrimary: boolean;
         displayOrder: number;
       }>;
+      amenities: Array<{ __typename: 'Amenity'; id: number; name: string }>;
     }>;
     pictures: Array<{
       __typename: 'StayPicture';
@@ -494,11 +571,88 @@ export type GetStayDetailsQuery = {
 };
 
 export type GetStayDetailsByPublicIdQueryVariables = Exact<{
-  publicId: string;
+  publicId: string | number;
 }>;
 
 export type GetStayDetailsByPublicIdQuery = {
-  stay: GetStayDetailsQuery['stay'];
+  stay: {
+    __typename: 'Stay';
+    id: number;
+    publicId: string;
+    name: string;
+    about: string | null;
+    propertyType: PropertyType;
+    isRefundable: boolean;
+    starRating: number | null;
+    daysFromBookingCancellationDeadline: number | null;
+    policiesText: string | null;
+    importantInformation: string | null;
+    startingFromPrice: number | null;
+    address: {
+      __typename: 'Address';
+      id: number;
+      streetAddress: string;
+      extendedAddress: string | null;
+      city: string;
+      stateProvince: string | null;
+      postalCode: string | null;
+      countryCode: string;
+    };
+    rooms: Array<{
+      __typename: 'Room';
+      id: number;
+      stayId: number;
+      name: string;
+      price: number;
+      sleeps: number;
+      bedroomAmount: number;
+      bathrooms: number;
+      size: number | null;
+      pictures: Array<{
+        __typename: 'RoomPicture';
+        id: number;
+        roomId: number;
+        url: string;
+        thumbnailUrl: string;
+        url1024: string | null;
+        url768: string | null;
+        url512: string | null;
+        caption: string | null;
+        isPrimary: boolean;
+        displayOrder: number;
+      }>;
+      amenities: Array<{ __typename: 'Amenity'; id: number; name: string }>;
+    }>;
+    pictures: Array<{
+      __typename: 'StayPicture';
+      id: number;
+      stayId: number;
+      url: string;
+      thumbnailUrl: string;
+      url1024: string | null;
+      url768: string | null;
+      url512: string | null;
+      caption: string | null;
+      isPrimary: boolean;
+      displayOrder: number;
+    }>;
+    host: { __typename: 'Host'; id: number };
+    propertyBrand: { __typename: 'PropertyBrand'; id: number } | null;
+    amenities: Array<{ __typename: 'Amenity'; id: number; name: string }>;
+    views: Array<{ __typename: 'View'; id: number }>;
+    accessibilities: Array<{ __typename: 'Accessibility'; id: number }>;
+    mealPlans: Array<{ __typename: 'MealPlan'; id: number }>;
+    paymentTypes: Array<{ __typename: 'PaymentType'; id: number }>;
+    travelerExperiences: Array<{
+      __typename: 'TravelerExperience';
+      id: number;
+    }>;
+    location: {
+      __typename: 'Location';
+      latitude: number;
+      longitude: number;
+    } | null;
+  } | null;
 };
 
 export type GetStayPriceStatsQueryVariables = Exact<{

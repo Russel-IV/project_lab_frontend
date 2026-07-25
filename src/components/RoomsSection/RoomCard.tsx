@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/utils/format';
+import { AMENITIES_LOOKUP } from '@/constants/amenities';
 import type { RoomsSectionRoom } from './RoomsSection';
 
 interface RoomCardProps {
@@ -24,6 +25,9 @@ export function RoomCard({
     room.pictures.find((p) => p.isPrimary) ?? room.pictures[0];
   const primaryPictureUrl = primaryPicture?.thumbnailUrl ?? primaryPicture?.url;
   const totalPrice = room.price * nights;
+  const amenities = room.amenities
+    .map((a) => AMENITIES_LOOKUP[a.id])
+    .filter(Boolean);
 
   return (
     <Card className={`flex-row gap-4 p-4 ${unavailable ? 'opacity-60' : ''}`}>
@@ -57,6 +61,20 @@ export function RoomCard({
             <Badge variant="secondary">Unavailable for these dates</Badge>
           )}
         </div>
+
+        {amenities.length > 0 && (
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {amenities.map((amenity, idx) => {
+              const Icon = amenity.icon;
+              return (
+                <div key={idx} className="flex items-center gap-1">
+                  <Icon className="size-3.5 text-primary shrink-0" />
+                  <span>{amenity.name}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="flex items-end justify-between gap-2 mt-auto">
           <div className="text-xs text-muted-foreground">

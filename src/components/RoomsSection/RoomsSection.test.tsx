@@ -21,6 +21,7 @@ const room = (overrides: Partial<RoomsSectionRoom>): RoomsSectionRoom => ({
   bathrooms: 1,
   size: null,
   pictures: [],
+  amenities: [],
   ...overrides,
 });
 
