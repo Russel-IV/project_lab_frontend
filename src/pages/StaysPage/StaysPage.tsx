@@ -5,16 +5,13 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSearchQuery } from '@/store/searchSlice';
 import { SearchForm } from '@/components/SearchForm';
 import { FilterBar } from '@/components/FilterBar';
-import {
-  getTotalGuests,
-  isValidDateRange,
-} from '@/components/SearchForm/searchFormUtils';
 import type { StayFilterInput } from '@/types/__generated__/graphql';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
 import { Seo } from '@/lib/seo';
 import { Sections, MobileSections } from '@/components/Sections';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useSearchContextFilter } from '@/hooks/useSearchContextFilter';
 
 import { PAGE_SIZE, StaysListContent } from './StaysListContent';
 import { StaysDetailContent } from './StaysDetailContent';
@@ -24,18 +21,9 @@ const SCROLL_TOP_THRESHOLD = 400;
 export default function StaysPage() {
   const dispatch = useAppDispatch();
 
-  const { place, placeRegionId, checkIn, checkOut, travelers } = useAppSelector(
-    (state) => state.search,
-  );
-
+  const { place } = useAppSelector((state) => state.search);
   const [searchParams] = useSearchParams();
-  const regionIdParam = searchParams.get('regionId');
-  const effectiveRegionId = regionIdParam
-    ? Number(regionIdParam)
-    : placeRegionId;
-  const effectiveCheckIn = searchParams.get('checkIn') ?? checkIn;
-  const effectiveCheckOut = searchParams.get('checkOut') ?? checkOut;
-  const effectiveTravelers = searchParams.get('travelers') ?? travelers;
+  const searchContextFilter = useSearchContextFilter();
 
   const {
     priceMin,
@@ -56,16 +44,7 @@ export default function StaysPage() {
   // FilterBar fields alike) is applied server-side, so infinite-scroll pages
   // stay correct past the first page.
   const filter: StayFilterInput | undefined = useMemo(() => {
-    const f: StayFilterInput = {};
-    if (effectiveRegionId != null && !Number.isNaN(effectiveRegionId)) {
-      f.regionId = effectiveRegionId;
-    }
-    if (isValidDateRange(effectiveCheckIn, effectiveCheckOut)) {
-      f.checkIn = effectiveCheckIn;
-      f.checkOut = effectiveCheckOut;
-    }
-    const guests = getTotalGuests(effectiveTravelers);
-    if (guests > 0) f.guests = guests;
+    const f: StayFilterInput = { ...searchContextFilter };
     if (priceMin !== null) f.minPricePerNight = priceMin;
     if (priceMax !== null) f.maxPricePerNight = priceMax;
     if (propertyType)
@@ -78,10 +57,7 @@ export default function StaysPage() {
     if (roomAmenityIds.length > 0) f.roomAmenityIds = roomAmenityIds;
     return Object.keys(f).length > 0 ? f : undefined;
   }, [
-    effectiveRegionId,
-    effectiveCheckIn,
-    effectiveCheckOut,
-    effectiveTravelers,
+    searchContextFilter,
     priceMin,
     priceMax,
     propertyType,

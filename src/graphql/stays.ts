@@ -166,6 +166,16 @@ export const GET_STAY_DETAILS = gql`
   }
 `;
 
+export const GET_STAY_PRICE_STATS = gql`
+  query GetStayPriceStats($filter: StayFilterInput, $bins: Int) {
+    stayPriceStats(filter: $filter, bins: $bins) {
+      min
+      max
+      histogram
+    }
+  }
+`;
+
 // Returns the rooms at a stay that are bookable for the given date range
 // (excludes rooms with an overlapping PENDING/CONFIRMED booking). Capacity
 // filtering against the traveler count is done client-side against

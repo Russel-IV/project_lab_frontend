@@ -1,90 +1,53 @@
-/** Internal type. DO NOT USE DIRECTLY. */
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-/** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> =
   | T
   | {
       [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
     };
-/** Lifecycle state of a booking. */
 export type BookingStatus = 'CANCELLED' | 'COMPLETED' | 'CONFIRMED' | 'PENDING';
 
-/** Input for creating a new booking. The booking is associated with the authenticated user. */
 export type CreateBookingInput = {
-  /** Desired check-in date. */
   checkInDate: unknown;
-  /** Desired check-out date. Must be after `checkInDate`. */
   checkOutDate: unknown;
-  /** Number of guests. */
   guestsCount: number;
-  /** ID of a payment intent previously created via createPaymentIntent, for the same rooms/dates/guests. Verified server-side before the booking is created. */
   paymentIntentId: string;
-  /** IDs of the rooms to include in the booking. */
   roomIds: Array<number>;
 };
 
-/** Input for creating a payment intent prior to booking. Card payments only, always captured immediately — there is no pay-later/manual-capture path. */
 export type CreatePaymentIntentInput = {
-  /** Desired check-in date. */
   checkInDate: unknown;
-  /** Desired check-out date. Must be after `checkInDate`. */
   checkOutDate: unknown;
-  /** Number of guests. */
   guestsCount: number;
-  /** Client-generated key. Retrying createPaymentIntent with the same key returns the original intent instead of creating a duplicate. */
   idempotencyKey: string;
-  /** IDs of the rooms to include in the booking. */
   roomIds: Array<number>;
 };
 
-/** Input for submitting a review. */
 export type CreateReviewInput = {
-  /** Rating from 1 (lowest) to 5 (highest). */
   rating: number;
-  /** ID of the stay being reviewed. */
   stayId: number;
-  /** The written review content. */
   text: string;
 };
 
-/** The type of property (hotel chain or private home). */
 export type PropertyType = 'HOME' | 'HOTEL';
 
-/** Search and availability filter for the stays query. All fields are optional and combined with AND logic. */
 export type StayFilterInput = {
-  /** Limit results to properties with a room having one of these bedroom counts. Use 4 to mean 4 or more bedrooms. */
   bedrooms?: Array<number> | null | undefined;
-  /** Availability check start date. Must be provided together with checkOut. */
   checkIn?: unknown;
-  /** Availability check end date. Must be provided together with checkIn. */
   checkOut?: unknown;
-  /** Minimum number of guests that at least one available room must accommodate. */
   guests?: number | null | undefined;
-  /** Limit results to properties eligible for a full refund on cancellation. */
   isRefundable?: boolean | null | undefined;
-  /** Require at least one room with a nightly rate at or below this amount. */
   maxPricePerNight?: number | null | undefined;
-  /** Require at least one room with a nightly rate at or above this amount. */
   minPricePerNight?: number | null | undefined;
-  /** Limit results to properties offering ALL of these property-level amenities (e.g. Wi-Fi, pool, parking, gym, pet-friendly). */
   propertyAmenityIds?: Array<number> | null | undefined;
-  /** Limit results to a specific property category. */
   propertyType?: PropertyType | null | undefined;
-  /** Stable destination identifier (docs/adr/0018) — the preferred replacement for city/countryCode, immune to same-name-different-region collisions. */
   regionId?: number | null | undefined;
-  /** Limit results to properties offering ALL of these in-room amenities (e.g. air conditioning, kitchen, balcony, private bathroom, washer) somewhere on the property. */
   roomAmenityIds?: Array<number> | null | undefined;
-  /** Limit results to properties with one of these star rating tiers (1-5). A property matches a tier if its starRating rounds to it. */
   starRatings?: Array<number> | null | undefined;
 };
 
-/** Input for updating an existing review. */
 export type UpdateReviewInput = {
-  /** Updated rating from 1 (lowest) to 5 (highest). */
   rating: number;
-  /** ID of the stay being reviewed. */
   stayId: number;
-  /** Updated review text. */
   text: string;
 };
 
@@ -485,6 +448,20 @@ export type GetStayDetailsQuery = {
       longitude: number;
     } | null;
   } | null;
+};
+
+export type GetStayPriceStatsQueryVariables = Exact<{
+  filter?: StayFilterInput | null | undefined;
+  bins?: number | null | undefined;
+}>;
+
+export type GetStayPriceStatsQuery = {
+  stayPriceStats: {
+    __typename: 'StayPriceStats';
+    min: number | null;
+    max: number | null;
+    histogram: Array<number>;
+  };
 };
 
 export type AvailableRoomsQueryVariables = Exact<{

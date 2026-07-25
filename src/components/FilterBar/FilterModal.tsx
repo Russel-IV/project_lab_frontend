@@ -1,13 +1,20 @@
 import { X, Star } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@apollo/client/react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setFilters } from '@/store/filtersSlice';
 import { AMENITIES_LOOKUP } from '@/constants/amenities';
-import { GET_STAYS } from '@/graphql/stays';
-import { type GetStaysQuery } from '@/types/__generated__/graphql';
+import { GET_STAY_PRICE_STATS } from '@/graphql/stays';
+import {
+  type GetStayPriceStatsQuery,
+  type GetStayPriceStatsQueryVariables,
+  type StayFilterInput,
+} from '@/types/__generated__/graphql';
 import { Slider } from '@/components/ui/slider';
+import { useSearchContextFilter } from '@/hooks/useSearchContextFilter';
+
+const NUM_BINS = 40;
 
 interface FilterModalProps {
   isOpen: boolean;
@@ -40,37 +47,48 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
     activeFilters.roomAmenityIds,
   );
 
-  // Reads from cache only — StaysPage owns the actual network query. Uses a
-  // large size to get a representative price distribution regardless of
-  // StaysPage's (much smaller) infinite-scroll page size.
-  const { data } = useQuery<GetStaysQuery>(GET_STAYS, {
-    variables: { page: 0, size: 100 },
-    fetchPolicy: 'cache-first',
+  const searchContextFilter = useSearchContextFilter();
+
+  // Excludes price so the histogram always shows the full distribution for
+  // the current region/dates/other filters — narrowing the price slider
+  // would otherwise shrink the bars it's drawn against on every drag. Uses
+  // the in-progress draft values (not activeFilters) so toggling e.g.
+  // property type live-updates the histogram before the user hits Apply.
+  const statsFilter: StayFilterInput | undefined = useMemo(() => {
+    const f: StayFilterInput = { ...searchContextFilter };
+    if (draftPropertyType)
+      f.propertyType = draftPropertyType as StayFilterInput['propertyType'];
+    if (activeFilters.freeCancellation) f.isRefundable = true;
+    if (draftStarRatings.length > 0) f.starRatings = draftStarRatings;
+    if (draftBedrooms.length > 0) f.bedrooms = draftBedrooms;
+    if (draftPropertyAmenityIds.length > 0)
+      f.propertyAmenityIds = draftPropertyAmenityIds;
+    if (draftRoomAmenityIds.length > 0) f.roomAmenityIds = draftRoomAmenityIds;
+    return Object.keys(f).length > 0 ? f : undefined;
+  }, [
+    searchContextFilter,
+    draftPropertyType,
+    activeFilters.freeCancellation,
+    draftStarRatings,
+    draftBedrooms,
+    draftPropertyAmenityIds,
+    draftRoomAmenityIds,
+  ]);
+
+  const { data } = useQuery<
+    GetStayPriceStatsQuery,
+    GetStayPriceStatsQueryVariables
+  >(GET_STAY_PRICE_STATS, {
+    variables: { filter: statsFilter, bins: NUM_BINS },
   });
 
-  const stays = data?.stays.items || [];
-  const prices = stays
-    .map((s) => s.startingFromPrice as number | null)
-    .filter((p: unknown): p is number => typeof p === 'number');
-
-  const globalMin = prices.length > 0 ? Math.min(...prices) : 0;
-  const globalMax = prices.length > 0 ? Math.max(...prices) : 1000;
+  const stats = data?.stayPriceStats;
+  const globalMin = stats?.min ?? 0;
+  const globalMax = stats?.max ?? 1000;
   const isUSD = globalMin < 10000;
 
-  const numBins = 40;
-  const binWidth = (globalMax - globalMin) / numBins;
-
-  const bins = Array.from({ length: numBins }, () => 0);
-  prices.forEach((price: number) => {
-    const binIndex = Math.min(
-      Math.floor((price - globalMin) / (binWidth || 1)),
-      numBins - 1,
-    );
-    if (binIndex >= 0 && binIndex < numBins) {
-      bins[binIndex]++;
-    }
-  });
-
+  const binWidth = (globalMax - globalMin) / NUM_BINS;
+  const bins = stats?.histogram ?? Array.from({ length: NUM_BINS }, () => 0);
   const maxCount = Math.max(...bins, 1);
 
   useEffect(() => {
