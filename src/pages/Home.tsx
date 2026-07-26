@@ -1,5 +1,6 @@
 import { SearchForm } from '@/components/SearchForm';
-import { Sections, MobileSections } from '../components/Sections';
+import { MobileSections } from '../components/Sections';
+import { HeroDesktop } from '@/components/Hero';
 import PresentationGallery from '../components/PresentationGallery/PresentationGallery';
 import { Seo } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/config/seo';
@@ -33,23 +34,22 @@ export default function Home() {
         path="/"
         jsonLd={homeJsonLd}
       />
-      <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pt-10 pb-2 -mb-6 text-left">
-        <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-[#121324] leading-tight !mb-2">
-          Discover your next escape
-        </h1>
-        <p className="text-base sm:text-lg text-[#5c5d6b] font-normal">
-          Find exclusive deals on hotels, flights, and car rentals.
-        </p>
-      </section>
-
       <div className="w-full md:hidden">
+        <section className="w-full max-w-[1100px] center px-4 sm:px-6 lg:px-8 pt-10 pb-2 -mb-6 text-left">
+          <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-[#121324] leading-tight !mb-2">
+            Discover your next escape
+          </h1>
+          <p className="text-base sm:text-lg text-[#5c5d6b] font-normal">
+            Find exclusive deals on hotels, flights, and car rentals.
+          </p>
+        </section>
         <MobileSections />
-      </div>
-      <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 -mb-10">
-        <Sections />
+        <SearchForm sticky />
       </div>
 
-      <SearchForm sticky />
+      <div className="hidden md:block w-full">
+        <HeroDesktop />
+      </div>
 
       <PresentationGallery />
     </div>
