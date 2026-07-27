@@ -118,7 +118,8 @@ export function BookingHistoryTab() {
               const canCancel =
                 booking.status === 'PENDING' || booking.status === 'CONFIRMED';
               const roomNames = booking.rooms.map((r) => r.name).join(', ');
-              const stayId = booking.rooms[0]?.stayId;
+              const stayName = booking.rooms[0]?.stay.name;
+              const stayPublicId = booking.rooms[0]?.stay.publicId;
 
               return (
                 <Fragment key={booking.id}>
@@ -127,12 +128,17 @@ export function BookingHistoryTab() {
                     <div className="flex min-w-0 flex-col gap-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate text-sm font-semibold text-foreground">
-                          {roomNames || `Booking #${booking.id}`}
+                          {stayName || `Booking #${booking.id}`}
                         </p>
                         <Badge variant={STATUS_BADGE_VARIANT[booking.status]}>
                           {STATUS_LABEL[booking.status]}
                         </Badge>
                       </div>
+                      {roomNames && (
+                        <p className="truncate text-xs text-muted-foreground">
+                          {roomNames}
+                        </p>
+                      )}
                       <p className="flex items-center gap-1 text-xs text-muted-foreground">
                         <CalendarDays className="size-3.5 shrink-0" />
                         {`${formatBookingDate(booking.checkInDate)} – ${formatBookingDate(booking.checkOutDate)}`}
@@ -146,11 +152,11 @@ export function BookingHistoryTab() {
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">
-                      {stayId != null && (
+                      {stayPublicId != null && (
                         <Button
                           variant="secondary"
                           size="sm"
-                          render={<Link to={`/stay/${stayId}`} />}
+                          render={<Link to={`/stay/${stayPublicId}`} />}
                           nativeButton={false}
                         >
                           View stay

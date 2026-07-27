@@ -137,8 +137,8 @@ export type MyBookingsQuery = {
     rooms: Array<{
       __typename: 'Room';
       id: number;
-      stayId: number;
       name: string;
+      stay: { __typename: 'Stay'; publicId: string; name: string };
     }>;
   }>;
 };

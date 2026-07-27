@@ -16,7 +16,11 @@ function bookingsMock(
     status: BookingStatus;
     guestsCount: number;
     totalPrice: number;
-    rooms: Array<{ id: number; stayId: number; name: string }>;
+    rooms: Array<{
+      id: number;
+      name: string;
+      stay: { publicId: string; name: string };
+    }>;
   }>,
 ): MockedResponse {
   return {
@@ -27,7 +31,11 @@ function bookingsMock(
           __typename: 'Booking' as const,
           createdAt: '2026-01-01',
           ...b,
-          rooms: b.rooms.map((r) => ({ __typename: 'Room' as const, ...r })),
+          rooms: b.rooms.map((r) => ({
+            __typename: 'Room' as const,
+            ...r,
+            stay: { __typename: 'Stay' as const, ...r.stay },
+          })),
         })),
       },
     },
@@ -62,17 +70,24 @@ describe('BookingHistoryTab', () => {
           status: 'CONFIRMED',
           guestsCount: 2,
           totalPrice: 400,
-          rooms: [{ id: 10, stayId: 99, name: 'Deluxe Room' }],
+          rooms: [
+            {
+              id: 10,
+              name: 'Deluxe Room',
+              stay: { publicId: 'stay-public-99', name: 'Ocean View Resort' },
+            },
+          ],
         },
       ]),
     ]);
 
-    expect(await screen.findByText('Deluxe Room')).toBeInTheDocument();
+    expect(await screen.findByText('Ocean View Resort')).toBeInTheDocument();
+    expect(screen.getByText('Deluxe Room')).toBeInTheDocument();
     expect(screen.getByText('Confirmed')).toBeInTheDocument();
     expect(screen.getByText('2 guests · $ 400 USD')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'View stay' })).toHaveAttribute(
       'href',
-      '/stay/99',
+      '/stay/stay-public-99',
     );
   });
 
@@ -86,7 +101,13 @@ describe('BookingHistoryTab', () => {
           status: 'CONFIRMED',
           guestsCount: 1,
           totalPrice: 200,
-          rooms: [{ id: 10, stayId: 99, name: 'Room A' }],
+          rooms: [
+            {
+              id: 10,
+              name: 'Room A',
+              stay: { publicId: 'stay-public-99', name: 'Stay A' },
+            },
+          ],
         },
         {
           id: 2,
@@ -95,7 +116,13 @@ describe('BookingHistoryTab', () => {
           status: 'COMPLETED',
           guestsCount: 1,
           totalPrice: 200,
-          rooms: [{ id: 11, stayId: 98, name: 'Room B' }],
+          rooms: [
+            {
+              id: 11,
+              name: 'Room B',
+              stay: { publicId: 'stay-public-98', name: 'Stay B' },
+            },
+          ],
         },
       ]),
     ]);
@@ -118,7 +145,13 @@ describe('BookingHistoryTab', () => {
           status: 'PENDING',
           guestsCount: 1,
           totalPrice: 150,
-          rooms: [{ id: 10, stayId: 99, name: 'Room A' }],
+          rooms: [
+            {
+              id: 10,
+              name: 'Room A',
+              stay: { publicId: 'stay-public-99', name: 'Stay A' },
+            },
+          ],
         },
       ]),
       {

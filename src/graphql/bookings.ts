@@ -38,8 +38,11 @@ export const MY_BOOKINGS = gql`
       createdAt
       rooms {
         id
-        stayId
         name
+        stay {
+          publicId
+          name
+        }
       }
     }
   }
