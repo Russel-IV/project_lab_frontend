@@ -30,6 +30,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Application (Vite + TypeScript)
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_GRAPHQL_URL: ${{ secrets.VITE_GRAPHQL_URL }}
         run: pnpm build
 
       - name: Install AWS CLI (local act only)

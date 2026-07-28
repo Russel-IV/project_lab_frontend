@@ -62,7 +62,7 @@ CloudFront sits in front of the S3 bucket. It acts as a globally distributed pro
 - **Distribution ID:** `EZE32CTHKYHAK`
 - **Origin Path:** Points to the `team1-proyect-frontend` S3 bucket.
 - **AWS CloudFront Console Link:** [CloudFront Distribution EZE32CTHKYHAK](https://us-east-1.console.aws.amazon.com/cloudfront/v4/home#/distributions/EZE32CTHKYHAK)
-- **Public URL / Domain Name:** [https://eze32cthkyhak.cloudfront.net](https://eze32cthkyhak.cloudfront.net) (or your mapped custom CNAME domain)
+- **Public URL / Domain Name:** [https://d1qn0qqylfb3ot.cloudfront.net](https://d1qn0qqylfb3ot.cloudfront.net) (or your mapped custom CNAME domain)
 
 ### Cache Invalidation
 
@@ -88,6 +88,28 @@ To support client-side routers:
   - **HTTP Response Code:** `200` (OK)
 
 This redirects all subroute requests back to the main `index.html` file, letting the React Router process and render the correct page view.
+
+### Backend API Proxy & Mixed Content Resolution (EC2 Custom Origin)
+
+To prevent browser **Mixed Content Security Policy** errors (HTTPS frontend attempting to connect to HTTP EC2 IP) and eliminate cross-origin complexity:
+
+#### 1. EC2 Custom Origin
+
+- **Origin Domain:** EC2 Public IPv4 DNS (e.g. `ec2-xxx-xxx-xxx-xxx.us-east-2.compute.amazonaws.com`)
+- **Protocol:** HTTP only
+- **HTTP Port:** `8080`
+- **Name:** `EC2-Backend-Gateway`
+
+#### 2. Cache Behaviors for API Endpoints (`/api/*` and `/graphql`)
+
+CloudFront proxies backend traffic using two specific behaviors:
+
+- **Path Patterns:** `/api/*` and `/graphql`
+- **Target Origin:** `EC2-Backend-Gateway`
+- **Viewer Protocol Policy:** Redirect HTTP to HTTPS
+- **Allowed HTTP Methods:** `GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE`
+- **Cache Policy:** `CachingDisabled` (AWS Managed Policy — ensures dynamic API responses are never cached)
+- **Origin Request Policy:** `AllViewerExceptHostHeader` or `AllViewer` (forwards headers, query parameters, and JWT tokens to EC2)
 
 ---
 
@@ -120,12 +142,14 @@ The deployment pipeline is automatically executed whenever code is pushed to the
 
 To enable the pipeline to authenticate with AWS and deploy changes, the following secrets must be set in the repository under **Settings > Secrets and variables > Actions**:
 
-| Secret Name                      | Value Description                   | Example Value            |
-| :------------------------------- | :---------------------------------- | :----------------------- |
-| `AWS_ACCESS_KEY_ID`              | IAM deployment user access key      | `AKIAVQMIT7EKCHP2XVYL`   |
-| `AWS_SECRET_ACCESS_KEY`          | IAM deployment user secret key      | `akeKnz6pi9WdhMxQ6MF...` |
-| `AWS_S3_BUCKET_NAME`             | The name of the hosting S3 bucket   | `team1-proyect-frontend` |
-| `AWS_CLOUDFRONT_DISTRIBUTION_ID` | The ID of the target CloudFront CDN | `EZE32CTHKYHAK`          |
+| Secret Name                      | Value Description                   | Example Value                         |
+| :------------------------------- | :---------------------------------- | :------------------------------------ |
+| `AWS_ACCESS_KEY_ID`              | IAM deployment user access key      | `AKIAVQMIT7EKCHP2XVYL`                |
+| `AWS_SECRET_ACCESS_KEY`          | IAM deployment user secret key      | `akeKnz6pi9WdhMxQ6MF...`              |
+| `AWS_S3_BUCKET_NAME`             | The name of the hosting S3 bucket   | `team1-proyect-frontend`              |
+| `AWS_CLOUDFRONT_DISTRIBUTION_ID` | The ID of the target CloudFront CDN | `EZE32CTHKYHAK`                       |
+| `VITE_API_BASE_URL`              | EC2 Backend REST API URL            | `http://<EC2_PUBLIC_IP>:8080/api/v1`  |
+| `VITE_GRAPHQL_URL`               | EC2 Backend GraphQL URL             | `http://<EC2_PUBLIC_IP>:8080/graphql` |
 
 ---
 
