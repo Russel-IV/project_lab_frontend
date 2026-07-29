@@ -96,7 +96,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
         >
           <InputGroupAddon align="inline-start">
             <span className="form-field-icon-wrapper">
-              <MapPin className="w-4 h-4" strokeWidth={2} />
+              <MapPin className="w-5 h-6" strokeWidth={2} />
             </span>
           </InputGroupAddon>
         </ComboboxInput>
