@@ -142,11 +142,11 @@ export default function StaysPage() {
       {selectedStayId !== null && (
         <>
           <div
-            className="fixed inset-0 bg-frui-blue/40 z-40"
+            className="fixed inset-0 bg-frui-blue/40 z-[55]"
             onClick={closeDetail}
             aria-hidden="true"
           />
-          <div className="fixed top-0 right-0 z-50 h-full w-full md:w-[56%] lg:w-[47%] xl:w-[50%] p-4 md:p-6">
+          <div className="fixed top-0 right-0 z-[60] h-full w-full md:w-[56%] lg:w-[47%] xl:w-[50%] p-4 md:p-6">
             <StaysDetailContent
               selectedStayId={selectedStayId}
               onClose={closeDetail}
