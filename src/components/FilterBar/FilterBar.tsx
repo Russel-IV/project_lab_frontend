@@ -57,7 +57,7 @@ export function FilterBar({ onSelectStay }: FilterBarProps) {
   ].filter(Boolean).length;
 
   const baseButtonClass =
-    'inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs md:text-sm font-medium shadow-2xs active:scale-[0.98] transition-all cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-frui-orange';
+    'inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 rounded-full border px-4 py-2 text-xs md:text-sm font-medium shadow-2xs active:scale-[0.98] transition-all cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-frui-orange';
 
   const getButtonClass = (isActive: boolean) =>
     isActive
@@ -65,7 +65,7 @@ export function FilterBar({ onSelectStay }: FilterBarProps) {
       : `${baseButtonClass} border-border bg-card text-foreground hover:bg-muted hover:border-muted-foreground/30`;
 
   return (
-    <div className="flex w-full items-center gap-2 border-b border-border py-3 px-2">
+    <div className="flex w-full items-center gap-2 overflow-x-auto border-b border-border py-3 px-2 scrollbar-none select-none">
       <button
         type="button"
         onClick={() => setIsModalOpen(true)}
