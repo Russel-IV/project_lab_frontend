@@ -79,6 +79,17 @@ export default function StaysPage() {
     );
   }, [searchParams, dispatch]);
 
+  useEffect(() => {
+    if (selectedStayId !== null) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedStayId]);
+
   const closeDetail = () => setSelectedStayId(null);
 
   const trimmedPlace = place.trim();
