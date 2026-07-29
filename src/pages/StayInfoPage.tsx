@@ -141,7 +141,7 @@ export default function StayInfoPage() {
           addressCountry: stay.address.countryCode,
         },
         ...(stay.startingFromPrice != null && {
-          priceRange: `$${stay.startingFromPrice}`,
+          priceRange: `$${stay.startingFromPrice.toFixed(2)}`,
         }),
         ...(stayReviews.length > 0 && {
           aggregateRating: {

@@ -3,16 +3,23 @@ import { parse, format, differenceInCalendarDays } from 'date-fns';
 /**
  * Formats a nightly or total price according to currency rules.
  * Stays with prices < 10000 are treated as USD, otherwise CLP.
+ * Always includes two decimal places.
  *
  * @param price - The numeric price to format.
- * @param useDesktopStyle - Whether to include space and 'USD' suffix (e.g. "$ 51 USD" vs "$51").
+ * @param useDesktopStyle - Whether to include space and 'USD' suffix (e.g. "$ 51.00 USD" vs "$51.00").
+ * @returns The formatted price string with two decimal places.
  */
 export function formatPrice(price: number, useDesktopStyle = false): string {
   const isUSD = price < 10000;
   if (isUSD) {
-    return useDesktopStyle ? `$ ${price} USD` : `$${price}`;
+    return useDesktopStyle
+      ? `$ ${price.toFixed(2)} USD`
+      : `$${price.toFixed(2)}`;
   }
-  return `CLP ${price.toLocaleString('de-DE')}`;
+  return `CLP ${price.toLocaleString('de-DE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
 /**

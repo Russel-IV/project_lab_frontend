@@ -74,12 +74,20 @@ describe('calculateTotalPrice', () => {
     expect(calculateTotalPrice(100, '2026-08-01', '2026-08-01')).toBe(100);
   });
 
-  it('formats below/above the USD-CLP threshold correctly', () => {
+  it('formats below/above the USD-CLP threshold correctly with two decimals', () => {
     expect(
       formatPrice(calculateTotalPrice(100, '2026-08-01', '2026-08-04')),
-    ).toBe('$300');
+    ).toBe('$300.00');
+    expect(
+      formatPrice(calculateTotalPrice(100, '2026-08-01', '2026-08-04'), true),
+    ).toBe('$ 300.00 USD');
     expect(
       formatPrice(calculateTotalPrice(5000, '2026-08-01', '2026-08-04')),
-    ).toBe(`CLP ${(15000).toLocaleString('de-DE')}`);
+    ).toBe(
+      `CLP ${(15000).toLocaleString('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
+    );
   });
 });
