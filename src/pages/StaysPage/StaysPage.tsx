@@ -8,7 +8,6 @@ import { FilterBar } from '@/components/FilterBar';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { StayCardSkeleton } from '@/components/StayCardVariant';
 import { Seo } from '@/lib/seo';
-import { Sections, MobileSections } from '@/components/Sections';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useStaysFilter } from '@/hooks/useStaysFilter';
 
@@ -103,16 +102,6 @@ export default function StaysPage() {
         }
         path="/stays"
       />
-
-      <div className="w-full md:hidden">
-        <MobileSections />
-      </div>
-
-      {/* Negative margins cancel the tabs' and search form's own top
-          margins for exact 16px/8px gaps. */}
-      <div className="hidden md:block w-full max-w-6xl mx-auto -mt-10 -mb-6">
-        <Sections />
-      </div>
 
       <main className="w-full">
         <section className="w-full max-w-6xl mx-auto flex flex-col gap-4">
