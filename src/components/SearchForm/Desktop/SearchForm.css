@@ -175,6 +175,7 @@
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
+  height: 36px !important;
 }
 
 .combobox-field [data-slot='input-group-control'] {

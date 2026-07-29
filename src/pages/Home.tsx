@@ -26,14 +26,25 @@ const homeJsonLd = [
 
 export default function Home() {
   return (
-    <div className="flex-1 w-full flex flex-col items-center bg-frui-cream pb-16 gap-10">
+    <div className="flex-1 w-full flex flex-col items-center bg-frui-cream pb-16 gap-5 sm:gap-10">
       <Seo
         title="Discover Your Next Escape"
         description="Find exclusive deals on hotels, flights, car rentals, things to do, and cruises. Book your next trip with Frui."
         path="/"
         jsonLd={homeJsonLd}
       />
-      <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pt-10 pb-2 -mb-6 text-left">
+
+      <div className="w-full md:hidden">
+        <MobileSections />
+      </div>
+
+      <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 -mb-10">
+        <Sections />
+      </div>
+
+      <SearchForm sticky />
+
+      <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pb-2 text-left">
         <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-[#121324] leading-tight !mb-2">
           Discover your next escape
         </h1>
@@ -41,15 +52,6 @@ export default function Home() {
           Find exclusive deals on hotels, flights, and car rentals.
         </p>
       </section>
-
-      <div className="w-full md:hidden">
-        <MobileSections />
-      </div>
-      <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 -mb-10">
-        <Sections />
-      </div>
-
-      <SearchForm sticky />
 
       <PresentationGallery />
     </div>

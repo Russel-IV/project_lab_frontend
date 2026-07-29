@@ -92,7 +92,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
           id="desktop-search-place"
           showClear={showClear && placeValue !== ''}
           placeholder={'Where to?'}
-          className="form-field-base combobox-field"
+          className="form-field-base combobox-field h-[36px]"
         >
           <InputGroupAddon align="inline-start">
             <span className="form-field-icon-wrapper">
