@@ -211,12 +211,40 @@ export function StayCardVariantRating() {
     reviewAverage ??
     (typeof stay.starRating === 'number' ? stay.starRating : null);
 
-  const getRatingText = (val: number) => {
-    if (val >= 4.8) return 'Exceptional';
-    if (val >= 4.5) return 'Wonderful';
-    if (val >= 4.0) return 'Very Good';
-    if (val >= 3.5) return 'Good';
-    return 'Fair';
+  const getRatingConfig = (val: number) => {
+    if (val >= 4.8) {
+      return {
+        label: 'Exceptional',
+        starClass: 'fill-emerald-800 text-emerald-800',
+        textClass: 'text-emerald-800',
+      };
+    }
+    if (val >= 4.5) {
+      return {
+        label: 'Wonderful',
+        starClass: 'fill-yellow-300 text-yellow-300',
+        textClass: 'text-yellow-700',
+      };
+    }
+    if (val >= 4.0) {
+      return {
+        label: 'Very Good',
+        starClass: 'fill-amber-500 text-amber-500',
+        textClass: 'text-amber-600',
+      };
+    }
+    if (val >= 3.5) {
+      return {
+        label: 'Good',
+        starClass: 'fill-frui-orange text-frui-orange',
+        textClass: 'text-frui-orange-text',
+      };
+    }
+    return {
+      label: 'Fair',
+      starClass: 'fill-frui-orange text-frui-orange',
+      textClass: 'text-frui-orange-text',
+    };
   };
 
   if (rating === null) {
@@ -228,17 +256,13 @@ export function StayCardVariantRating() {
     return null;
   }
 
-  const isHighlyRated = rating >= 4.5;
+  const config = getRatingConfig(rating);
 
   return (
     <div className="absolute top-4 left-4 bg-white flex items-center gap-1 text-[11px] md:text-xs font-semibold px-2 py-0.5 rounded-md shadow-xs z-10">
-      {isHighlyRated && (
-        <Star className="size-3 shrink-0 fill-frui-orange text-frui-orange" />
-      )}
-      <span
-        className={isHighlyRated ? 'text-frui-orange-text' : 'text-slate-900'}
-      >
-        {rating.toFixed(1)} {getRatingText(rating)}
+      <Star className={`size-3 shrink-0 ${config.starClass}`} />
+      <span className={config.textClass}>
+        {rating.toFixed(1)} {config.label}
       </span>
     </div>
   );
