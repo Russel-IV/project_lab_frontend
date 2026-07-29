@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { SlidersHorizontal, ArrowUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { ActionGroup } from './ActionGroup';
 
 interface PromptContainerProps {
@@ -55,27 +55,14 @@ export function PromptContainer({
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={
-          disabled
-            ? 'Assistant is thinking...'
-            : 'Write a prompt asking about anything of the application'
+          disabled ? 'Assistant is thinking...' : 'How can I help you?'
         }
         rows={2}
         className="w-full text-sm leading-5 text-frui-blue placeholder:text-frui-blue/40 bg-transparent resize-none border-0 outline-none focus:ring-0 focus:outline-none scrollbar-none pb-2 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Chatbot prompt input"
       />
 
-      <div className="flex justify-between items-center w-full border-t border-frui-blue/5 pt-2">
-        <ActionGroup gap="md">
-          <button
-            type="button"
-            aria-label="Prompt configuration settings"
-            disabled={disabled}
-            className="text-frui-blue/60 focus:outline-none cursor-pointer flex items-center justify-center p-1 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <SlidersHorizontal className="h-5 w-5" />
-          </button>
-        </ActionGroup>
-
+      <div className="flex justify-end items-center w-full border-t border-frui-blue/5 pt-2">
         <ActionGroup gap="md">
           <button
             type="button"

@@ -1,4 +1,4 @@
-import { Menu, SquarePen, X } from 'lucide-react';
+import { SquarePen, X } from 'lucide-react';
 import { ActionGroup } from './ActionGroup';
 
 interface ChatHeaderProps {
@@ -10,13 +10,6 @@ export function ChatHeader({ onClose, onNewChat }: ChatHeaderProps) {
   return (
     <div className="flex justify-between items-center w-full px-4 py-3 border-b border-frui-blue/10 bg-frui-white rounded-t-2xl">
       <ActionGroup gap="sm">
-        <button
-          type="button"
-          aria-label="Open menu"
-          className="text-frui-blue focus:outline-none cursor-pointer flex items-center justify-center p-1 rounded-md"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
         <div className="flex items-center gap-1">
           <span className="font-bold text-lg bg-gradient-to-r from-frui-orange to-[#ff9900] bg-clip-text text-transparent select-none">
             Frui
@@ -28,14 +21,16 @@ export function ChatHeader({ onClose, onNewChat }: ChatHeaderProps) {
       </ActionGroup>
 
       <ActionGroup gap="sm">
-        <button
-          type="button"
-          onClick={onNewChat}
-          aria-label="Start new chat"
-          className="text-frui-blue/60 focus:outline-none cursor-pointer flex items-center justify-center p-1 rounded-md"
-        >
-          <SquarePen className="h-5 w-5" />
-        </button>
+        {onNewChat && (
+          <button
+            type="button"
+            onClick={onNewChat}
+            aria-label="Start new chat"
+            className="text-frui-blue/60 focus:outline-none cursor-pointer flex items-center justify-center p-1 rounded-md"
+          >
+            <SquarePen className="h-5 w-5" />
+          </button>
+        )}
         <button
           type="button"
           onClick={onClose}
