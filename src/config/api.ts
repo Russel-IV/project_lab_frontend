@@ -13,4 +13,5 @@ export const API_ENDPOINTS = {
   PROFILE_PICTURE: `${BASE_URL}/profile/picture`,
   PROFILE_PASSWORD: `${BASE_URL}/profile/password`,
   PAYMENT_METHODS: `${BASE_URL}/payment-methods`,
+  CHAT: import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8080/api/chat',
 };

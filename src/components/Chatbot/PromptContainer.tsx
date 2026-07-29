@@ -4,9 +4,13 @@ import { ActionGroup } from './ActionGroup';
 
 interface PromptContainerProps {
   onSubmit: (text: string) => void;
+  disabled?: boolean;
 }
 
-export function PromptContainer({ onSubmit }: PromptContainerProps) {
+export function PromptContainer({
+  onSubmit,
+  disabled = false,
+}: PromptContainerProps) {
   const [inputValue, setInputValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -22,7 +26,7 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
 
   const handleSubmit = () => {
     const trimmed = inputValue.trim();
-    if (trimmed) {
+    if (trimmed && !disabled) {
       onSubmit(trimmed);
       setInputValue('');
     }
@@ -40,11 +44,16 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
       <textarea
         ref={textareaRef}
         value={inputValue}
+        disabled={disabled}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Write a prompt asking about anything of the application"
+        placeholder={
+          disabled
+            ? 'Assistant is thinking...'
+            : 'Write a prompt asking about anything of the application'
+        }
         rows={1}
-        className="w-full text-sm text-frui-blue placeholder:text-frui-blue/40 bg-transparent resize-none border-0 outline-none focus:ring-0 focus:outline-none scrollbar-none pb-2"
+        className="w-full text-sm text-frui-blue placeholder:text-frui-blue/40 bg-transparent resize-none border-0 outline-none focus:ring-0 focus:outline-none scrollbar-none pb-2 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Chatbot prompt input"
       />
 
@@ -53,7 +62,8 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
           <button
             type="button"
             aria-label="Prompt configuration settings"
-            className="text-frui-blue/60 focus:outline-none cursor-pointer flex items-center justify-center p-1 rounded-md"
+            disabled={disabled}
+            className="text-frui-blue/60 focus:outline-none cursor-pointer flex items-center justify-center p-1 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <SlidersHorizontal className="h-5 w-5" />
           </button>
@@ -64,9 +74,9 @@ export function PromptContainer({ onSubmit }: PromptContainerProps) {
             type="button"
             onClick={handleSubmit}
             aria-label="Send prompt"
-            disabled={!inputValue.trim()}
+            disabled={disabled || !inputValue.trim()}
             className={`flex items-center justify-center p-2 rounded-xl text-frui-white focus:outline-none cursor-pointer ${
-              inputValue.trim()
+              !disabled && inputValue.trim()
                 ? 'bg-frui-orange'
                 : 'bg-frui-orange/50 cursor-not-allowed'
             }`}

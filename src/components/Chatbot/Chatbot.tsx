@@ -1,57 +1,29 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Loader2 } from 'lucide-react';
 import { ChatHeader } from './ChatHeader';
 import { ChatBody } from './ChatBody';
 import { SuggestedActions } from './SuggestedActions';
 import { PromptContainer } from './PromptContainer';
 import { ChatFooter } from './ChatFooter';
-
-interface Message {
-  sender: 'user' | 'assistant';
-  text: string;
-}
+import { useChatbot } from './useChatbot';
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, isLoading, sendMessage, startNewChat } = useChatbot();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isOpen]);
+  }, [messages, isLoading, isOpen]);
 
   const handleSelectAction = (text: string) => {
-    setMessages((prev) => [...prev, { sender: 'user', text }]);
-
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'assistant',
-          text: `Thanks for asking about "${text}"! We are currently working on this feature.`,
-        },
-      ]);
-    }, 600);
+    void sendMessage(text);
   };
 
   const handlePromptSubmit = (text: string) => {
-    setMessages((prev) => [...prev, { sender: 'user', text }]);
-
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'assistant',
-          text: `You said: "${text}". The AI booking assistant is currently under development.`,
-        },
-      ]);
-    }, 600);
-  };
-
-  const handleNewChat = () => {
-    setMessages([]);
+    void sendMessage(text);
   };
 
   return (
@@ -75,7 +47,7 @@ export function Chatbot() {
         >
           <ChatHeader
             onClose={() => setIsOpen(false)}
-            onNewChat={handleNewChat}
+            onNewChat={startNewChat}
           />
 
           <ChatBody>
@@ -85,25 +57,34 @@ export function Chatbot() {
             >
               {messages.length > 0 ? (
                 <div className="flex flex-col gap-3">
-                  {messages.map((msg, index) => (
+                  {messages.map((msg) => (
                     <div
-                      key={index}
-                      className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed select-text ${
+                      key={msg.id}
+                      className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed select-text whitespace-pre-wrap ${
                         msg.sender === 'user'
                           ? 'bg-frui-blue text-frui-white self-end rounded-tr-none'
-                          : 'bg-frui-white text-frui-blue border border-frui-blue/5 self-start rounded-tl-none'
+                          : 'bg-frui-white text-frui-blue border border-frui-blue/10 self-start rounded-tl-none'
                       }`}
                     >
                       {msg.text}
                     </div>
                   ))}
+                  {isLoading && (
+                    <div className="flex items-center gap-2 max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed bg-frui-white text-frui-blue/70 border border-frui-blue/10 self-start rounded-tl-none">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-frui-orange" />
+                      <span>Thinking...</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <SuggestedActions onSelectAction={handleSelectAction} />
               )}
             </div>
 
-            <PromptContainer onSubmit={handlePromptSubmit} />
+            <PromptContainer
+              onSubmit={handlePromptSubmit}
+              disabled={isLoading}
+            />
           </ChatBody>
 
           <ChatFooter />
