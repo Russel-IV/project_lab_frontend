@@ -18,9 +18,16 @@ export function PromptContainer({
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = 'auto';
-      // 96px caps the textarea at ~4 lines before it scrolls.
       const scrollHeight = textarea.scrollHeight;
-      textarea.style.height = `${Math.min(scrollHeight, 96)}px`;
+      // Min 2 lines (48px), Max 4 lines (88px) for text-sm leading-5 with pb-2
+      const minHeight = 48;
+      const maxHeight = 88;
+      const targetHeight = Math.max(
+        minHeight,
+        Math.min(scrollHeight, maxHeight),
+      );
+      textarea.style.height = `${targetHeight}px`;
+      textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
     }
   }, [inputValue]);
 
@@ -52,8 +59,8 @@ export function PromptContainer({
             ? 'Assistant is thinking...'
             : 'Write a prompt asking about anything of the application'
         }
-        rows={1}
-        className="w-full text-sm text-frui-blue placeholder:text-frui-blue/40 bg-transparent resize-none border-0 outline-none focus:ring-0 focus:outline-none scrollbar-none pb-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        rows={2}
+        className="w-full text-sm leading-5 text-frui-blue placeholder:text-frui-blue/40 bg-transparent resize-none border-0 outline-none focus:ring-0 focus:outline-none scrollbar-none pb-2 disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Chatbot prompt input"
       />
 
