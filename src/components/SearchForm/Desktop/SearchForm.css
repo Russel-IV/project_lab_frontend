@@ -4,7 +4,6 @@
   width: 100%;
   max-width: min(880px, calc(100% - 32px));
   margin: 0 auto;
-  margin-top: 24px;
   text-align: left;
   background-color: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);

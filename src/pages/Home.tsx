@@ -26,7 +26,7 @@ const homeJsonLd = [
 
 export default function Home() {
   return (
-    <div className="flex-1 w-full flex flex-col items-center bg-frui-cream pb-16 gap-5 sm:gap-10">
+    <div className="flex-1 w-full flex flex-col items-center bg-frui-white pb-16 gap-5 sm:gap-10">
       <Seo
         title="Discover Your Next Escape"
         description="Find exclusive deals on hotels, flights, car rentals, things to do, and cruises. Book your next trip with Frui."

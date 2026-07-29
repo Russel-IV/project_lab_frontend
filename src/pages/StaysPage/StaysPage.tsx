@@ -95,7 +95,7 @@ export default function StaysPage() {
   const trimmedPlace = place.trim();
 
   return (
-    <div className="flex-1 bg-frui-cream py-10 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 bg-frui-white pt-6 pb-10 px-4 sm:px-6 lg:px-8">
       <Seo
         title={
           effectiveIsSurpriseMe
