@@ -1,4 +1,3 @@
-import React from 'react';
 import LoginForm from '@/components/Form/LoginForm';
 import airplaneFlying from '@/assets/airplane-flying.jpeg';
 import { Seo } from '@/lib/seo';
