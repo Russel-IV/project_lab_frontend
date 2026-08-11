@@ -71,7 +71,7 @@ export const SearchFormMobile: React.FC<SearchFormMobileProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="self-end w-10 h-10 flex items-center justify-center bg-frui-white border border-[#d6c7b9] rounded-full shadow-sm text-frui-blue cursor-pointer mb-6"
+          className="self-end w-10 h-10 shrink-0 flex items-center justify-center bg-frui-white border border-[#d6c7b9] rounded-full shadow-sm text-frui-blue cursor-pointer mb-6"
         >
           <X className="w-5 h-5" />
         </button>
