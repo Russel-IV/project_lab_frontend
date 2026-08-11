@@ -1,15 +1,6 @@
-import { useMemo, useState } from 'react';
-import { MapPin, Sparkles } from 'lucide-react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { MapPin, Sparkles, X } from 'lucide-react';
 import { useSearchForm } from './SearchFormContext';
-import { InputGroupAddon } from '@/components/ui/input-group';
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxContent,
-  ComboboxList,
-  ComboboxItem,
-  ComboboxEmpty,
-} from '@/components/ui/combobox';
 import {
   useDestinations,
   usePopularDestinations,
@@ -18,19 +9,80 @@ import { formatDestinationLabel } from '@/utils/countryName';
 import { SURPRISE_ME_VALUE } from '../searchFormUtils';
 import { SURPRISE_ME_LABEL } from '@/store/searchSlice';
 
+interface PlaceOption {
+  value: number | string;
+  label: string;
+}
+
+/**
+ * Properties for the DestinationDropdown component.
+ */
+interface DestinationDropdownProps {
+  options: PlaceOption[];
+  onSelect: (value: number | string, label: string) => void;
+  inputValue: string;
+}
+
+/**
+ * Renders the list of destination options or empty state.
+ *
+ * @param props - Component properties containing options and selection handler.
+ */
+const DestinationDropdown: React.FC<DestinationDropdownProps> = ({
+  options,
+  onSelect,
+  inputValue,
+}) => {
+  return (
+    <div className="absolute top-[calc(100%+8px)] left-0 z-50 w-full min-w-[320px] bg-frui-white border border-[#d6c7b9] rounded-2xl shadow-xl p-1.5 text-frui-blue overflow-hidden">
+      <div className="max-h-[296px] overflow-y-auto rounded-xl pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-400">
+        {/* Surprise me option */}
+        <button
+          type="button"
+          onClick={() => onSelect(SURPRISE_ME_VALUE, SURPRISE_ME_LABEL)}
+          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-frui-blue hover:bg-frui-cream rounded-lg transition-colors text-left cursor-pointer"
+        >
+          <Sparkles className="h-4 w-4 text-frui-orange shrink-0" />
+          <span className="font-medium">{SURPRISE_ME_LABEL}</span>
+        </button>
+
+        {options.length === 0 && inputValue.trim() !== '' ? (
+          <div className="px-3 py-2.5 text-xs text-[#7a7168] italic">
+            No stays found matching &quot;{inputValue}&quot;
+          </div>
+        ) : (
+          options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onSelect(option.value, option.label)}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-frui-blue hover:bg-frui-cream rounded-lg transition-colors text-left cursor-pointer"
+            >
+              <MapPin className="h-4 w-4 text-[#7a7168] shrink-0" />
+              <span>{option.label}</span>
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Renders the search form place selection field component.
+ *
+ * @param props - Component properties including optional showClear flag.
+ */
 export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   showClear = true,
 }) => {
-  const {
-    placeValue,
-    placeRegionId,
-    isSurpriseMe,
-    onPlaceChange,
-    onPlaceSelect,
-    onSurpriseMeSelect,
-  } = useSearchForm();
+  const { placeValue, onPlaceChange, onPlaceSelect, onSurpriseMeSelect } =
+    useSearchForm();
+
   const [inputValue, setInputValue] = useState(placeValue);
   const [prevPlaceValue, setPrevPlaceValue] = useState(placeValue);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   if (placeValue !== prevPlaceValue) {
     setInputValue(placeValue);
@@ -41,10 +93,10 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   const { destinations: popularDestinations } = usePopularDestinations();
   const destinations = inputValue.trim() ? searchResults : popularDestinations;
 
-  const options = useMemo(
+  const options = useMemo<PlaceOption[]>(
     () =>
       destinations.map((destination) => ({
-        value: destination.regionId as number | string,
+        value: destination.regionId,
         label: formatDestinationLabel(
           destination.city,
           destination.countryCode,
@@ -53,78 +105,99 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
     [destinations],
   );
 
-  const allOptions = useMemo(
-    () => [{ value: SURPRISE_ME_VALUE, label: SURPRISE_ME_LABEL }, ...options],
-    [options],
-  );
+  useEffect(() => {
+    /**
+     * Handles closing the dropdown when clicking outside the container.
+     */
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  /**
+   * Handles selection of a destination option from the dropdown.
+   *
+   * @param value - The region ID or surprise me value.
+   * @param label - The destination display label.
+   */
+  const handleSelectOption = (value: number | string, label: string) => {
+    if (value === SURPRISE_ME_VALUE) {
+      onSurpriseMeSelect();
+      setInputValue(SURPRISE_ME_LABEL);
+    } else {
+      onPlaceSelect(value as number, label);
+      setInputValue(label);
+    }
+    setIsOpen(false);
+  };
+
+  /**
+   * Handles input value change events.
+   *
+   * @param e - React change event object.
+   */
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setInputValue(val);
+    onPlaceChange(val);
+    setIsOpen(true);
+  };
+
+  /**
+   * Clears the selected place value.
+   */
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setInputValue('');
+    onPlaceChange('');
+    setIsOpen(true);
+  };
 
   return (
-    <div className="selection-field-container">
+    <div ref={containerRef} className="selection-field-container relative">
       <span className="selection-field-label">Where to?</span>
-      <Combobox<number | string>
-        items={allOptions}
-        value={isSurpriseMe ? SURPRISE_ME_VALUE : placeRegionId}
-        onValueChange={(value) => {
-          if (value == null) return;
-          if (value === SURPRISE_ME_VALUE) {
-            onSurpriseMeSelect();
-            setInputValue(SURPRISE_ME_LABEL);
-            return;
-          }
-          const picked = options.find((option) => option.value === value);
-          if (!picked) return;
-          onPlaceSelect(picked.value as number, picked.label);
-          setInputValue(picked.label);
-        }}
-        inputValue={inputValue}
-        onInputValueChange={(val, eventDetails) => {
-          if (
-            eventDetails.reason === 'item-press' ||
-            eventDetails.reason === 'none'
-          ) {
-            return;
-          }
-          setInputValue(val);
-          onPlaceChange(val);
-        }}
-      >
-        <ComboboxInput
+      <div className="form-field-base selection-field-button relative flex items-center">
+        <span className="form-field-icon-wrapper">
+          <MapPin className="w-5 h-5" strokeWidth={1.5} />
+        </span>
+        <input
           id="desktop-search-place"
-          showClear={showClear && placeValue !== ''}
-          placeholder={'Where to?'}
-          className="form-field-base combobox-field h-[36px]"
-        >
-          <InputGroupAddon align="inline-start">
-            <span className="form-field-icon-wrapper">
-              <MapPin className="w-5 h-6" strokeWidth={2} />
-            </span>
-          </InputGroupAddon>
-        </ComboboxInput>
-        <ComboboxContent
-          className="z-50 min-w-[320px] bg-white border border-[#d6c7b9] rounded-lg shadow-xl p-1 text-[#121324]"
-          collisionAvoidance={{ side: 'none' }}
-        >
-          <ComboboxEmpty className="px-3 py-2.5 text-xs text-[#7a7168] italic">
-            No stays found matching
-          </ComboboxEmpty>
-          <ComboboxList>
-            {(option) => (
-              <ComboboxItem
-                key={option.value}
-                value={option.value}
-                className="flex items-center gap-2 cursor-pointer px-3 py-2 text-sm text-[#121324] hover:bg-[#f7f4f2] rounded transition-colors duration-150"
-              >
-                {option.value === SURPRISE_ME_VALUE ? (
-                  <Sparkles className="h-4 w-4 text-[#e8660d] shrink-0" />
-                ) : (
-                  <MapPin className="h-4 w-4 text-[#7a7168] shrink-0" />
-                )}
-                {option.label}
-              </ComboboxItem>
-            )}
-          </ComboboxList>
-        </ComboboxContent>
-      </Combobox>
+          type="text"
+          placeholder="Where to?"
+          value={inputValue}
+          onChange={handleInputChange}
+          onFocus={() => setIsOpen(true)}
+          className="selection-field-value min-w-0 bg-transparent border-0 outline-none p-0 h-[36px] text-frui-blue font-bold placeholder:text-[#a8a29e]"
+        />
+        {showClear && inputValue !== '' && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="selection-field-clear-button"
+            aria-label="Clear destination"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {isOpen && (
+        <DestinationDropdown
+          options={options}
+          onSelect={handleSelectOption}
+          inputValue={inputValue}
+        />
+      )}
     </div>
   );
 };

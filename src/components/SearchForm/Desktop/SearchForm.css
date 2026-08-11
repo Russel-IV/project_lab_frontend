@@ -102,6 +102,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   flex-grow: 1;
+  min-width: 0;
   color: #121529;
 }
 
@@ -116,6 +117,29 @@
   height: 36px;
   margin-right: 12px;
   flex-shrink: 0;
+}
+
+.selection-field-clear-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: #7a7168;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 6px;
+  background: transparent;
+  border: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.selection-field-clear-button:hover {
+  color: #121529;
+  background-color: rgba(18, 21, 41, 0.08);
 }
 
 /* Submit/Search Button actions */
@@ -166,49 +190,4 @@
 .search-button:disabled:active {
   background-color: #d6c7b9;
   transform: none;
-}
-
-/* Combobox adjustments extending base */
-.combobox-field {
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  height: 36px !important;
-}
-
-.combobox-field [data-slot='input-group-control'] {
-  color: #121529;
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 700;
-  height: 100%;
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 0;
-}
-
-.combobox-field [data-slot='input-group-control']::placeholder {
-  color: #a8a29e;
-}
-
-.combobox-field [data-slot='input-group-addon'] {
-  color: #7a7168;
-}
-
-.combobox-field [data-slot='input-group-addon'] button {
-  color: #7a7168;
-  cursor: pointer;
-}
-
-.combobox-field [data-slot='input-group-addon'] button:hover {
-  color: #121529;
-}
-
-@media (max-width: 900px) {
-  .form-card {
-    border-radius: 28px;
-  }
 }
