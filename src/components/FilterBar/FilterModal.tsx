@@ -166,7 +166,7 @@ export function FilterModal({ isOpen, onClose }: FilterModalProps) {
       <div className="fixed inset-0 bg-black/40" onClick={onClose} />
 
       <div
-        className="relative z-10 w-full max-w-lg transform overflow-hidden rounded-3xl border border-frui-blue/10 bg-frui-cream p-6 shadow-2xl transition-all duration-300 animate-in fade-in zoom-in-95 flex flex-col"
+        className="relative z-10 w-full max-w-lg transform overflow-hidden rounded-3xl border border-frui-blue/10 bg-frui-white p-6 shadow-2xl transition-all duration-300 animate-in fade-in zoom-in-95 flex flex-col"
         role="dialog"
         aria-modal="true"
       >
