@@ -199,7 +199,7 @@ export const BookingWidgetDesktop: React.FC = () => {
       {isCalendarOpen && (
         <div
           ref={calendarRef}
-          className="absolute right-[calc(100%+16px)] top-0 h-full w-[600px] bg-frui-white border border-border shadow-[0_10px_30px_rgba(0,0,0,0.06)] rounded-3xl p-6 z-50 flex flex-col justify-center select-none"
+          className="absolute right-[calc(100%+16px)] top-0 h-[420px] w-[600px] bg-frui-white border border-border shadow-[0_10px_30px_rgba(0,0,0,0.06)] rounded-3xl p-6 z-50 flex flex-col justify-center select-none"
         >
           <RangeCalendar
             defaultMonth={dateRange.from || new Date()}

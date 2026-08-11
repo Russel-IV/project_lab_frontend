@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { useSearchForm } from './SearchFormContext';
 import { FormField } from './FormField';
 import {
@@ -17,6 +17,9 @@ const RangeCalendar = lazy(() =>
   })),
 );
 
+/**
+ * Renders the date selection field with a range calendar popover.
+ */
 export const SearchFormDatesField: React.FC = () => {
   const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -37,6 +40,12 @@ export const SearchFormDatesField: React.FC = () => {
     return formatDatesRange(selectedRange);
   }, [selectedRange]);
 
+  /**
+   * Handles selection of date ranges within the calendar.
+   *
+   * @param _range - The date range object selected in the calendar.
+   * @param selectedDay - The specific day clicked by the user.
+   */
   const handleSelect = (_range: DateRange | undefined, selectedDay: Date) => {
     if (!selectedDay) return;
 
@@ -57,7 +66,11 @@ export const SearchFormDatesField: React.FC = () => {
     }
   };
 
-  // Closing with only a check-in set defaults check-out to check-in + 1 day.
+  /**
+   * Handles visibility state changes of the popover.
+   *
+   * @param open - Indicates whether the popover is open.
+   */
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
 
@@ -71,12 +84,6 @@ export const SearchFormDatesField: React.FC = () => {
     }
   };
 
-  const today = React.useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger
@@ -89,19 +96,20 @@ export const SearchFormDatesField: React.FC = () => {
           />
         }
       />
-      <PopoverContent className="w-auto p-0 bg-white border border-[#d6c7b9] rounded-lg shadow-xl text-[#121324] z-50">
+      <PopoverContent className="h-[420px] w-[600px] bg-frui-white border border-border shadow-[0_10px_30px_rgba(0,0,0,0.06)] rounded-3xl p-6 z-50 flex flex-col justify-center select-none">
         <Suspense
           fallback={
-            <div className="flex items-center justify-center w-[580px] h-[320px] text-sm text-muted-foreground">
+            <div className="flex items-center justify-center w-full h-full text-sm text-muted-foreground">
               Loading calendar…
             </div>
           }
         >
           <RangeCalendar
+            defaultMonth={selectedRange.from || new Date()}
             selected={selectedRange}
             onSelect={handleSelect}
             numberOfMonths={2}
-            disabled={{ before: today }}
+            disabled={(date) => date < startOfDay(new Date())}
           />
         </Suspense>
       </PopoverContent>
