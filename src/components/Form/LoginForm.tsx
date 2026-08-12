@@ -63,6 +63,7 @@ export const LoginForm: React.FC = () => {
             id="email"
             type="email"
             placeholder="Email"
+            autoComplete="email"
             {...register('email')}
             className="w-full px-5 py-3.5 bg-frui-cream border border-transparent rounded-full text-sm text-frui-blue placeholder:text-neutral-400 outline-none focus:border-frui-orange"
           />
@@ -79,6 +80,7 @@ export const LoginForm: React.FC = () => {
               id="password"
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
+              autoComplete="current-password"
               {...register('password')}
               className="w-full px-5 py-3.5 pr-12 bg-frui-cream border border-transparent rounded-full text-sm text-frui-blue placeholder:text-neutral-400 outline-none focus:border-frui-orange"
             />
