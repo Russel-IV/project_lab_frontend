@@ -81,6 +81,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
     onPlaceSelect,
     onSurpriseMeSelect,
     onSubmit,
+    autoSubmit,
   } = useSearchForm();
 
   const [inputValue, setInputValue] = useState(placeValue);
@@ -143,7 +144,9 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
       setInputValue(label);
     }
     setIsOpen(false);
-    onSubmit();
+    if (autoSubmit) {
+      onSubmit();
+    }
   };
 
   /**

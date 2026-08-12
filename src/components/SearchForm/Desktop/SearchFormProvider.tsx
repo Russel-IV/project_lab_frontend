@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector, useAppStore } from '@/store/hooks';
 import {
   setPlace,
@@ -19,12 +19,17 @@ import {
  *
  * Provides Redux and router navigation state to desktop search fields.
  */
-export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const SearchFormProvider: React.FC<{
+  children: React.ReactNode;
+  autoSubmit?: boolean;
+}> = ({ children, autoSubmit }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const store = useAppStore();
+
+  const isAutoSubmit =
+    autoSubmit !== undefined ? autoSubmit : location.pathname !== '/';
 
   // Manage state from Redux store
   const {
@@ -79,6 +84,7 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
       dispatch(setDates({ checkIn, checkOut })),
     onTravelersChange: (val) => dispatch(setTravelers(val)),
     onSubmit: handleSearch,
+    autoSubmit: isAutoSubmit,
   };
 
   return (

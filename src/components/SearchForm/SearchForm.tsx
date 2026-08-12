@@ -141,11 +141,12 @@ export const SearchFormFields: React.FC = () => {
  *
  * Desktop search form card layout that connects inputs to the Redux store directly.
  */
-export const SearchFormDesktop: React.FC<{ sticky?: boolean }> = ({
-  sticky = false,
-}) => {
+export const SearchFormDesktop: React.FC<{
+  sticky?: boolean;
+  autoSubmit?: boolean;
+}> = ({ sticky = false, autoSubmit }) => {
   return (
-    <SearchFormProvider>
+    <SearchFormProvider autoSubmit={autoSubmit}>
       <div className={`form-card ${sticky ? 'is-sticky' : ''}`}>
         <SearchFormFields />
       </div>
@@ -158,6 +159,7 @@ interface SearchFormProps {
    * Only enable this where the page has enough clearance below the bar
    * (e.g. the Home hero) — see SearchForm.css for details. */
   sticky?: boolean;
+  autoSubmit?: boolean;
 }
 
 /**
@@ -165,7 +167,10 @@ interface SearchFormProps {
  *
  * Root SearchForm component that conditionally renders mobile trigger/modal or desktop layout.
  */
-export const SearchForm: React.FC<SearchFormProps> = ({ sticky = false }) => {
+export const SearchForm: React.FC<SearchFormProps> = ({
+  sticky = false,
+  autoSubmit,
+}) => {
   const isMobile = useIsMobile();
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
@@ -185,7 +190,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ sticky = false }) => {
     );
   }
 
-  return <SearchFormDesktop sticky={sticky} />;
+  return <SearchFormDesktop sticky={sticky} autoSubmit={autoSubmit} />;
 };
 
 export default SearchForm;

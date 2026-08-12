@@ -14,7 +14,8 @@ import {
 } from '../searchFormUtils';
 
 export const SearchFormTravelersField: React.FC = () => {
-  const { travelersValue, onTravelersChange, onSubmit } = useSearchForm();
+  const { travelersValue, onTravelersChange, onSubmit, autoSubmit } =
+    useSearchForm();
   const [open, setOpen] = useState(false);
   const [rooms, setRooms] = useState<RoomConfig[]>(() =>
     parseTravelersValue(travelersValue),
@@ -27,7 +28,9 @@ export const SearchFormTravelersField: React.FC = () => {
     } else {
       const formatted = serializeTravelersValue(rooms);
       onTravelersChange(formatted);
-      onSubmit();
+      if (autoSubmit) {
+        onSubmit();
+      }
     }
   };
 

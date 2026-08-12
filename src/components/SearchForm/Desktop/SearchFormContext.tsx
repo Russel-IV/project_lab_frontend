@@ -13,6 +13,7 @@ export interface SearchFormContextProps {
   onDatesChange: (checkIn: string, checkOut: string) => void;
   onTravelersChange: (val: string) => void;
   onSubmit: () => void;
+  autoSubmit: boolean;
 }
 
 export const SearchFormContext = createContext<
