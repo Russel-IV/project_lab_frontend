@@ -8,6 +8,10 @@ import { getProfile } from '@/api/profile';
 
 import fruiLogo from '@/assets/frui-logo.svg';
 
+/**
+ * Navbar component for main site header navigation.
+ * Renders logo branding, user authentication state, profile link, and login/logout controls.
+ */
 export function Navbar() {
   const user = useAppSelector((state) => state.auth.user);
   const token = useAppSelector((state) => state.auth.token);
@@ -29,10 +33,7 @@ export function Navbar() {
   };
 
   return (
-    <header
-      style={{ backgroundColor: '#121529' }}
-      className="sticky top-0 z-50 w-full border-b border-border/40 shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
-    >
+    <header className="sticky top-0 z-50 w-full bg-frui-blue border-b border-frui-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
@@ -46,7 +47,7 @@ export function Navbar() {
             />
           </div>
           <span className="text-3xl font-bold tracking-tight text-frui-white">
-            <span className="bg-gradient-to-r from-frui-orange to-[#ff9900] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-frui-orange to-frui-orange-text bg-clip-text text-transparent">
               Frui
             </span>
           </span>
@@ -81,7 +82,7 @@ export function Navbar() {
                 variant="secondary"
                 size="sm"
                 onClick={handleLogout}
-                className="gap-1.5 bg-frui-orange-text text-frui-white border-frui-orange-text hover:bg-frui-orange-text hover:brightness-110 focus-visible:ring-frui-orange/40"
+                className="gap-1.5"
               >
                 <LogOut className="h-4 w-4" />
                 <span>Log Out</span>
