@@ -142,6 +142,7 @@ export const WhereSection: React.FC = () => {
           placeholder="Search destinations"
           value={inputValue}
           onChange={handleInputChange}
+          autoComplete="off"
           className="w-full bg-transparent text-sm font-semibold text-frui-blue placeholder:text-[#a8a29e] outline-none"
         />
         {inputValue && (

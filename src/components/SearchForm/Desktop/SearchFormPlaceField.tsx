@@ -182,6 +182,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
           value={inputValue}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
+          autoComplete="off"
           className="selection-field-value min-w-0 bg-transparent border-0 outline-none p-0 h-[36px] text-frui-blue font-bold placeholder:text-[#a8a29e]"
         />
         {showClear && inputValue !== '' && (
