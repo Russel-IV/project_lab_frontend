@@ -4,6 +4,8 @@ export const BASE_URL =
 export const GRAPHQL_URL =
   import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:8080/graphql';
 
+const GATEWAY_ORIGIN = BASE_URL.replace(/\/api\/v1\/?$/, '');
+
 export const API_ENDPOINTS = {
   STAYS: `${BASE_URL}/stays`,
   GRAPHQL: GRAPHQL_URL,
@@ -13,5 +15,5 @@ export const API_ENDPOINTS = {
   PROFILE_PICTURE: `${BASE_URL}/profile/picture`,
   PROFILE_PASSWORD: `${BASE_URL}/profile/password`,
   PAYMENT_METHODS: `${BASE_URL}/payment-methods`,
-  CHAT: import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8080/api/chat',
+  CHAT: import.meta.env.VITE_CHAT_API_URL || `${GATEWAY_ORIGIN}/api/chat`,
 };
