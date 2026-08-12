@@ -90,7 +90,7 @@ export function ImageGalleryModal({
   return createPortal(
     <div
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex flex-col justify-between bg-frui-blue/95 text-frui-white select-none"
+      className="fixed inset-0 z-[1000] flex flex-col justify-between bg-frui-blue/95 text-frui-white select-none"
     >
       <div
         onClick={(e) => e.stopPropagation()}

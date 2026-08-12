@@ -157,7 +157,7 @@ export default function StayInfoPage() {
     : undefined;
 
   return (
-    <div className="flex-1 w-full bg-frui-cream md:py-10 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-frui-white md:py-10 px-4 sm:px-6 lg:px-8">
       {stay && (
         <Seo
           title={stay.name}
