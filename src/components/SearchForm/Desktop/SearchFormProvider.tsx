@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector, useAppStore } from '@/store/hooks';
 import {
   setPlace,
   setPlaceSelection,
@@ -24,6 +24,7 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   // Manage state from Redux store
   const {
@@ -36,20 +37,30 @@ export const SearchFormProvider: React.FC<{ children: React.ReactNode }> = ({
   } = useAppSelector((state) => state.search);
 
   const handleSearch = () => {
-    if (!isValidDateRange(checkInValue, checkOutValue)) return;
-    if (placeRegionId == null && !isSurpriseMe) return;
+    const currentState = store.getState().search;
+    const {
+      place,
+      placeRegionId: regionId,
+      isSurpriseMe: surprise,
+      checkIn,
+      checkOut,
+      travelers,
+    } = currentState;
+
+    if (!isValidDateRange(checkIn, checkOut)) return;
+    if (regionId == null && !surprise) return;
 
     const params = new URLSearchParams();
-    params.append('place', placeValue);
-    if (placeRegionId != null) {
-      params.append('regionId', String(placeRegionId));
+    params.append('place', place);
+    if (regionId != null) {
+      params.append('regionId', String(regionId));
     }
-    if (isSurpriseMe) {
+    if (surprise) {
       params.append('surprise', 'true');
     }
-    params.append('checkIn', checkInValue);
-    params.append('checkOut', checkOutValue);
-    params.append('travelers', travelersValue);
+    params.append('checkIn', checkIn);
+    params.append('checkOut', checkOut);
+    params.append('travelers', travelers);
     navigate(`/stays?${params.toString()}`);
   };
 

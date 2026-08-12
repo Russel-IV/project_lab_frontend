@@ -75,8 +75,13 @@ const DestinationDropdown: React.FC<DestinationDropdownProps> = ({
 export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   showClear = true,
 }) => {
-  const { placeValue, onPlaceChange, onPlaceSelect, onSurpriseMeSelect } =
-    useSearchForm();
+  const {
+    placeValue,
+    onPlaceChange,
+    onPlaceSelect,
+    onSurpriseMeSelect,
+    onSubmit,
+  } = useSearchForm();
 
   const [inputValue, setInputValue] = useState(placeValue);
   const [prevPlaceValue, setPrevPlaceValue] = useState(placeValue);
@@ -138,6 +143,7 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
       setInputValue(label);
     }
     setIsOpen(false);
+    onSubmit();
   };
 
   /**

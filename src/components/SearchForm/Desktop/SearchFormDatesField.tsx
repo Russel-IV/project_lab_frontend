@@ -21,7 +21,8 @@ const RangeCalendar = lazy(() =>
  * Renders the date selection field with a range calendar popover.
  */
 export const SearchFormDatesField: React.FC = () => {
-  const { checkInValue, checkOutValue, onDatesChange } = useSearchForm();
+  const { checkInValue, checkOutValue, onDatesChange, onSubmit } =
+    useSearchForm();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const selectedRange = React.useMemo<DateRange>(() => {
@@ -81,6 +82,7 @@ export const SearchFormDatesField: React.FC = () => {
         checkOutDate.setDate(checkOutDate.getDate() + 1);
         onDatesChange(checkInValue, format(checkOutDate, 'yyyy-MM-dd'));
       }
+      onSubmit();
     }
   };
 
