@@ -23,23 +23,33 @@ export function formatPrice(price: number, useDesktopStyle = false): string {
 }
 
 /**
- * Multiplies a per-night rate by the number of searched nights. Nights are
- * clamped to a minimum of 1, matching booking-widget/list-card behavior when
- * dates are unset or equal.
+ * Calculates the total price for a given nightly rate and stay duration.
+ * Defaults to a 1-night calculation if dates are missing, empty, or invalid.
  *
  * @param nightlyPrice - Per-night rate.
  * @param checkIn - ISO 'yyyy-MM-dd' check-in date string.
  * @param checkOut - ISO 'yyyy-MM-dd' check-out date string.
+ * @returns Total calculated price.
  */
 export function calculateTotalPrice(
   nightlyPrice: number,
-  checkIn: string,
-  checkOut: string,
+  checkIn?: string | null,
+  checkOut?: string | null,
 ): number {
-  const nights = Math.max(
-    1,
-    differenceInCalendarDays(new Date(checkOut), new Date(checkIn)),
-  );
+  if (!checkIn || !checkOut) {
+    return nightlyPrice;
+  }
+
+  const startDate = new Date(checkIn);
+  const endDate = new Date(checkOut);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return nightlyPrice;
+  }
+
+  const calculatedNights = differenceInCalendarDays(endDate, startDate);
+  const nights = isNaN(calculatedNights) ? 1 : Math.max(1, calculatedNights);
+
   return nightlyPrice * nights;
 }
 

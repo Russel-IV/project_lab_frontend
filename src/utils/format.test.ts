@@ -74,6 +74,12 @@ describe('calculateTotalPrice', () => {
     expect(calculateTotalPrice(100, '2026-08-01', '2026-08-01')).toBe(100);
   });
 
+  it('defaults to 1 night when checkOut is empty or missing', () => {
+    expect(calculateTotalPrice(100, '2026-08-01', '')).toBe(100);
+    expect(calculateTotalPrice(100, '2026-08-01', undefined)).toBe(100);
+    expect(calculateTotalPrice(100, '', '')).toBe(100);
+  });
+
   it('formats below/above the USD-CLP threshold correctly with two decimals', () => {
     expect(
       formatPrice(calculateTotalPrice(100, '2026-08-01', '2026-08-04')),
