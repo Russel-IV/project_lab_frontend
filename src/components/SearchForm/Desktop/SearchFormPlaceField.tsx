@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { MapPin, Sparkles, X } from 'lucide-react';
+import { MapPin, X } from 'lucide-react';
 import { useSearchForm } from './SearchFormContext';
 import {
   useDestinations,
@@ -42,7 +42,6 @@ const DestinationDropdown: React.FC<DestinationDropdownProps> = ({
           onClick={() => onSelect(SURPRISE_ME_VALUE, SURPRISE_ME_LABEL)}
           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-frui-blue hover:bg-frui-cream rounded-lg transition-colors text-left cursor-pointer"
         >
-          <Sparkles className="h-4 w-4 text-frui-orange shrink-0" />
           <span className="font-medium">{SURPRISE_ME_LABEL}</span>
         </button>
 
