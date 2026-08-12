@@ -25,9 +25,44 @@ export const SearchFormDatesField: React.FC = () => {
     useSearchForm();
   const [isOpen, setIsOpen] = React.useState(false);
 
+  // Local state for dates while calendar popover is active
+  const [tempCheckIn, setTempCheckIn] = React.useState(checkInValue);
+  const [tempCheckOut, setTempCheckOut] = React.useState(checkOutValue);
+
+  /**
+   * Handles visibility state changes of the popover.
+   * Synchronizes local state when opened, and commits to Redux/submits when closed.
+   *
+   * @param open - Indicates whether the popover is open.
+   */
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+
+    if (open) {
+      setTempCheckIn(checkInValue);
+      setTempCheckOut(checkOutValue);
+    } else {
+      const finalCheckIn = tempCheckIn;
+      let finalCheckOut = tempCheckOut;
+
+      if (finalCheckIn && !finalCheckOut) {
+        const checkInDate = new Date(finalCheckIn + 'T00:00:00');
+        const checkOutDate = new Date(checkInDate);
+        checkOutDate.setDate(checkOutDate.getDate() + 1);
+        finalCheckOut = format(checkOutDate, 'yyyy-MM-dd');
+      }
+
+      onDatesChange(finalCheckIn, finalCheckOut);
+      onSubmit();
+    }
+  };
+
+  const activeCheckIn = isOpen ? tempCheckIn : checkInValue;
+  const activeCheckOut = isOpen ? tempCheckOut : checkOutValue;
+
   const selectedRange = React.useMemo<DateRange>(() => {
-    return parseISOToDateRange(checkInValue, checkOutValue);
-  }, [checkInValue, checkOutValue]);
+    return parseISOToDateRange(activeCheckIn, activeCheckOut);
+  }, [activeCheckIn, activeCheckOut]);
 
   const displayValue = React.useMemo(() => {
     const isSameDay =
@@ -53,36 +88,19 @@ export const SearchFormDatesField: React.FC = () => {
     const clickedDay = new Date(selectedDay);
     clickedDay.setHours(0, 0, 0, 0);
 
-    const hasOnlyCheckIn = !!checkInValue && !checkOutValue;
+    const hasOnlyCheckIn = !!tempCheckIn && !tempCheckOut;
 
     if (hasOnlyCheckIn) {
-      const checkInDate = new Date(checkInValue + 'T00:00:00');
+      const checkInDate = new Date(tempCheckIn + 'T00:00:00');
       if (clickedDay < checkInDate) {
-        onDatesChange(format(clickedDay, 'yyyy-MM-dd'), '');
+        setTempCheckIn(format(clickedDay, 'yyyy-MM-dd'));
+        setTempCheckOut('');
       } else {
-        onDatesChange(checkInValue, format(clickedDay, 'yyyy-MM-dd'));
+        setTempCheckOut(format(clickedDay, 'yyyy-MM-dd'));
       }
     } else {
-      onDatesChange(format(clickedDay, 'yyyy-MM-dd'), '');
-    }
-  };
-
-  /**
-   * Handles visibility state changes of the popover.
-   *
-   * @param open - Indicates whether the popover is open.
-   */
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-
-    if (!open) {
-      if (checkInValue && !checkOutValue) {
-        const checkInDate = new Date(checkInValue + 'T00:00:00');
-        const checkOutDate = new Date(checkInDate);
-        checkOutDate.setDate(checkOutDate.getDate() + 1);
-        onDatesChange(checkInValue, format(checkOutDate, 'yyyy-MM-dd'));
-      }
-      onSubmit();
+      setTempCheckIn(format(clickedDay, 'yyyy-MM-dd'));
+      setTempCheckOut('');
     }
   };
 
