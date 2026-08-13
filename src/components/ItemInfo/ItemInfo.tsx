@@ -273,21 +273,6 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
                 total
               </span>
             </div>
-
-            <button
-              type="button"
-              disabled={booking.selectedRooms.length === 0}
-              onClick={() => navigate(`/payment/${stay.publicId}`)}
-              className="bg-frui-orange hover:bg-frui-orange/90 active:scale-[0.98] text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-sm select-none text-sm cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-            >
-              Reserve
-            </button>
-
-            <p className="text-[10px] text-muted-foreground">
-              {booking.selectedRooms.length === 0
-                ? 'Select a room to continue'
-                : 'Includes all taxes and fees'}
-            </p>
           </div>
         </div>
 
@@ -465,6 +450,37 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
               )}
             </>
           )}
+        </div>
+      </div>
+
+      <div className="p-4 bg-frui-white border-t border-border flex items-center justify-between gap-3 shrink-0">
+        <div className="flex flex-col text-left">
+          <span className="text-sm font-bold text-foreground">
+            {formattedPrice} total
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            {booking.selectedRooms.length === 0
+              ? 'Select a room to continue'
+              : 'Includes all taxes and fees'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => navigate(`/stay/${stay.publicId}`)}
+            className="bg-frui-white text-frui-blue border border-frui-blue/20 font-medium px-4 py-2.5 rounded-xl text-sm cursor-pointer select-none"
+          >
+            More info
+          </button>
+          <button
+            type="button"
+            disabled={booking.selectedRooms.length === 0}
+            onClick={() => navigate(`/payment/${stay.publicId}`)}
+            className="bg-frui-orange text-white font-medium px-6 py-2.5 rounded-xl select-none text-sm cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Reserve
+          </button>
         </div>
       </div>
     </div>
