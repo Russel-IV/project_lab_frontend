@@ -211,7 +211,11 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
       </button>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-        <PhotoGallery images={stay.pictures ?? undefined} maxPhotos={3} />
+        <PhotoGallery
+          images={stay.pictures ?? undefined}
+          maxPhotos={3}
+          useFallbacks
+        />
 
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="space-y-3 min-w-0">

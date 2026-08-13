@@ -179,6 +179,7 @@ export default function StayInfoPage() {
         <PhotoGallery
           images={data?.stay?.pictures ?? undefined}
           maxPhotos={5}
+          useFallbacks
         />
 
         <div>

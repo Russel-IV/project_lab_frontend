@@ -104,7 +104,7 @@ export default function PopularDestinations() {
             : destinations.map((destination, idx) => (
                 <Link
                   key={`${destination.city}-${destination.countryCode}`}
-                  to={`/stays?place=${encodeURIComponent(destination.city)}`}
+                  to={`/stays?place=${encodeURIComponent(destination.city)}&regionId=${destination.regionId}`}
                   draggable={false}
                   className="group relative h-28 w-40 shrink-0 overflow-hidden rounded-xl shadow-sm"
                 >
