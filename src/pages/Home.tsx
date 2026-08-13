@@ -1,8 +1,10 @@
 import { SearchForm } from '@/components/SearchForm';
 import { Sections, MobileSections } from '../components/Sections';
-import PresentationGallery from '../components/PresentationGallery/PresentationGallery';
+import PopularDestinations from '../components/PopularDestinations';
+import FeaturedStays from '../components/FeaturedStays';
 import { Seo } from '@/lib/seo';
 import { SITE_NAME, SITE_URL } from '@/config/seo';
+import airplaneFlying from '@/assets/airplane-flying.jpeg';
 
 const homeJsonLd = [
   {
@@ -34,26 +36,43 @@ export default function Home() {
         jsonLd={homeJsonLd}
       />
 
-      <div className="w-full md:hidden">
-        <MobileSections />
+      <div className="relative isolate w-full flex flex-col items-center gap-4 sm:gap-6 pt-4 sm:pt-6 pb-10 sm:pb-14 lg:pb-16">
+        <img
+          src={airplaneFlying}
+          alt="Airplane flying above the clouds"
+          className="absolute inset-0 -z-20 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-black/60 via-black/30 to-black/10" />
+
+        <div className="w-full md:hidden">
+          <MobileSections />
+        </div>
+
+        <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8">
+          <Sections />
+        </div>
+
+        <div className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 flex flex-col gap-10">
+          <div className="w-full lg:w-[860px] lg:mx-auto [&_.form-card]:bg-white! [&_.form-card]:backdrop-blur-none!">
+            <SearchForm />
+          </div>
+
+          <div className="max-w-lg text-left">
+            <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-white leading-tight !mb-2 drop-shadow-md">
+              Discover your next escape
+            </h1>
+            <p className="text-base sm:text-lg text-white/90 font-normal drop-shadow-sm">
+              Find exclusive deals on hotels, flights, and car rentals.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="hidden md:block w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 -mb-10">
-        <Sections />
-      </div>
+      <PopularDestinations />
 
-      <SearchForm sticky />
+      {/*<PresentationGallery />*/}
 
-      <section className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 pb-2 text-left">
-        <h1 className="text-4xl sm:text-[52px] font-bold tracking-tight text-[#121324] leading-tight !mb-2">
-          Discover your next escape
-        </h1>
-        <p className="text-base sm:text-lg text-[#5c5d6b] font-normal">
-          Find exclusive deals on hotels, flights, and car rentals.
-        </p>
-      </section>
-
-      <PresentationGallery />
+      <FeaturedStays />
     </div>
   );
 }
