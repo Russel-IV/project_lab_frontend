@@ -18,11 +18,21 @@ export function ChatbotStayList({ stays }: ChatbotStayListProps) {
   if (displayedStays.length === 0) return null;
 
   const handleScrollLeft = () => {
-    scrollRef.current?.scrollBy({ left: -220, behavior: 'smooth' });
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: -scrollRef.current.clientWidth,
+        behavior: 'smooth',
+      });
+    }
   };
 
   const handleScrollRight = () => {
-    scrollRef.current?.scrollBy({ left: 220, behavior: 'smooth' });
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: scrollRef.current.clientWidth,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
@@ -32,7 +42,7 @@ export function ChatbotStayList({ stays }: ChatbotStayListProps) {
           Recommended Stays
         </span>
         {displayedStays.length > 1 && (
-          <div className="flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1">
             <button
               type="button"
               onClick={handleScrollLeft}

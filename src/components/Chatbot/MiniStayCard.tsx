@@ -16,7 +16,7 @@ export function MiniStayCard({ stay }: MiniStayCardProps) {
   return (
     <Link
       to={`/stay/${stay.publicId}`}
-      className="shrink-0 w-44 bg-frui-white border border-frui-blue/10 rounded-xl overflow-hidden shadow-xs flex flex-col no-underline text-inherit select-none"
+      className="shrink-0 w-[calc(50%-5px)] bg-frui-white border border-frui-blue/10 rounded-xl overflow-hidden shadow-xs flex flex-col no-underline text-inherit select-none"
     >
       <div className="relative w-full h-24 bg-frui-placeholder overflow-hidden">
         {stay.imageUrl ? (
