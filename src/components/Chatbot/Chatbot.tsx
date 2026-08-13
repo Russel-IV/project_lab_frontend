@@ -6,6 +6,7 @@ import { SuggestedActions } from './SuggestedActions';
 import { PromptContainer } from './PromptContainer';
 import { ChatFooter } from './ChatFooter';
 import { useChatbot } from './useChatbot';
+import { ChatbotStayList } from './ChatbotStayList';
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,15 +59,21 @@ export function Chatbot() {
               {messages.length > 0 ? (
                 <div className="flex flex-col gap-3">
                   {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed select-text whitespace-pre-wrap ${
-                        msg.sender === 'user'
-                          ? 'bg-frui-blue text-frui-white self-end rounded-tr-none'
-                          : 'bg-frui-white text-frui-blue border border-frui-blue/10 self-start rounded-tl-none'
-                      }`}
-                    >
-                      {msg.text}
+                    <div key={msg.id} className="flex flex-col">
+                      <div
+                        className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed select-text whitespace-pre-wrap ${
+                          msg.sender === 'user'
+                            ? 'bg-frui-blue text-frui-white self-end rounded-tr-none'
+                            : 'bg-frui-white text-frui-blue border border-frui-blue/10 self-start rounded-tl-none'
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                      {msg.sender === 'assistant' &&
+                        msg.stays &&
+                        msg.stays.length > 0 && (
+                          <ChatbotStayList stays={msg.stays} />
+                        )}
                     </div>
                   ))}
                   {isLoading && (

@@ -9,10 +9,26 @@ export interface ChatRequest {
 }
 
 /**
+ * Interface representing a compact stay summary in chatbot responses.
+ */
+export interface StaySummary {
+  id: number;
+  publicId: string;
+  name: string;
+  propertyType: string;
+  starRating?: number;
+  startingFromPrice?: number;
+  city?: string;
+  countryCode?: string;
+  imageUrl?: string;
+}
+
+/**
  * Interface representing the chat API response payload.
  */
 export interface ChatResponse {
   response: string;
+  stays?: StaySummary[];
 }
 
 /**

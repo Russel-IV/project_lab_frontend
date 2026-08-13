@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { sendChatMessage, clearChatSession } from '@/api/chat';
+import {
+  sendChatMessage,
+  clearChatSession,
+  type StaySummary,
+} from '@/api/chat';
 import { API_ENDPOINTS } from '@/config/api';
 
 /**
@@ -9,6 +13,7 @@ export interface ChatMessage {
   id: string;
   sender: 'user' | 'assistant';
   text: string;
+  stays?: StaySummary[];
 }
 
 /**
@@ -72,6 +77,7 @@ export function useChatbot() {
           id: crypto.randomUUID(),
           sender: 'assistant',
           text: data.response,
+          stays: data.stays,
         };
         setMessages((prev) => [...prev, assistantMsg]);
       } catch (err) {
