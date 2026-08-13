@@ -68,6 +68,11 @@ export const LoginForm: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="login-input"
             />
+            <div className="forgot-password-container">
+              <Link to="/forgot-password" className="forgot-password-link">
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           {error && <p className="login-error">{error}</p>}

@@ -9,7 +9,11 @@ import tailwindcss from '@tailwindcss/vite';
 // request against them fires, instead of paying for it on the critical path
 // after the JS finishes loading.
 function preconnectOrigins(urls: string[]): Plugin {
-  const origins = [...new Set(urls.map((url) => new URL(url).origin))];
+  // Same-origin (relative) URLs are skipped: the page is already connected
+  // to its own origin, and new URL() throws on a path with no base to
+  // resolve against.
+  const absoluteUrls = urls.filter((url) => /^https?:\/\//.test(url));
+  const origins = [...new Set(absoluteUrls.map((url) => new URL(url).origin))];
   return {
     name: 'preconnect-origins',
     transformIndexHtml() {

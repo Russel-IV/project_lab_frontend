@@ -10,6 +10,9 @@ const Home = lazy(() => import('@/pages/Home'));
 const StaysPage = lazy(() => import('@/pages/StaysPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const SignupPage = lazy(() => import('@/pages/SignupPage'));
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'));
+const ConfirmAccountPage = lazy(() => import('@/pages/ConfirmAccountPage'));
 const StayInfoPage = lazy(() => import('@/pages/StayInfoPage'));
 const Payment = lazy(() => import('@/pages/Payment'));
 const Profile = lazy(() => import('@/pages/Profile'));
@@ -70,6 +73,15 @@ function App() {
                 <Route path="/stays" element={<StaysPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
+                <Route
+                  path="/forgot-password"
+                  element={<ForgotPasswordPage />}
+                />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route
+                  path="/confirm-account"
+                  element={<ConfirmAccountPage />}
+                />
                 <Route path="/stay/:publicId" element={<StayInfoPage />} />
                 <Route path="/payment/:publicId" element={<Payment />} />
                 <Route path="/profile" element={<Profile />}>
