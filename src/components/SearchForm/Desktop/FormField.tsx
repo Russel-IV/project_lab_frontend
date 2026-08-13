@@ -5,16 +5,21 @@ interface FormFieldProps {
   value: string;
   onClick: () => void;
   icon?: React.ReactNode;
+  isActive?: boolean;
 }
 
+/**
+ * FormField component renders an input field segment with label, value, icon, and active status.
+ */
 export const FormField: React.FC<FormFieldProps> = ({
   label,
   value,
   onClick,
   icon,
+  isActive = false,
 }) => {
   return (
-    <div className="selection-field-container">
+    <div className={`selection-field-container ${isActive ? 'is-active' : ''}`}>
       <span className="selection-field-label">{label}</span>
       <button
         type="button"

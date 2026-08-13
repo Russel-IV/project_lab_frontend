@@ -31,6 +31,9 @@ export const SearchFormTravelersField: React.FC = () => {
       if (autoSubmit) {
         onSubmit();
       }
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
     }
   };
 
@@ -73,6 +76,7 @@ export const SearchFormTravelersField: React.FC = () => {
             value={travelersValue}
             onClick={() => {}}
             icon={<User className="w-5 h-5" strokeWidth={1.5} />}
+            isActive={open}
           />
         }
       />

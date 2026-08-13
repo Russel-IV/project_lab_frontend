@@ -144,6 +144,9 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
       setInputValue(label);
     }
     setIsOpen(false);
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     if (autoSubmit) {
       onSubmit();
     }
@@ -172,7 +175,10 @@ export const SearchFormPlaceField: React.FC<{ showClear?: boolean }> = ({
   };
 
   return (
-    <div ref={containerRef} className="selection-field-container relative">
+    <div
+      ref={containerRef}
+      className={`selection-field-container relative ${isOpen ? 'is-active' : ''}`}
+    >
       <span className="selection-field-label">Where to?</span>
       <div className="form-field-base selection-field-button relative flex items-center">
         <span className="form-field-icon-wrapper">

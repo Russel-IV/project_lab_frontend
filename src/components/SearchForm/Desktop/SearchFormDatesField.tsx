@@ -56,6 +56,9 @@ export const SearchFormDatesField: React.FC = () => {
       if (autoSubmit) {
         onSubmit();
       }
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
     }
   };
 
@@ -115,6 +118,7 @@ export const SearchFormDatesField: React.FC = () => {
             value={displayValue}
             onClick={() => {}}
             icon={<CalendarIcon className="w-5 h-5" strokeWidth={1.5} />}
+            isActive={isOpen}
           />
         }
       />
