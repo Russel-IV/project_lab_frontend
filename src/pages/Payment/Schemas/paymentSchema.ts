@@ -23,9 +23,6 @@ export const paymentSchema = z.object({
   billingCity: z.string().min(1, 'Please enter a city.'),
   billingState: z.string().min(1, 'Please enter a state/province.'),
   billingPostalCode: z.string().min(1, 'Please enter a postal code.'),
-
-  // Desktop specific
-  payWhen: z.enum(['now', 'later']),
 });
 
 export type PaymentFormValues = z.infer<typeof paymentSchema>;

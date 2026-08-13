@@ -356,7 +356,6 @@ function PaymentCheckout({
       billingCity: paymentState.billingCity,
       billingState: paymentState.billingState,
       billingPostalCode: paymentState.billingPostalCode,
-      payWhen: paymentState.payWhen,
     },
   });
 
@@ -377,7 +376,6 @@ function PaymentCheckout({
       billingCity: '',
       billingState: '',
       billingPostalCode: '',
-      payWhen: 'now',
     });
   }, [dispatch, reset]);
 

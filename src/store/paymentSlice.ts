@@ -15,9 +15,6 @@ export interface PaymentState {
   billingCity: string;
   billingState: string;
   billingPostalCode: string;
-
-  // Desktop specific
-  payWhen: 'now' | 'later';
 }
 
 const initialState: PaymentState = {
@@ -34,7 +31,6 @@ const initialState: PaymentState = {
   billingCity: '',
   billingState: '',
   billingPostalCode: '',
-  payWhen: 'now',
 };
 
 const paymentSlice = createSlice({

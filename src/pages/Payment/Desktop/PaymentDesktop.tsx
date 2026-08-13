@@ -19,7 +19,6 @@ import { type DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 import type { GetStayDetailsQuery } from '@/types/__generated__/graphql';
 
-import ChooseWhenToPaySection from './ChooseWhenToPaySection';
 import GuestDetailsSection from './GuestDetailsSection';
 import PaymentElementForm from '../PaymentElementForm';
 
@@ -64,8 +63,8 @@ export default function PaymentDesktop({
   const dispatch = useAppDispatch();
 
   const [activeSection, setActiveSection] = useState<
-    'payTiming' | 'guestInfo' | 'paymentMethod'
-  >('payTiming');
+    'guestInfo' | 'paymentMethod'
+  >('guestInfo');
 
   const {
     trigger,
@@ -306,39 +305,13 @@ export default function PaymentDesktop({
               type="button"
               onClick={() =>
                 setActiveSection(
-                  activeSection === 'payTiming' ? 'guestInfo' : 'payTiming',
-                )
-              }
-              className="w-full px-6 py-4 flex items-center justify-between text-left font-bold text-frui-blue hover:bg-neutral-50/50 cursor-pointer"
-            >
-              <span>1. Choose when to pay</span>
-              {activeSection === 'payTiming' ? (
-                <ChevronUp className="size-4" />
-              ) : (
-                <ChevronDown className="size-4" />
-              )}
-            </button>
-
-            {activeSection === 'payTiming' && (
-              <ChooseWhenToPaySection
-                totalPayable={totalPayable}
-                formattedCancelDate={formattedCancelDate}
-              />
-            )}
-          </div>
-
-          <div className="bg-frui-white border border-border rounded-2xl overflow-hidden shadow-xs">
-            <button
-              type="button"
-              onClick={() =>
-                setActiveSection(
                   activeSection === 'guestInfo' ? 'paymentMethod' : 'guestInfo',
                 )
               }
               className="w-full px-6 py-4 flex items-center justify-between text-left font-bold text-frui-blue hover:bg-neutral-50/50 cursor-pointer"
             >
               <div className="flex gap-2 items-center">
-                <span>2. Who&apos;s checking in?</span>
+                <span>1. Who&apos;s checking in?</span>
                 {!(
                   errors.firstName ||
                   errors.lastName ||
@@ -365,14 +338,14 @@ export default function PaymentDesktop({
               onClick={() =>
                 setActiveSection(
                   activeSection === 'paymentMethod'
-                    ? 'payTiming'
+                    ? 'guestInfo'
                     : 'paymentMethod',
                 )
               }
               className="w-full px-6 py-4 flex items-center justify-between text-left font-bold text-frui-blue hover:bg-neutral-50/50 cursor-pointer"
             >
               <div className="flex gap-2 items-center">
-                <span>3. Payment method</span>
+                <span>2. Payment method</span>
               </div>
               {activeSection === 'paymentMethod' ? (
                 <ChevronUp className="size-4" />

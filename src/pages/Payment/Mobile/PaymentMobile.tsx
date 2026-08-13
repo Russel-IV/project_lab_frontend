@@ -183,7 +183,7 @@ export default function PaymentMobile({
           <Fragment key={s.id}>
             <div className="flex items-center gap-2">
               <div
-                className={`size-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                className={`size-6 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                   currentStep === s.id
                     ? 'bg-frui-orange text-frui-white ring-4 ring-frui-orange/20'
                     : currentStep > s.id
