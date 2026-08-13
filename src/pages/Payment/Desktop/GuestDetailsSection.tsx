@@ -17,6 +17,7 @@ export default function GuestDetailsSection() {
           </label>
           <Input
             placeholder="(e.g. John)"
+            autoComplete="off"
             {...register('firstName')}
             aria-invalid={!!errors.firstName}
             className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -35,6 +36,7 @@ export default function GuestDetailsSection() {
           </label>
           <Input
             placeholder="(e.g. Smith)"
+            autoComplete="off"
             {...register('lastName')}
             aria-invalid={!!errors.lastName}
             className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -55,6 +57,7 @@ export default function GuestDetailsSection() {
         <Input
           placeholder="(e.g. name@example.com)"
           type="email"
+          autoComplete="off"
           {...register('email')}
           aria-invalid={!!errors.email}
           className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -89,6 +92,7 @@ export default function GuestDetailsSection() {
           <Input
             placeholder="Enter phone number"
             type="tel"
+            autoComplete="off"
             {...register('phone')}
             aria-invalid={!!errors.phone}
             className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"

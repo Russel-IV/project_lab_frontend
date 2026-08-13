@@ -62,6 +62,7 @@ export default function PaymentElementForm({
           Name on Card *
         </label>
         <Input
+          autoComplete="off"
           {...register('cardName')}
           aria-invalid={!!errors.cardName}
           className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -96,6 +97,7 @@ export default function PaymentElementForm({
         </label>
         <Input
           placeholder="(ex. 123 Main)"
+          autoComplete="off"
           {...register('billingAddress1')}
           aria-invalid={!!errors.billingAddress1}
           className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -114,6 +116,7 @@ export default function PaymentElementForm({
         </label>
         <Input
           placeholder="(ex. Suite 400, Apt. 4B)"
+          autoComplete="off"
           {...register('billingAddress2')}
           className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
         />
@@ -122,6 +125,7 @@ export default function PaymentElementForm({
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-bold text-frui-blue">City *</label>
         <Input
+          autoComplete="off"
           {...register('billingCity')}
           aria-invalid={!!errors.billingCity}
           className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -141,6 +145,7 @@ export default function PaymentElementForm({
           </label>
           <Input
             placeholder="(ex. CA)"
+            autoComplete="off"
             {...register('billingState')}
             aria-invalid={!!errors.billingState}
             className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
@@ -159,6 +164,7 @@ export default function PaymentElementForm({
           </label>
           <Input
             placeholder="(ex. 94103)"
+            autoComplete="off"
             {...register('billingPostalCode')}
             aria-invalid={!!errors.billingPostalCode}
             className="h-10 border-neutral-300 focus-visible:border-frui-orange focus-visible:ring-frui-orange/20"
