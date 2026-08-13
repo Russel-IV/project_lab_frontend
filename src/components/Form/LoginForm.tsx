@@ -113,12 +113,12 @@ export const LoginForm: React.FC = () => {
             />
             <span>Remember me</span>
           </label>
-          <a
-            href="#forgot"
+          <Link
+            to="/forgot-password"
             className="text-neutral-500 hover:text-frui-orange-text underline"
           >
             Forgot Password?
-          </a>
+          </Link>
         </div>
 
         {apiError && (
