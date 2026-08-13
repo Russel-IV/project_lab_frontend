@@ -381,7 +381,7 @@ function PaymentCheckout({
 
   return (
     <FormProvider {...methods}>
-      <div className="flex-1 w-full bg-frui-cream">
+      <div className="flex-1 w-full bg-frui-white">
         <Seo title="Payment" path={`/payment/${publicId ?? ''}`} noIndex />
         {isMobile ? (
           <div className="py-6 px-4 flex flex-col items-center">

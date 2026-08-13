@@ -217,18 +217,18 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
           useFallbacks
         />
 
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="space-y-3 min-w-0">
-            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground leading-snug">
-              {stay.name}
-            </h2>
+        <div className="space-y-3">
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground leading-snug w-full">
+            {stay.name}
+          </h2>
 
-            <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
+          <div className="flex justify-between items-start gap-4 w-full">
+            <div className="flex flex-col gap-1.5 text-sm text-muted-foreground min-w-0">
+              <div className="flex items-center gap-1.5">
                 <PropertyTypeIcon className="size-4 shrink-0 text-primary" />
                 <span>{propertyTypeLabel}</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <MapPin className="size-4 shrink-0 text-primary" />
                 <span>
                   {stay.address?.city || 'Palma'},{' '}
@@ -237,7 +237,7 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
                     'Spain'}
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-amber-500">
+              <div className="flex items-center gap-1.5 text-amber-500">
                 <Star className="size-4 fill-amber-500" />
                 <span className="font-semibold text-foreground">
                   {rating.toFixed(1)}
@@ -245,10 +245,8 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
                 <span>{ratingText}</span>
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col items-end gap-2 shrink-0 text-right">
-            <div className="flex items-center gap-1.5 text-xs font-medium">
+            <div className="flex flex-col items-end gap-1.5 text-xs font-medium shrink-0 text-right">
               {stay.isRefundable ? (
                 <span className="flex items-center gap-1 text-emerald-600">
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
@@ -260,17 +258,9 @@ export function ItemInfo({ stay, onClose, className = '' }: ItemInfoProps) {
                   Non-refundable
                 </span>
               )}
-              <span className="text-muted-foreground">·</span>
               <span className="flex items-center gap-1 text-emerald-600">
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                 Dates available
-              </span>
-            </div>
-
-            <div className="text-lg font-bold text-foreground">
-              {formattedPrice}
-              <span className="text-xs text-muted-foreground font-normal ml-1">
-                total
               </span>
             </div>
           </div>
